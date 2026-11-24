@@ -1,0 +1,13 @@
+---
+// Home provisória da fase 0: título e parágrafo-resposta são os rascunhos da spec 5.1, palavra por palavra.
+import Base from '../layouts/Base.astro';
+
+const titulo = 'Hugo Martins · Desenvolvimento de Potencial Humano | 10S';
+const resumo =
+  'Hugo Martins é terapeuta e formador, criador do 10S e do Reiki da Alma. Seu trabalho, o Desenvolvimento de Potencial Humano, tem duas frentes: para pessoas, uma esteira que começa obrigatoriamente pelo 10S e segue para o Potencial Humano ou o Potencial Corporativo; para empresas, os treinamentos da Lumi – Soluções Integradas.';
+---
+
+<Base title={titulo} description={resumo}>
+  <h1>Hugo Martins – Desenvolvimento de Potencial Humano</h1>
+  <p class="lead">{resumo}</p>
+</Base>
