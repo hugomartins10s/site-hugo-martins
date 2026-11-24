@@ -285,9 +285,14 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     display: none;
   }
 
+  .nav :global(.nav__cta) {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
   /* ---------- Celular e tablet ---------- */
 
-  @media (max-width: 63.99rem) {
+  @media (max-width: 71.99rem) {
     .nav {
       padding-left: var(--space-4);
     }
