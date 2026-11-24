@@ -1,0 +1,49 @@
+{
+  "nome": "Hugo Martins – Desenvolvimento de Potencial Humano",
+  "nomeCurto": "Hugo Martins",
+  "assinatura": "Abraço de Alma",
+  "marcas": {
+    "pessoal": {
+      "nome": "Hugo Martins",
+      "publico": "pessoa",
+      "caminho": "/para-voce/"
+    },
+    "empresas": {
+      "nome": "Lumi – Soluções Integradas",
+      "publico": "empresa",
+      "caminho": "/para-empresas/"
+    }
+  },
+  "pessoa": {
+    "nome": "Hugo Martins",
+    "nomeCompleto": "Hugo David Santos Martins",
+    "descricao": "Terapeuta e formador, especializado em comportamento humano, linguagem não verbal e reprogramação mental e emocional."
+  },
+  "livro": {
+    "titulo": "Reiki, uma Viagem à Alma",
+    "editora": "Editora Viseu",
+    "isbnEbook": "978-65-254-3850-4"
+  },
+  "contato": {
+    "whatsapp": "+5545998566093",
+    "whatsappExibicao": "+55 45 99856-6093",
+    "email": "10s.hugomartins@gmail.com"
+  },
+  "redes": [
+    {
+      "rede": "Instagram",
+      "usuario": "@hugomartins10s",
+      "url": "https://www.instagram.com/hugomartins10s/"
+    },
+    {
+      "rede": "Facebook",
+      "usuario": "@hugomartins10s",
+      "url": "https://www.facebook.com/hugomartins10s"
+    },
+    {
+      "rede": "YouTube",
+      "usuario": "@hugomartins10s",
+      "url": "https://www.youtube.com/@hugomartins10s"
+    }
+  ]
+}
