@@ -1,0 +1,35 @@
+# Verificações de cada push e pull request: tipos, formatação, testes da trava e builds.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Lint (astro check + prettier)
+        run: npm run lint
+      - name: Testes da trava de pendências
+        run: npm test
+      - name: Build de homologação
+        run: npm run build:homologacao
+        env:
+          SITE_URL: https://hugomartins10s.github.io
+          BASE_PATH: /site-hugo-martins
+      # Até o lançamento, o conteúdo ainda tem [PENDENTE] e este passo falha de propósito.
+      # Ele fica informativo (amarelo, não vermelho). No lançamento, remover continue-on-error.
+      - name: Build de produção (trava de pendências)
+        run: npm run build
+        continue-on-error: true
