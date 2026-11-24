@@ -1,0 +1,171 @@
+/*
+ * Liquid Glass (spec 9.3). Só na camada flutuante e nos botões; conteúdo fica em superfície sólida.
+ *
+ * Fallbacks, nesta ordem de força:
+ *   1. sem suporte a backdrop-filter  → vidro sólido translúcido (--glass-solid)
+ *   2. prefers-reduced-transparency   → superfície sólida, borda reforçada
+ *   3. prefers-contrast: more         → idem
+ *   4. forced-colors                  → cores do sistema
+ *   5. prefers-reduced-motion         → sem transições (base.css)
+ *
+ * O /styleguide simula 1–3 com ?simular=… (atributo data-simular no <html>), para revisão sem
+ * mexer nas configurações do sistema. As regras de simulação repetem as do @media de propósito.
+ */
+
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--glass-shadow);
+  color: var(--hm-white);
+}
+
+.glass--painel {
+  border-radius: var(--radius-panel);
+}
+
+.glass--tint {
+  background: var(--glass-tint);
+}
+
+/* Refração (aprimoramento só em Chromium; a classe .lente-ok é posta por JS em Base.astro). */
+.lente-ok .glass--lente {
+  -webkit-backdrop-filter: url(#lente) var(--glass-blur);
+  backdrop-filter: url(#lente) var(--glass-blur);
+}
+
+/* ---------- Botões ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0.7rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1.1;
+  color: var(--hm-white);
+  cursor: pointer;
+  transition:
+    background var(--dur-2) var(--ease),
+    box-shadow var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease),
+    filter var(--dur-1) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.btn {
+  font: inherit;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btn:hover {
+  color: var(--hm-white);
+  background: var(--glass-bg-hover);
+  box-shadow: var(--glass-shadow-hover);
+}
+
+.btn.glass--tint:hover {
+  background: var(--glass-tint-hover);
+}
+
+.btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.88);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-pill);
+}
+
+.btn--grande {
+  min-height: 52px;
+  padding: 0.9rem 1.9rem;
+  font-size: 1.0625rem;
+}
+
+.btn--icone {
+  width: var(--tap);
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* ---------- Fallback 1: sem backdrop-filter ---------- */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--glass-solid);
+  }
+  .glass--tint {
+    background: var(--glass-tint-camada), var(--glass-solid);
+  }
+}
+
+:root[data-simular~='sem-backdrop'] .glass {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--glass-solid);
+}
+:root[data-simular~='sem-backdrop'] .glass--tint {
+  background: var(--glass-tint-camada), var(--glass-solid);
+}
+
+/* ---------- Fallbacks 2 e 3: transparência reduzida, contraste alto ---------- */
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .glass,
+  .glass--tint,
+  .btn:hover,
+  .btn.glass--tint:hover {
+    background: var(--surface-2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  .glass--tint {
+    border-color: var(--brand-1);
+  }
+}
+
+:root[data-simular~='sem-transparencia'] :is(.glass, .glass--tint, .btn:hover),
+:root[data-simular~='contraste'] :is(.glass, .glass--tint, .btn:hover) {
+  background: var(--surface-2);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+:root[data-simular~='sem-transparencia'] .glass--tint,
+:root[data-simular~='contraste'] .glass--tint {
+  border-color: var(--brand-1);
+}
+
+/* ---------- Fallback 4: cores forçadas (Windows alto contraste) ---------- */
+
+@media (forced-colors: active) {
+  .glass {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .btn {
+    color: LinkText;
+    border-color: LinkText;
+  }
+}

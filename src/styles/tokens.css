@@ -1,0 +1,149 @@
+/*
+ * Tokens de design (spec 9.2). Cores da marca extraídas do manual de identidade (2020);
+ * "derivados" são decisões de arquitetura [P]. Tema escuro único na v1.
+ *
+ * Fontes web [P]: as do logo (Typeface 6781, P22 Underground) não têm licença web confirmada
+ * (PENDENCIAS P31). Título: Jost (sans geométrica). Corpo: Source Sans 3 (sans humanista).
+ * Todas OFL, auto-hospedadas, subconjunto latino.
+ */
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/jost-var.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/source-sans-3-var.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/source-sans-3-var-italic.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Hugo Martins (manual de identidade) */
+  --hm-navy: #000523; /* fundo principal */
+  --hm-cyan: #01ffff; /* destaque, brilho, foco */
+  --hm-teal: #02b9ca; /* links e ícones */
+  --hm-white: #ffffff;
+
+  /* Derivados [P] */
+  --surface-1: #060c33; /* cartão sólido */
+  --surface-2: #0b1445;
+  --surface-3: #121d57; /* hover de superfícies sólidas */
+  --text: #eaf4fb;
+  --text-muted: #9fb0d0;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.22);
+
+  /* Papéis (a seção Lumi sobrescreve estes) */
+  --bg: var(--hm-navy);
+  --brand-1: var(--hm-cyan);
+  --brand-2: var(--hm-teal);
+  --link: var(--hm-teal);
+  --link-hover: var(--hm-cyan);
+  --focus: var(--hm-cyan);
+  --eyebrow: var(--hm-teal);
+
+  /* Manchas de luz do fundo (spec 9.1) */
+  --glow-1: rgba(1, 255, 255, 0.2);
+  --glow-2: rgba(2, 185, 202, 0.22);
+  --glow-3: rgba(2, 185, 202, 0.12);
+  --pattern-opacity: 0.06;
+
+  /* Vidro (spec 9.3) */
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+  --glass-bg-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+  /* Botão primário: o tingimento da spec sobre uma base navy translúcida. A base garante
+     contraste ≥ 4,5:1 do texto branco sobre a mancha de luz mais clara (scripts/check-contraste.mjs). */
+  --glass-tint-camada: linear-gradient(135deg, rgba(1, 255, 255, 0.28), rgba(2, 185, 202, 0.14));
+  --glass-tint-camada-hover: linear-gradient(
+    135deg,
+    rgba(1, 255, 255, 0.34),
+    rgba(2, 185, 202, 0.2)
+  );
+  --glass-tint-base: rgba(0, 5, 35, 0.45);
+  --glass-tint: var(--glass-tint-camada), var(--glass-tint-base);
+  --glass-tint-hover: var(--glass-tint-camada-hover), var(--glass-tint-base);
+  --glass-solid: rgba(11, 20, 69, 0.92); /* sem backdrop-filter */
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-blur: blur(18px) saturate(170%);
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 30px rgba(0, 5, 35, 0.35);
+  --glass-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 34px rgba(0, 5, 35, 0.45);
+
+  /* Tipografia */
+  --font-display: 'Jost', 'Avenir Next', 'Century Gothic', system-ui, sans-serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-h1: var(--font-display);
+  --tracking-display: 0.14em; /* caixa alta espaçada, no espírito do logo */
+  --tracking-heading: 0.01em;
+
+  --step--1: 0.9375rem; /* 15px: legendas, metadados */
+  --step-0: 1.125rem; /* 18px: corpo (spec: ≥ 17px) */
+  --step-1: clamp(1.25rem, 1.15rem + 0.4vw, 1.4rem);
+  --step-2: clamp(1.45rem, 1.25rem + 0.9vw, 1.85rem);
+  --step-3: clamp(1.8rem, 1.45rem + 1.6vw, 2.5rem);
+  --step-4: clamp(2.2rem, 1.6rem + 2.8vw, 3.5rem);
+  --leading: 1.6;
+  --leading-tight: 1.2;
+  --measure: 68ch; /* 60 a 72 caracteres */
+
+  /* Espaçamento */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --container: 72rem;
+
+  /* Formas */
+  --radius-pill: 999px;
+  --radius-panel: 26px; /* painéis de vidro: 24–28px */
+  --radius-card: 18px;
+  --radius-field: 12px;
+
+  /* Movimento (150–250 ms; desligado em prefers-reduced-motion) */
+  --dur-1: 150ms;
+  --dur-2: 220ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Camadas */
+  --z-bg: -1;
+  --z-float: 50;
+  --z-nav: 60;
+  --z-sheet: 70;
+
+  /* Alvos de toque ≥ 44 px */
+  --tap: 44px;
+}

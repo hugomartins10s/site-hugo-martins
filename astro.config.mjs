@@ -15,6 +15,9 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'always',
+  // Astro 7 mudou o padrão para 'jsx', que apaga o espaço entre texto e links em quebras de linha
+  // ("escolhePotencial Humano"). true mantém a regra de espaços do HTML.
+  compressHTML: true,
   build: { format: 'directory' },
   env: {
     schema: {

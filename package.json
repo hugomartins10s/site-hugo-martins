@@ -16,9 +16,11 @@
     "build": "astro build",
     "postbuild": "npm run check:pendentes:dist",
     "build:homologacao": "HOMOLOGACAO=true astro build && node scripts/check-pendentes.mjs --aviso dist",
-    "lint": "astro check && prettier --check .",
+    "lint": "astro check && prettier --check . && npm run check:contraste",
     "format": "prettier --write .",
-    "test": "node --test \"scripts/*.test.mjs\""
+    "test": "node --test \"scripts/*.test.mjs\"",
+    "check:contraste": "node scripts/check-contraste.mjs",
+    "marca": "node scripts/otimizar-marca.mjs"
   },
   "dependencies": {
     "astro": "7.4.13"

@@ -1,0 +1,70 @@
+/* Tipografia de artigos (posts, conceitos, páginas de texto). Sempre sobre superfície sólida. */
+
+.prose {
+  max-width: var(--measure);
+  font-size: var(--step-0);
+  line-height: var(--leading);
+}
+
+.prose > * + * {
+  margin-top: 0;
+}
+
+.prose h2 {
+  margin-top: var(--space-7);
+  font-size: var(--step-2);
+}
+
+.prose h3 {
+  margin-top: var(--space-6);
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+
+.prose :is(h2, h3) + * {
+  margin-top: 0;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+
+.prose li + li {
+  margin-top: var(--space-2);
+}
+
+.prose li::marker {
+  color: var(--brand-2);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: var(--space-2) 0 var(--space-2) var(--space-5);
+  border-left: 3px solid var(--brand-2);
+  color: var(--text);
+  font-style: italic;
+}
+
+.prose hr {
+  margin-block: var(--space-7);
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.prose table {
+  font-size: var(--step--1);
+}
+
+.prose img {
+  border-radius: var(--radius-card);
+}
+
+/* Assinatura dos textos do Hugo */
+.assinatura {
+  margin-top: var(--space-6);
+  font-family: var(--font-display);
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
