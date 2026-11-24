@@ -1,0 +1,47 @@
+---
+// Caixa de autor (spec 4.5): todo post e conceito aponta para a página-entidade do Hugo.
+// Foto só entra quando existir a oficial (PENDENCIAS P08).
+import { empresa } from '../../lib/empresa';
+import { url } from '../../lib/links';
+---
+
+<aside class="autor superficie" aria-label="Sobre o autor">
+  <img
+    class="autor__marca"
+    src={url('/brand/hugo-martins-submarca.webp')}
+    width="160"
+    height="183"
+    alt=""
+    loading="lazy"
+  />
+  <div>
+    <p class="autor__nome">{empresa.pessoa.nome}</p>
+    <p class="autor__descricao">{empresa.pessoa.descricao}</p>
+    <a href={url('/hugo-martins/')}>Quem é {empresa.pessoa.nome}</a>
+  </div>
+</aside>
+
+<style>
+  .autor {
+    display: flex;
+    gap: var(--space-5);
+    align-items: flex-start;
+  }
+
+  .autor__marca {
+    width: 56px;
+    flex-shrink: 0;
+  }
+
+  .autor__nome {
+    margin: 0 0 var(--space-1);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--hm-white);
+  }
+
+  .autor__descricao {
+    margin-bottom: var(--space-3);
+    color: var(--text-muted);
+  }
+</style>

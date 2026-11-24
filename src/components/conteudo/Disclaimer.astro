@@ -1,0 +1,35 @@
+---
+// Aviso legal (spec 5.9, texto fixo; revisão do Hugo em PENDENCIAS P22). Vai no rodapé
+// (variante "rodape") e em toda página de produto da frente pessoal.
+interface Props {
+  variante?: 'pagina' | 'rodape';
+}
+const { variante = 'pagina' } = Astro.props;
+---
+
+<aside
+  class:list={['aviso', `aviso--${variante}`, variante === 'pagina' && 'superficie']}
+  aria-label="Aviso legal"
+>
+  <p>
+    O trabalho de Hugo Martins é de desenvolvimento pessoal e profissional. Não é tratamento médico
+    nem psicológico, não faz diagnóstico e não substitui o acompanhamento de profissionais de saúde.
+  </p>
+</aside>
+
+<style>
+  .aviso p {
+    margin: 0;
+  }
+
+  .aviso--pagina {
+    border-left: 3px solid var(--brand-2);
+    max-width: var(--measure);
+  }
+
+  .aviso--rodape {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    max-width: var(--measure);
+  }
+</style>

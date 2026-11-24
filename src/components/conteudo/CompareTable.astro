@@ -1,0 +1,58 @@
+---
+// Tabela comparativa em HTML real (spec 7.1). Em telas estreitas, rola na horizontal dentro de
+// uma região focável, sem quebrar a página.
+interface Linha {
+  rotulo: string;
+  valores: string[];
+}
+interface Props {
+  legenda: string;
+  colunas: string[]; // inclui o cabeçalho da primeira coluna
+  linhas: Linha[];
+}
+const { legenda, colunas, linhas } = Astro.props;
+---
+
+<div class="tabela superficie" role="region" aria-label={legenda} tabindex="0">
+  <table>
+    <caption>{legenda}</caption>
+    <thead>
+      <tr>
+        {colunas.map((c) => (
+          <th scope="col">{c}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {linhas.map((l) => (
+        <tr>
+          <th scope="row">{l.rotulo}</th>
+          {l.valores.map((v) => (
+            <td>{v}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .tabela {
+    overflow-x: auto;
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .tabela table {
+    min-width: 34rem;
+    margin: 0;
+  }
+
+  .tabela tbody tr:last-child :is(th, td) {
+    border-bottom: 0;
+  }
+
+  .tabela:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+</style>

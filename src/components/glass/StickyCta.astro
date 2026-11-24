@@ -1,0 +1,43 @@
+---
+// Barra de CTA fixa, só no celular (spec 9.1). O conteúdo da página ganha respiro embaixo
+// para não ficar coberto.
+import GlassButton from './GlassButton.astro';
+
+interface Props {
+  href: string;
+  rotulo: string;
+}
+const { href, rotulo } = Astro.props;
+---
+
+<div class="cta-fixa glass glass--painel">
+  <GlassButton href={href} class="cta-fixa__botao">
+    {rotulo}
+  </GlassButton>
+</div>
+
+<style>
+  .cta-fixa {
+    display: none;
+  }
+
+  @media (max-width: 47.99rem) {
+    .cta-fixa {
+      position: fixed;
+      left: var(--space-3);
+      right: var(--space-3);
+      bottom: max(var(--space-3), env(safe-area-inset-bottom));
+      z-index: var(--z-float);
+      display: flex;
+      padding: var(--space-2);
+    }
+
+    .cta-fixa :global(.cta-fixa__botao) {
+      flex: 1;
+    }
+
+    :global(body:has(.cta-fixa)) {
+      padding-bottom: 96px;
+    }
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+// Cartão de vidro em destaque sobre o hero (spec 9.1: no máximo um grupo por página).
+// O texto vem do slot; o título é um link que cobre o cartão inteiro.
+interface Props {
+  titulo: string;
+  href: string;
+  eyebrow?: string;
+  nivel?: 2 | 3;
+}
+const { titulo, href, eyebrow, nivel = 3 } = Astro.props;
+const Titulo = `h${nivel}` as 'h2' | 'h3';
+---
+
+<article class="destaque glass glass--painel">
+  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+  <Titulo class="destaque__titulo">
+    <a href={href}>{titulo}</a>
+  </Titulo>
+  <div class="destaque__texto">
+    <slot />
+  </div>
+</article>
+
+<style>
+  .destaque {
+    position: relative;
+    padding: var(--space-6);
+    transition:
+      background var(--dur-2) var(--ease),
+      box-shadow var(--dur-2) var(--ease);
+  }
+
+  .destaque:hover {
+    background: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
+  }
+
+  .destaque__titulo {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .destaque__titulo a {
+    color: var(--hm-white);
+    text-decoration: none;
+  }
+
+  .destaque__titulo a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .destaque__titulo a:focus-visible {
+    outline: none;
+  }
+
+  .destaque:has(a:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .destaque .eyebrow {
+    color: var(--hm-white);
+    opacity: 0.85;
+  }
+
+  .destaque__texto {
+    color: var(--hm-white);
+  }
+
+  .destaque__texto :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

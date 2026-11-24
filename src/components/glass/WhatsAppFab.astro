@@ -1,0 +1,57 @@
+---
+// Botão flutuante de WhatsApp (spec 4.2): vidro, canto inferior direito, todas as páginas.
+import { linkWhatsApp } from '../../lib/empresa';
+import WhatsApp from '../icones/WhatsApp.astro';
+---
+
+<a
+  class="fab glass"
+  href={linkWhatsApp()}
+  aria-label="Conversar com Hugo Martins no WhatsApp"
+  rel="noopener"
+  target="_blank"
+>
+  <WhatsApp tamanho={28} />
+</a>
+
+<style>
+  .fab {
+    position: fixed;
+    right: max(var(--space-4), env(safe-area-inset-right));
+    bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    z-index: var(--z-float);
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    color: var(--hm-white);
+    transition:
+      transform var(--dur-1) var(--ease),
+      box-shadow var(--dur-2) var(--ease),
+      background var(--dur-2) var(--ease);
+  }
+
+  .fab:hover {
+    color: var(--hm-white);
+    background: var(--glass-bg-hover);
+    box-shadow: var(--glass-shadow-hover);
+  }
+
+  .fab:active {
+    transform: scale(0.97);
+  }
+
+  .fab:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 50%;
+  }
+
+  /* No celular, sobe para não cobrir a barra de CTA fixa */
+  @media (max-width: 47.99rem) {
+    :global(body:has(.cta-fixa)) .fab {
+      bottom: calc(max(var(--space-4), env(safe-area-inset-bottom)) + 76px);
+    }
+  }
+</style>

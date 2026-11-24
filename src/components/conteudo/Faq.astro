@@ -1,0 +1,76 @@
+---
+// Perguntas frequentes da página (spec 5): texto visível, <details> aberto por padrão no HTML.
+// Sem marcação FAQPage (spec 2 e 8).
+interface Item {
+  pergunta: string;
+  resposta: string;
+}
+interface Props {
+  itens: Item[];
+  titulo?: string;
+}
+const { itens, titulo = 'Perguntas frequentes' } = Astro.props;
+---
+
+{itens.length > 0 && (
+  <section class="faq">
+    <h2>{titulo}</h2>
+    {itens.map((i) => (
+      <details class="faq__item superficie" open>
+        <summary>
+          <h3 class="faq__pergunta">{i.pergunta}</h3>
+        </summary>
+        <p class="faq__resposta">{i.resposta}</p>
+      </details>
+    ))}
+  </section>
+)}
+
+<style>
+  .faq__item + .faq__item {
+    margin-top: var(--space-3);
+  }
+
+  .faq__item {
+    padding-block: var(--space-4);
+  }
+
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: var(--tap);
+    list-style: none;
+  }
+
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__item summary::after {
+    content: '';
+    flex-shrink: 0;
+    width: 0.6em;
+    height: 0.6em;
+    border-right: 2px solid var(--brand-2);
+    border-bottom: 2px solid var(--brand-2);
+    transform: rotate(45deg) translateY(-25%);
+    transition: transform var(--dur-1) var(--ease);
+  }
+
+  .faq__item[open] summary::after {
+    transform: rotate(-135deg) translateX(-25%);
+  }
+
+  .faq__pergunta {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 500;
+  }
+
+  .faq__resposta {
+    margin: var(--space-3) 0 0;
+    max-width: var(--measure);
+  }
+</style>

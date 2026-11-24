@@ -1,0 +1,412 @@
+---
+/**
+ * Cabeçalho flutuante em pílula de vidro (spec 4.2, 9.1, 9.3).
+ *
+ * - Funciona sem JS: submenus e menu móvel são <details>. O JS só fecha os outros ao abrir um,
+ *   fecha com Esc e com clique fora.
+ * - O vidro fica numa camada própria (.nav__vidro), não no <header>: um elemento com
+ *   backdrop-filter isolaria o backdrop dos filhos e os submenus de vidro perderiam o efeito.
+ * - Encolhe e fica mais opaco ao rolar (animation-timeline: scroll(), com fallback estático).
+ */
+import navegacao from '../../data/navegacao.json';
+import { empresa } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import GlassButton from './GlassButton.astro';
+
+const atual = Astro.url.pathname;
+const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href));
+---
+
+<header class="nav" data-nav>
+  <div class="nav__vidro glass glass--lente" aria-hidden="true"></div>
+
+  <a class="nav__marca" href={url('/')}>
+    <img
+      class="nav__logo"
+      src={url('/brand/hugo-martins-horizontal.webp')}
+      width="480"
+      height="81"
+      alt={empresa.nome}
+      fetchpriority="high"
+    />
+    <img
+      class="nav__logo-compacto"
+      src={url('/brand/hugo-martins-submarca.webp')}
+      width="160"
+      height="183"
+      alt={empresa.nome}
+    />
+  </a>
+
+  <nav class="nav__principal" aria-label="Principal">
+    <ul class="nav__lista">
+      {navegacao.principal.map((item) => (
+        <li class="nav__item">
+          <a
+            class="nav__link"
+            href={url(item.href)}
+            aria-current={ativo(item.href) ? 'page' : undefined}
+          >
+            {item.rotulo}
+          </a>
+          {item.filhos && (
+            <details class="nav__sub" data-nav-details>
+              <summary class="nav__abrir" aria-label={`Abrir o submenu ${item.rotulo}`}>
+                <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12">
+                  <path
+                    d="M2 4.5 6 8.5 10 4.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                  />
+                </svg>
+              </summary>
+              <ul class="nav__painel glass glass--painel">
+                {item.filhos.map((filho) => (
+                  <li>
+                    <a
+                      href={url(filho.href)}
+                      aria-current={atual === url(filho.href) ? 'page' : undefined}
+                    >
+                      {filho.rotulo}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <GlassButton href={url(navegacao.cta.href)} class="nav__cta">
+    {navegacao.cta.rotulo}
+  </GlassButton>
+
+  <details class="nav__movel" data-nav-details>
+    <summary class="btn glass nav__menu">Menu</summary>
+    <nav class="nav__folha glass glass--painel" aria-label="Principal (celular)">
+      <ul>
+        {navegacao.principal.map((item) => (
+          <li>
+            <a
+              class="nav__folha-link"
+              href={url(item.href)}
+              aria-current={ativo(item.href) ? 'page' : undefined}
+            >
+              {item.rotulo}
+            </a>
+            {item.filhos && (
+              <ul class="nav__folha-filhos">
+                {item.filhos.map((filho) => (
+                  <li>
+                    <a href={url(filho.href)}>{filho.rotulo}</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+      <GlassButton href={url(navegacao.cta.href)} tamanho="grande" class="nav__folha-cta">
+        {navegacao.cta.rotulo}
+      </GlassButton>
+    </nav>
+  </details>
+</header>
+
+<script>
+  // Aprimoramento: um submenu aberto por vez; Esc e clique fora fecham.
+  const cabecalho = document.querySelector<HTMLElement>('[data-nav]');
+  if (cabecalho) {
+    const todos = [...cabecalho.querySelectorAll<HTMLDetailsElement>('[data-nav-details]')];
+    const fechar = (exceto?: HTMLDetailsElement) =>
+      todos.forEach((d) => d !== exceto && d.removeAttribute('open'));
+
+    todos.forEach((d) => d.addEventListener('toggle', () => d.open && fechar(d)));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const aberto = todos.find((d) => d.open);
+      if (aberto) {
+        aberto.removeAttribute('open');
+        aberto.querySelector('summary')?.focus();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!(e.target instanceof Node)) return;
+      todos.forEach((d) => d.open && !d.contains(e.target as Node) && d.removeAttribute('open'));
+    });
+  }
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    top: max(var(--space-3), env(safe-area-inset-top));
+    left: 50%;
+    z-index: var(--z-nav);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    width: min(100% - 2 * var(--space-3), var(--container));
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+    transform: translateX(-50%);
+    color: var(--hm-white);
+  }
+
+  .nav__vidro {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--radius-pill);
+  }
+
+  .nav__marca {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-height: var(--tap);
+  }
+
+  .nav__logo {
+    width: 200px;
+    height: auto;
+  }
+
+  .nav__logo-compacto {
+    display: none;
+    width: 38px;
+    height: auto;
+  }
+
+  .nav__principal {
+    margin-inline: auto;
+  }
+
+  .nav__lista {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-pill);
+    color: var(--hm-white);
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .nav__link:hover {
+    color: var(--hm-white);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav__link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--brand-1);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+  }
+
+  .nav__sub {
+    position: static;
+  }
+
+  .nav__abrir {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: var(--tap);
+    margin-left: calc(-1 * var(--space-2));
+    border-radius: var(--radius-pill);
+    list-style: none;
+    color: var(--hm-white);
+  }
+
+  .nav__abrir::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav__abrir svg {
+    transition: transform var(--dur-1) var(--ease);
+  }
+
+  .nav__sub[open] .nav__abrir svg {
+    transform: rotate(180deg);
+  }
+
+  .nav__abrir:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav__painel {
+    position: absolute;
+    top: calc(100% + var(--space-3));
+    left: 0;
+    min-width: 19rem;
+    margin: 0;
+    padding: var(--space-3);
+    list-style: none;
+  }
+
+  .nav__painel a {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: var(--space-2) var(--space-4);
+    border-radius: 14px;
+    color: var(--hm-white);
+    text-decoration: none;
+  }
+
+  .nav__painel a:hover,
+  .nav__painel a[aria-current='page'] {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .nav__movel {
+    display: none;
+  }
+
+  /* ---------- Celular e tablet ---------- */
+
+  @media (max-width: 63.99rem) {
+    .nav {
+      padding-left: var(--space-4);
+    }
+
+    .nav__principal,
+    :global(.nav__cta) {
+      display: none !important;
+    }
+
+    .nav__movel {
+      display: block;
+      margin-left: auto;
+    }
+
+    .nav__menu {
+      list-style: none;
+    }
+
+    .nav__menu::-webkit-details-marker {
+      display: none;
+    }
+
+    .nav__folha {
+      position: absolute;
+      top: calc(100% + var(--space-3));
+      left: 0;
+      right: 0;
+      max-height: calc(100dvh - 7rem);
+      overflow-y: auto;
+      padding: var(--space-5);
+    }
+
+    .nav__folha ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav__folha-link,
+    .nav__folha-filhos a {
+      display: flex;
+      align-items: center;
+      min-height: var(--tap);
+      color: var(--hm-white);
+      text-decoration: none;
+    }
+
+    .nav__folha-link {
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+    }
+
+    .nav__folha-filhos {
+      padding-left: var(--space-4) !important;
+      margin-bottom: var(--space-2) !important;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .nav__folha-filhos a {
+      padding-left: var(--space-3);
+      color: var(--text);
+    }
+
+    .nav__folha :global(.nav__folha-cta) {
+      width: 100%;
+      margin-top: var(--space-5);
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .nav__logo {
+      display: none;
+    }
+    .nav__logo-compacto {
+      display: block;
+    }
+  }
+
+  /* ---------- Encolhe ao rolar ---------- */
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .nav {
+        animation: nav-encolher linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 160px;
+      }
+
+      .nav__vidro {
+        animation: nav-opacar linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 160px;
+      }
+
+      .nav__logo {
+        animation: nav-logo linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 160px;
+      }
+    }
+  }
+
+  @keyframes nav-encolher {
+    to {
+      top: var(--space-2);
+      padding-block: 2px;
+      width: min(100% - 2 * var(--space-3), calc(var(--container) - 4rem));
+    }
+  }
+
+  @keyframes nav-opacar {
+    to {
+      background-color: rgba(0, 5, 35, 0.55);
+    }
+  }
+
+  @keyframes nav-logo {
+    to {
+      width: 176px;
+    }
+  }
+</style>

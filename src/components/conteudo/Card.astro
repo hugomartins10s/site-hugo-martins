@@ -1,0 +1,77 @@
+---
+// Cartão de conteúdo em superfície sólida (produto, post, conceito). O título é o link e a área
+// clicável cobre o cartão inteiro.
+interface Props {
+  titulo: string;
+  href: string;
+  eyebrow?: string;
+  meta?: string;
+  nivel?: 2 | 3;
+}
+const { titulo, href, eyebrow, meta, nivel = 3 } = Astro.props;
+const Titulo = `h${nivel}` as 'h2' | 'h3';
+---
+
+<article class="cartao superficie">
+  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+  <Titulo class="cartao__titulo">
+    <a href={href}>{titulo}</a>
+  </Titulo>
+  <div class="cartao__texto">
+    <slot />
+  </div>
+  {meta && <p class="cartao__meta small muted">{meta}</p>}
+</article>
+
+<style>
+  .cartao {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition:
+      background var(--dur-2) var(--ease),
+      border-color var(--dur-2) var(--ease),
+      transform var(--dur-2) var(--ease);
+  }
+
+  .cartao:hover {
+    background: var(--surface-3);
+    border-color: var(--line-strong);
+  }
+
+  .cartao__titulo {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .cartao__titulo a {
+    color: var(--hm-white);
+    text-decoration: none;
+  }
+
+  .cartao__titulo a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .cartao__titulo a:focus-visible {
+    outline: none;
+  }
+
+  .cartao:has(a:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  .cartao__texto :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .cartao__meta {
+    margin: auto 0 0;
+    padding-top: var(--space-4);
+  }
+</style>

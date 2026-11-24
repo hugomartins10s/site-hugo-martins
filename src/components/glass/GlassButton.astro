@@ -1,0 +1,49 @@
+---
+/**
+ * Botão de vidro (spec 9.3/9.4). Primário = vidro tingido com refração (Chromium); secundário =
+ * vidro neutro; ícone = redondo (exige `rotulo` para leitores de tela).
+ * Com `href` vira <a>; sem, <button>.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props {
+  href?: string;
+  variante?: 'primario' | 'secundario' | 'icone';
+  tamanho?: 'normal' | 'grande';
+  type?: 'button' | 'submit';
+  rotulo?: string; // aria-label (obrigatório para ícone)
+  class?: string;
+  rel?: string;
+  target?: HTMLAttributes<'a'>['target'];
+}
+
+const {
+  href,
+  variante = 'primario',
+  tamanho = 'normal',
+  type = 'button',
+  rotulo,
+  class: extra,
+  rel,
+  target,
+} = Astro.props;
+
+const classes = [
+  'btn',
+  'glass',
+  variante === 'primario' && 'glass--tint glass--lente',
+  variante === 'icone' && 'btn--icone',
+  tamanho === 'grande' && 'btn--grande',
+  extra,
+];
+---
+
+{href ? (
+  <a href={href} class:list={classes} aria-label={rotulo} rel={rel} target={target}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class:list={classes} aria-label={rotulo}>
+    <slot />
+  </button>
+)}

@@ -1,0 +1,19 @@
+---
+// Painel de vidro para menu móvel, submenus e modais (spec 9.1). O conteúdo sai no HTML;
+// quem abre/fecha é um <details> pai, então funciona sem JavaScript.
+interface Props {
+  class?: string;
+  id?: string;
+}
+const { class: extra, id } = Astro.props;
+---
+
+<div class:list={['glass', 'glass--painel', 'folha', extra]} id={id}>
+  <slot />
+</div>
+
+<style>
+  .folha {
+    padding: var(--space-4);
+  }
+</style>
