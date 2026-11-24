@@ -18,7 +18,7 @@
     "build:homologacao": "HOMOLOGACAO=true astro build && node scripts/check-pendentes.mjs --aviso dist",
     "lint": "astro check && prettier --check .",
     "format": "prettier --write .",
-    "test": "node --test scripts/"
+    "test": "node --test \"scripts/*.test.mjs\""
   },
   "dependencies": {
     "astro": "7.4.13"
