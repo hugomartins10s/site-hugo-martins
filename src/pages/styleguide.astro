@@ -1,0 +1,621 @@
+---
+/**
+ * Styleguide (fase 1, noindex sempre). Mostra tokens, tipografia, fundo, componentes de vidro e
+ * sólidos, e a seção Lumi. Os textos de exemplo são rascunhos e fatos [C] da spec, nunca texto de
+ * preenchimento. Os fallbacks podem ser simulados com ?simular=… (ver barra no topo).
+ */
+import Base from '../layouts/Base.astro';
+import GlassButton from '../components/glass/GlassButton.astro';
+import FeaturedGlassCard from '../components/glass/FeaturedGlassCard.astro';
+import StickyCta from '../components/glass/StickyCta.astro';
+import Lead from '../components/conteudo/Lead.astro';
+import FactList from '../components/conteudo/FactList.astro';
+import Card from '../components/conteudo/Card.astro';
+import CompareTable from '../components/conteudo/CompareTable.astro';
+import Faq from '../components/conteudo/Faq.astro';
+import EsteiraDiagram from '../components/conteudo/EsteiraDiagram.astro';
+import AuthorBox from '../components/conteudo/AuthorBox.astro';
+import Disclaimer from '../components/conteudo/Disclaimer.astro';
+import CrossFrontNotice from '../components/conteudo/CrossFrontNotice.astro';
+import WhatsApp from '../components/icones/WhatsApp.astro';
+import { empresa, linkWhatsApp } from '../lib/empresa';
+import { url } from '../lib/links';
+import { avaliar, piorFundo, vidros } from '../lib/contraste';
+
+const contraste = avaliar();
+
+const cores = [
+  { nome: '--hm-navy', valor: '#000523', papel: 'Fundo principal (manual)' },
+  { nome: '--hm-cyan', valor: '#01FFFF', papel: 'Destaque, brilho, foco (manual)' },
+  { nome: '--hm-teal', valor: '#02B9CA', papel: 'Links e ícones (manual)' },
+  { nome: '--hm-white', valor: '#FFFFFF', papel: 'Texto sobre vidro (manual)' },
+  { nome: '--surface-1', valor: '#060C33', papel: 'Cartão sólido [P]' },
+  { nome: '--surface-2', valor: '#0B1445', papel: 'Superfície elevada [P]' },
+  { nome: '--surface-3', valor: '#121D57', papel: 'Hover de superfície [P]' },
+  { nome: '--text', valor: '#EAF4FB', papel: 'Texto [P]' },
+  { nome: '--text-muted', valor: '#9FB0D0', papel: 'Texto secundário [P]' },
+];
+
+const coresLumi = [
+  { nome: '--brand-1', valor: '#0079B6', papel: 'Azul Lumi (manual)' },
+  { nome: '--brand-2', valor: '#024B98', papel: 'Azul escuro Lumi (manual)' },
+  { nome: '--link', valor: '#5CB8E6', papel: 'Link no tema escuro [P]' },
+];
+
+const simulacoes = [
+  { valor: '', rotulo: 'Normal' },
+  { valor: 'sem-backdrop', rotulo: 'Sem backdrop-filter' },
+  { valor: 'sem-transparencia', rotulo: 'Transparência reduzida' },
+  { valor: 'contraste', rotulo: 'Contraste alto' },
+];
+
+// Rascunhos da spec (seções 5.1, 5.3, 5.4, 5.5, 5.6), palavra por palavra.
+const rascunho = {
+  home: 'Hugo Martins é terapeuta e formador, criador do 10S e do Reiki da Alma. Seu trabalho, o Desenvolvimento de Potencial Humano, tem duas frentes: para pessoas, uma esteira que começa obrigatoriamente pelo 10S e segue para o Potencial Humano ou o Potencial Corporativo; para empresas, os treinamentos da Lumi – Soluções Integradas.',
+  paraVoce:
+    'O trabalho individual com Hugo Martins segue uma esteira de três etapas. Começa sempre pelo 10S, dez sessões individuais para limpar o terreno. Depois a pessoa escolhe entre o Potencial Humano, voltado à vida pessoal e social, e o Potencial Corporativo, voltado à vida de trabalho. As duas etapas podem ser feitas em qualquer ordem.',
+  dezS: 'O 10S é a etapa de entrada do trabalho de Hugo Martins: dez sessões individuais em que a pessoa expurga o que pesa, se entende e situa o seu momento de vida. Hugo compara o processo a limpar e adubar o terreno antes de plantar o jardim. O 10S é obrigatório antes do Potencial Humano e do Potencial Corporativo.',
+  humano:
+    'O Potencial Humano é a etapa do trabalho de Hugo Martins que aplica à vida pessoal e social o que foi preparado no 10S: casa, família, igreja e convívio. É onde o lado transpessoal do trabalho ganha corpo. Só pode ser feito depois do 10S.',
+  corporativo:
+    'O Potencial Corporativo é a etapa do trabalho de Hugo Martins que aplica à vida profissional o que foi preparado no 10S: relações na empresa, dinâmicas de poder, escolha da área certa, ajustes de carreira e gestão de time. Quem contrata é a própria pessoa, não a empresa. Para treinamentos contratados por empresas, existe a Lumi.',
+  lumi: 'A Lumi – Soluções Integradas é a frente empresarial do grupo Hugo Martins. Atende empresas com três treinamentos: desenvolvimento de equipes de alta performance (All Stars), inteligência emocional e leitura corporal, e liderança de alta performance. Os contratos são firmados e faturados pela Lumi.',
+};
+---
+
+<Base
+  title="Styleguide · Hugo Martins"
+  description="Guia visual interno do site Hugo Martins: tokens, tipografia, vidro e componentes."
+  noindex
+>
+  <div class="container sg">
+    <!-- Barra de simulação de fallbacks -->
+    <section class="sg-barra superficie" aria-labelledby="sg-simular">
+      <h2 id="sg-simular" class="eyebrow">
+        Simular fallbacks do vidro
+      </h2>
+      <ul class="sg-barra__lista">
+        {simulacoes.map((s) => (
+          <li>
+            <a href={s.valor ? `?simular=${s.valor}` : '?'}>{s.rotulo}</a>
+          </li>
+        ))}
+      </ul>
+      <p class="small muted">
+        A simulação reproduz as regras CSS de cada preferência. Para testar a preferência real: no
+        Chrome, DevTools → Rendering → “Emulate CSS media feature” (prefers-reduced-transparency,
+        prefers-contrast, prefers-reduced-motion, forced-colors). No macOS: Ajustes → Acessibilidade
+        → Tela → Reduzir transparência / Aumentar contraste. A refração (lente) só aparece no
+        Chromium e fica desligada durante a simulação.
+      </p>
+    </section>
+
+    <!-- 1. Hero -->
+    <section class="sg-secao sg-hero" aria-labelledby="sg-hero">
+      <span class="eyebrow">1 · Hero</span>
+      <h1 id="sg-hero" class="display">
+        Hugo Martins – Desenvolvimento de Potencial Humano
+      </h1>
+      <Lead>{rascunho.home}</Lead>
+      <div class="sg-acoes">
+        <GlassButton href={url('/para-voce/')} tamanho="grande">
+          Para você
+        </GlassButton>
+        <GlassButton href={url('/para-empresas/')} variante="secundario" tamanho="grande">
+          Para empresas
+        </GlassButton>
+      </div>
+      <div class="sg-destaques">
+        <FeaturedGlassCard titulo="Para você" href={url('/para-voce/')} eyebrow="Hugo Martins">
+          <p>Quem compra é a pessoa. 10S, Potencial Humano e Potencial Corporativo.</p>
+        </FeaturedGlassCard>
+        <FeaturedGlassCard
+          titulo="Para empresas"
+          href={url('/para-empresas/')}
+          eyebrow="Lumi – Soluções Integradas"
+        >
+          <p>Quem compra é a empresa. Os contratos são firmados e faturados pela Lumi.</p>
+        </FeaturedGlassCard>
+      </div>
+      <p class="small muted">
+        Cartões de vidro em destaque: no máximo um grupo por página (spec 9.1). O slogan não aparece
+        até a pendência P33 ser resolvida.
+      </p>
+    </section>
+
+    <!-- 2. Cores -->
+    <section class="sg-secao" aria-labelledby="sg-cores">
+      <span class="eyebrow">2 · Cores</span>
+      <h2 id="sg-cores">Tokens de cor</h2>
+      <ul class="sg-cores">
+        {cores.map((c) => (
+          <li class="sg-cor superficie">
+            <span class="sg-cor__amostra" style={`background:${c.valor}`} />
+            <code>{c.nome}</code>
+            <span>{c.valor}</span>
+            <span class="small muted">{c.papel}</span>
+          </li>
+        ))}
+      </ul>
+      <h3>Contraste WCAG 2.2</h3>
+      <p class="measure">
+        Texto exige 4,5:1; elementos gráficos e foco, 3:1. O vidro é medido contra o pior fundo
+        possível: o pico da mancha de luz com o padrão no pixel mais claro (Hugo Martins{' '}
+        <code>{piorFundo.hugo}</code>, Lumi <code>{piorFundo.lumi}</code>). Calculado no build a
+        partir de
+        <code>src/lib/contraste.ts</code>; o mesmo cálculo roda em <code>npm run lint</code>.
+      </p>
+      <div
+        class="tabela-contraste superficie"
+        role="region"
+        aria-label="Pares de contraste"
+        tabindex="0"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Par</th>
+              <th scope="col">Amostra</th>
+              <th scope="col">Razão</th>
+              <th scope="col">Mínimo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contraste.map((r) => (
+              <tr>
+                <th scope="row">{r.nome}</th>
+                <td>
+                  <span class="sg-par" style={`color:${r.texto};background:${r.fundo}`}>
+                    Aa
+                  </span>
+                </td>
+                <td>
+                  {r.ok ? '✓' : '✗'} {r.razao.toFixed(2)}:1
+                </td>
+                <td>{r.minimo}:1</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h3>Vidro sobre o pior fundo</h3>
+      <div class="sg-palco" style={`background:${piorFundo.hugo}`}>
+        <GlassButton href="#sg-cores">Botão primário</GlassButton>
+        <GlassButton href="#sg-cores" variante="secundario">
+          Botão secundário
+        </GlassButton>
+        <span
+          class="small"
+          style={`color:#fff;background:${vidros.primario};padding:.4rem .8rem;border-radius:8px`}
+        >
+          cor resultante do primário: {vidros.primario}
+        </span>
+      </div>
+    </section>
+
+    <!-- 3. Tipografia -->
+    <section class="sg-secao" aria-labelledby="sg-tipo">
+      <span class="eyebrow">3 · Tipografia</span>
+      <h2 id="sg-tipo">Jost nos títulos, Source Sans 3 no corpo</h2>
+      <div class="superficie stack">
+        <p class="display display--grande sg-tipo-display">Hugo Martins</p>
+        <p class="sg-tipo-h1">O que é o 10S de Hugo Martins?</p>
+        <h2>Como funciona o trabalho individual com Hugo Martins?</h2>
+        <h3>O que é o Potencial Corporativo? É para empresas?</h3>
+        <h4>Quem é Hugo Martins (10S)?</h4>
+        <Lead>{rascunho.paraVoce}</Lead>
+        <p class="measure">{rascunho.dezS}</p>
+        <span class="eyebrow">Rótulo · eyebrow</span>
+        <p class="small muted">Atualizado em 24/11/2026 · texto pequeno e secundário</p>
+      </div>
+      <h3>Artigo (.prose)</h3>
+      <article class="superficie prose">
+        <p>{rascunho.humano}</p>
+        <h2>Pergunta-guia do trabalho</h2>
+        <blockquote>
+          <p>
+            O que faz uma criança que apenas quer amor, conforto e uma família se tornar no adulto
+            complexo…?
+          </p>
+        </blockquote>
+        <h3>Os treinamentos da Lumi</h3>
+        <ul>
+          <li>Desenvolvimento de equipes de alta performance (All Stars)</li>
+          <li>Treinamentos de inteligência emocional e leitura corporal</li>
+          <li>Liderança de alta performance</li>
+        </ul>
+        <p class="assinatura">
+          {empresa.assinatura}, {empresa.pessoa.nome}
+        </p>
+      </article>
+    </section>
+
+    <!-- 4. Botões -->
+    <section class="sg-secao" aria-labelledby="sg-botoes">
+      <span class="eyebrow">4 · Botões de vidro</span>
+      <h2 id="sg-botoes">Primário, secundário e ícone</h2>
+      <div class="sg-acoes">
+        <GlassButton href={url('/contato/')}>Falar com o Hugo</GlassButton>
+        <GlassButton href={url('/para-empresas/')} variante="secundario">
+          Para empresas
+        </GlassButton>
+        <GlassButton
+          href={linkWhatsApp()}
+          variante="icone"
+          rotulo="Conversar com Hugo Martins no WhatsApp"
+          rel="noopener"
+          target="_blank"
+        >
+          <WhatsApp tamanho={22} />
+        </GlassButton>
+        <GlassButton type="button" variante="secundario">
+          Botão &lt;button&gt;
+        </GlassButton>
+        <GlassButton href={url('/contato/')} tamanho="grande">
+          Grande
+        </GlassButton>
+      </div>
+      <p class="small muted measure">
+        Hover clareia o gradiente e reforça o brilho; pressionado reduz para 0,97 e escurece; foco
+        com anel de 2 px e afastamento. Transições de 150 a 220 ms, desligadas com movimento
+        reduzido. No Chromium, o primário e o cabeçalho ganham refração.
+      </p>
+    </section>
+
+    <!-- 5. Navegação e flutuantes -->
+    <section class="sg-secao" aria-labelledby="sg-nav">
+      <span class="eyebrow">5 · Camada flutuante</span>
+      <h2 id="sg-nav">Cabeçalho, WhatsApp e CTA fixa</h2>
+      <ul class="measure">
+        <li>
+          <strong>Cabeçalho</strong> (topo desta página): pílula de vidro; submenus de “Para você” e
+          “Para empresas” abrem pela seta; abaixo de 1024 px vira botão “Menu”. Encolhe e fica mais
+          opaco ao rolar (Chrome e Edge; nos demais fica estático). Sem JavaScript, tudo continua
+          funcionando por &lt;details&gt;.
+        </li>
+        <li>
+          <strong>WhatsApp</strong>: canto inferior direito, em todas as páginas.
+        </li>
+        <li>
+          <strong>CTA fixa</strong>: só no celular (abaixo de 768 px), na base da tela. O botão de
+          WhatsApp sobe para não ficar por cima.
+        </li>
+      </ul>
+    </section>
+
+    <!-- 6. Conteúdo sólido -->
+    <section class="sg-secao" aria-labelledby="sg-cartoes">
+      <span class="eyebrow">6 · Superfícies sólidas</span>
+      <h2 id="sg-cartoes">Cartões de produto</h2>
+      <div class="grade">
+        <Card titulo="10S" href={url('/para-voce/10s/')} eyebrow="Etapa de entrada">
+          <p>{rascunho.dezS}</p>
+        </Card>
+        <Card
+          titulo="Potencial Humano"
+          href={url('/para-voce/potencial-humano/')}
+          eyebrow="Depois do 10S"
+        >
+          <p>{rascunho.humano}</p>
+        </Card>
+        <Card
+          titulo="Potencial Corporativo"
+          href={url('/para-voce/potencial-corporativo/')}
+          eyebrow="Depois do 10S"
+        >
+          <p>{rascunho.corporativo}</p>
+        </Card>
+      </div>
+    </section>
+
+    <section class="sg-secao sg-duas" aria-label="Em resumo e autor">
+      <FactList
+        fatos={[
+          { rotulo: 'Nome completo', valor: empresa.pessoa.nomeCompleto },
+          { rotulo: 'Atuação', valor: empresa.pessoa.descricao },
+          {
+            rotulo: 'Criou',
+            valor: 'O Reiki da Alma, o Programa 10S e o Liderança para a Mudança',
+          },
+          { rotulo: 'Livro', valor: `${empresa.livro.titulo} (${empresa.livro.editora})` },
+          { rotulo: 'Cidade-base', valor: empresa.pessoa.cidadeBase ?? '' },
+        ]}
+      />
+      <div class="stack">
+        <AuthorBox />
+        <p class="small muted">
+          “Em resumo” omite itens sem dado confirmado: a linha “Cidade-base” foi passada vazia (P03)
+          e não aparece.
+        </p>
+      </div>
+    </section>
+
+    <section class="sg-secao" aria-labelledby="sg-tabela">
+      <h2 id="sg-tabela" class="sr-only">
+        Tabela comparativa
+      </h2>
+      <CompareTable
+        legenda="Para você × Para empresas"
+        colunas={['', 'Para você', 'Para empresas']}
+        linhas={[
+          { rotulo: 'Marca', valores: ['Hugo Martins', 'Lumi – Soluções Integradas'] },
+          { rotulo: 'Quem compra', valores: ['A pessoa', 'A empresa'] },
+          {
+            rotulo: 'Produtos',
+            valores: [
+              '10S, Potencial Humano, Potencial Corporativo',
+              'All Stars, inteligência emocional e leitura corporal, liderança de alta performance',
+            ],
+          },
+        ]}
+      />
+    </section>
+
+    <section class="sg-secao" aria-label="Esteira">
+      <EsteiraDiagram titulo="A esteira pessoal" />
+    </section>
+
+    <section class="sg-secao">
+      <Faq
+        itens={[
+          {
+            pergunta: 'Posso começar pelo Potencial Corporativo?',
+            resposta: 'Não, o 10S vem sempre primeiro.',
+          },
+          {
+            pergunta: 'O Potencial Corporativo é para empresas?',
+            resposta:
+              'Quem contrata é a própria pessoa, não a empresa. Para treinamentos contratados por empresas, existe a Lumi.',
+          },
+        ]}
+      />
+    </section>
+
+    <section class="sg-secao stack" aria-label="Avisos">
+      <Disclaimer />
+      <CrossFrontNotice para="empresas" />
+      <Disclaimer variante="rodape" />
+    </section>
+
+    <!-- 7. Formulário -->
+    <section class="sg-secao" aria-labelledby="sg-form">
+      <span class="eyebrow">7 · Formulário</span>
+      <h2 id="sg-form">Campos sólidos, botão de vidro</h2>
+      <form class="superficie sg-form" action="#sg-form" method="get">
+        <fieldset class="campo">
+          <legend>Quem está escrevendo?</legend>
+          <label class="opcao">
+            <input type="radio" name="perfil" value="pessoa" checked /> Sou pessoa
+          </label>
+          <label class="opcao">
+            <input type="radio" name="perfil" value="empresa" /> Sou empresa
+          </label>
+        </fieldset>
+        <div class="campo">
+          <label for="sg-nome">Nome</label>
+          <input id="sg-nome" name="nome" autocomplete="name" />
+        </div>
+        <div class="campo">
+          <label for="sg-email">E-mail</label>
+          <input id="sg-email" name="email" type="email" autocomplete="email" />
+          <p class="campo__ajuda">Texto de ajuda do campo.</p>
+        </div>
+        <div class="campo">
+          <label for="sg-msg">Mensagem</label>
+          <textarea id="sg-msg" name="mensagem"></textarea>
+        </div>
+        <div class="campo">
+          <GlassButton type="submit">Enviar</GlassButton>
+        </div>
+      </form>
+      <p class="small muted">
+        Só a aparência. O formulário de verdade (destino, honeypot, fallback para WhatsApp) entra na
+        fase 5.
+      </p>
+    </section>
+  </div>
+
+  <!-- 8. Lumi -->
+  <section class="sg-lumi" data-brand="lumi" aria-labelledby="sg-lumi">
+    <div class="container sg-secao">
+      <span class="eyebrow">8 · Identidade Lumi (/para-empresas/)</span>
+      <img
+        class="sg-lumi__logo"
+        src={url('/brand/lumi-branco.svg')}
+        width="2777"
+        height="979"
+        alt="Lumi – Soluções Integradas"
+        loading="lazy"
+      />
+      <h2 id="sg-lumi" class="sg-lumi__titulo">
+        Lumi – Soluções Integradas
+      </h2>
+      <Lead>{rascunho.lumi}</Lead>
+      <div class="sg-acoes">
+        <GlassButton href={url('/contato/')}>Solicitar proposta</GlassButton>
+        <GlassButton href={url('/para-empresas/')} variante="secundario">
+          Treinamentos
+        </GlassButton>
+      </div>
+      <div class="grade sg-lumi__cartoes">
+        <Card
+          titulo="Equipes de alta performance (All Stars)"
+          href={url('/para-empresas/equipes-de-alta-performance-all-stars/')}
+          eyebrow="Treinamento"
+        />
+        <Card
+          titulo="Inteligência emocional e leitura corporal"
+          href={url('/para-empresas/inteligencia-emocional-e-leitura-corporal/')}
+          eyebrow="Treinamento"
+        />
+        <Card
+          titulo="Liderança de alta performance"
+          href={url('/para-empresas/lideranca-de-alta-performance/')}
+          eyebrow="Treinamento"
+        />
+      </div>
+      <ul class="sg-cores">
+        {coresLumi.map((c) => (
+          <li class="sg-cor superficie">
+            <span class="sg-cor__amostra" style={`background:${c.valor}`} />
+            <code>{c.nome}</code>
+            <span>{c.valor}</span>
+            <span class="small muted">{c.papel}</span>
+          </li>
+        ))}
+      </ul>
+      <CrossFrontNotice para="pessoal" />
+      <p class="small muted">
+        Audiowide só no título curto; Montserrat no resto. O padrão de cérebros (marca Hugo Martins)
+        não aparece; as manchas de luz ficam azuis. Na página real, data-brand="lumi" vai no
+        &lt;html&gt; e troca também o fundo fixo.
+      </p>
+    </div>
+  </section>
+
+  <StickyCta slot="depois" href={url('/contato/')} rotulo="Falar com o Hugo" />
+</Base>
+
+<style>
+  .sg-barra {
+    margin-bottom: var(--space-7);
+  }
+
+  .sg-barra__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .sg-barra__lista a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+
+  .sg-secao {
+    padding-block: var(--space-7);
+    border-top: 1px solid var(--line);
+  }
+
+  .sg-hero {
+    border-top: 0;
+    padding-top: var(--space-5);
+  }
+
+  .sg-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    margin-block: var(--space-6);
+  }
+
+  .sg-destaques {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    margin-bottom: var(--space-4);
+  }
+
+  .sg-cores {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    padding: 0;
+    list-style: none;
+  }
+
+  .sg-cor {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+  }
+
+  .sg-cor__amostra {
+    height: 56px;
+    margin-bottom: var(--space-2);
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+  }
+
+  .tabela-contraste {
+    overflow-x: auto;
+    padding: var(--space-3) var(--space-5);
+    margin-bottom: var(--space-6);
+  }
+
+  .tabela-contraste table {
+    min-width: 32rem;
+    margin: 0;
+    font-size: var(--step--1);
+  }
+
+  .sg-par {
+    display: inline-block;
+    padding: 0.1rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  .sg-palco {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-6);
+    border-radius: var(--radius-card);
+  }
+
+  .sg-tipo-display {
+    font-size: var(--step-4);
+    color: var(--hm-white);
+    margin: 0;
+  }
+
+  .sg-tipo-h1 {
+    font-family: var(--font-h1);
+    font-size: var(--step-4);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--hm-white);
+  }
+
+  .sg-duas {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    align-items: start;
+  }
+
+  .sg-form {
+    max-width: 36rem;
+  }
+
+  .sg-lumi {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 10%, var(--glow-1), transparent 70%),
+      radial-gradient(ellipse 50% 45% at 90% 60%, var(--glow-2), transparent 70%), #000523;
+    font-family: var(--font-body);
+  }
+
+  .sg-lumi__logo {
+    width: min(100%, 320px);
+    margin-block: var(--space-5);
+  }
+
+  .sg-lumi__titulo {
+    font-family: var(--font-h1);
+    font-size: var(--step-4);
+    font-weight: 400;
+  }
+
+  .sg-lumi__cartoes {
+    margin-bottom: var(--space-6);
+  }
+</style>

@@ -1,26 +1,122 @@
 ---
-// Layout mínimo da fase 0. Head completo (canonical, OG, JSON-LD) entra na fase 2.
+/**
+ * Layout base. Head completo (canonical, OG, JSON-LD) e rodapé entram na fase 2.
+ * - marca="lumi" aplica a identidade Lumi na página inteira (data-brand no <html>).
+ * - noindex: sempre na homologação; em produção, só onde a página pedir (404, styleguide).
+ */
 import { HOMOLOGACAO } from 'astro:env/server';
+import '../styles/tokens.css';
+import '../styles/brand-lumi.css';
+import '../styles/base.css';
+import '../styles/glass.css';
+import '../styles/prose.css';
+import Background from '../components/layout/Background.astro';
+import GlassNav from '../components/glass/GlassNav.astro';
+import WhatsAppFab from '../components/glass/WhatsAppFab.astro';
+import { url } from '../lib/links';
 
 interface Props {
   title: string;
   description: string;
+  marca?: 'hugo' | 'lumi';
+  noindex?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, marca = 'hugo', noindex = false } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-brand={marca === 'lumi' ? 'lumi' : undefined}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {HOMOLOGACAO && <meta name="robots" content="noindex, nofollow" />}
+    {(HOMOLOGACAO || noindex) && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#000523" />
+    <link rel="icon" href={url('/favicon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    <!-- Uma fonte crítica pré-carregada: a do título (spec 6.1) -->
+    <link
+      rel="preload"
+      href={url(marca === 'lumi' ? '/fonts/audiowide.woff2' : '/fonts/jost-var.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <script is:inline>
+      // Refração (spec 9.3): só Chromium aplica backdrop-filter com filtro SVG. Nos demais fica o
+      // vidro normal. Também respeita transparência reduzida, contraste alto e movimento reduzido.
+      (function () {
+        var d = document.documentElement;
+        var p = new URLSearchParams(location.search).get('simular');
+        if (p) d.setAttribute('data-simular', p);
+        var chromium =
+          navigator.userAgentData &&
+          navigator.userAgentData.brands.some(function (b) {
+            return b.brand === 'Chromium';
+          });
+        var evitar = matchMedia(
+          '(prefers-reduced-transparency: reduce), (prefers-contrast: more), (prefers-reduced-motion: reduce)',
+        ).matches;
+        if (chromium && !evitar && !p) d.classList.add('lente-ok');
+      })();
+    </script>
   </head>
   <body>
-    <main id="conteudo">
+    <a class="pular-conteudo" href="#conteudo">
+      Pular para o conteúdo
+    </a>
+    <Background />
+
+    <!-- Filtro de refração do vidro: deslocamento suave a partir de ruído de baixa frequência -->
+    <svg class="sr-only" aria-hidden="true" focusable="false" width="0" height="0">
+      <!-- A região precisa ser absoluta (userSpaceOnUse): com a região relativa padrão, o Chromium
+         descarta o backdrop-filter inteiro e mostra o fundo sem desfoque. -->
+      <filter
+        id="lente"
+        filterUnits="userSpaceOnUse"
+        x="-50"
+        y="-50"
+        width="4000"
+        height="600"
+        color-interpolation-filters="sRGB"
+      >
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.006 0.012"
+          numOctaves="2"
+          seed="7"
+          result="ruido"
+        ></feTurbulence>
+        <feGaussianBlur in="ruido" stdDeviation="3" result="ruidoSuave"></feGaussianBlur>
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="ruidoSuave"
+          scale="28"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        ></feDisplacementMap>
+      </filter>
+    </svg>
+
+    <GlassNav />
+
+    <main id="conteudo" tabindex="-1">
       <slot />
     </main>
+
+    <slot name="depois" />
+    <WhatsAppFab />
   </body>
 </html>
+
+<style>
+  main {
+    padding-top: 7.5rem;
+    padding-bottom: var(--space-8);
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>
