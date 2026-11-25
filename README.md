@@ -28,7 +28,7 @@ npm run preview          # serve o dist/ gerado
 Todo build termina com duas verificações sobre o `dist/`, e qualquer erro quebra o build:
 
 - `npm run check:html`: HTML válido (html-validate, regras recomendadas).
-- `npm run check:seo`: em cada página, um `h1`, title (até 70 caracteres) único, description, canonical absoluto, Open Graph, Twitter Card, imagem OG existente e um JSON-LD válido sem tipos proibidos.
+- `npm run check:seo`: em cada página, um `h1`, title (até 70 caracteres) único, description, canonical absoluto, Open Graph, Twitter Card, imagem OG existente e um JSON-LD válido sem tipos proibidos. Também verifica as regras da spec (avisos, frentes, Holos, preço) e os links internos obrigatórios da spec 4.3, contados dentro do `<main>`.
 
 As imagens Open Graph (`dist/og/*.png`) são geradas no build, a partir do `h1` de cada página.
 
@@ -86,25 +86,30 @@ conceitos: [metodo-gps] # pelo menos 1
 produtoCta: 10s
 ---
 
-Corpo do post em Markdown. Termina com "Abraço de Alma".
+Corpo do post em Markdown. A assinatura "Abraço de Alma", a caixa de autor, os conceitos, o
+produto e os relacionados do mesmo tema entram sozinhos.
 ```
+
+O post entra em `/blog/`, no arquivo do tema (`/blog/tema/<tema>/`, que só existe com posts), no RSS
+(`/rss.xml`), nos "Leituras relacionadas" dos conceitos do mesmo tema e nos "Do blog" da Home.
 
 **Conceito** em `src/content/conceitos/<slug>.md` (URL `/metodo/<slug>/`):
 
 ```md
 ---
-titulo: O que é metacognição?
-pergunta: O que é metacognição e o que são os 7 campos do eu observador?
-resumo: Parágrafo-resposta de 40 a 80 palavras.
+titulo: Metacognição e os 7 campos do eu observador
+pergunta: O que é metacognição e o que são os 7 campos do eu observador? # texto do cartão
+resumo: Parágrafo-resposta de 40 a 80 palavras ("No método de Hugo Martins, …").
 tema: autoconhecimento-e-metacognicao
-fontesAcervo: [Metacognição proposta completa]
-produtosRelacionados: [10s, potencial-humano]
-conceitosVizinhos: [sombra-e-armadilhas-do-ego]
+ordem: 1 # ordem da spec 4.4; a Home destaca os 4 primeiros do lote 1
 lote: 1
-atualizado: 2026-11-24
+fontesAcervo: [Metacognição proposta completa] # interno, não aparece na página
+produtosRelacionados: [10s] # única fonte da ligação: o produto lista o conceito sozinho
+atualizado: 2026-11-25
 ---
 
-Corpo em Markdown, escrito só a partir do acervo. Enquanto faltar texto: [PENDENTE]
+Corpo em Markdown, escrito só a partir do acervo: os elementos (lista ou tabela) e como reconhecer
+no dia a dia. Enquanto faltar texto: [PENDENTE]
 ```
 
 **Produto** em `src/content/produtos/pessoal/<slug>.md` ou `produtos/empresas/<slug>.md` (URL `/para-voce/<slug>/` ou `/para-empresas/<slug>/`). A página é montada por `src/components/pagina/ProdutoPagina.astro`:
@@ -131,4 +136,7 @@ atualizado: 2026-11-25
 Seções narrativas em Markdown (## em forma de pergunta). Enquanto faltar texto: [PENDENTE]
 ```
 
-**Páginas avulsas** (Home, hubs, Hugo Martins, Livro, Contato, FAQ, Imprensa, legais) ficam em `src/content/paginas/<id>.md`, com `titulo`, `tituloSeo`, `resumo`, `fatos`, `faq` e `atualizado`. As **perguntas frequentes** de `/perguntas-frequentes/` ficam em `src/content/faq/`, uma por arquivo, com `grupo`, `ordem`, `pergunta` e `resposta`.
+Cada produto precisa aparecer em 2 a 4 conceitos (`produtosRelacionados`): o `check:seo` quebra o
+build se não. Os conceitos vizinhos saem sozinhos (mesmo tema, depois produtos em comum).
+
+**Páginas avulsas** (Home, hubs, Método, Blog, Hugo Martins, Livro, Contato, FAQ, Imprensa, legais) ficam em `src/content/paginas/<id>.md`, com `titulo`, `tituloSeo`, `resumo`, `fatos`, `faq` e `atualizado`. As **perguntas frequentes** de `/perguntas-frequentes/` ficam em `src/content/faq/`, uma por arquivo, com `grupo`, `ordem`, `pergunta` e `resposta`.
