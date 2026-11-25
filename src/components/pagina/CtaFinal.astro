@@ -1,0 +1,59 @@
+---
+/**
+ * Chamada final da página (spec 5, item 7): título curto e botões para o contato e o WhatsApp.
+ * Fica numa faixa navy, como o topo. Sem texto de venda: só a ação.
+ */
+import GlassButton from '../glass/GlassButton.astro';
+import WhatsApp from '../icones/WhatsApp.astro';
+import { linkWhatsApp } from '../../lib/empresa';
+import { url } from '../../lib/links';
+
+interface Props {
+  titulo?: string;
+  rotulo?: string;
+  href?: string;
+}
+const {
+  titulo = 'Falar com o Hugo',
+  rotulo = 'Falar com o Hugo',
+  href = '/contato/',
+} = Astro.props;
+---
+
+<section class="cta-final tema-navy" aria-labelledby="cta-final">
+  <div class="container cta-final__conteudo">
+    <span class="filete" aria-hidden="true"></span>
+    <h2 id="cta-final">{titulo}</h2>
+    <slot />
+    <div class="acoes">
+      <GlassButton href={url(href)} tamanho="grande">
+        {rotulo}
+      </GlassButton>
+      <GlassButton
+        href={linkWhatsApp()}
+        variante="secundario"
+        tamanho="grande"
+        rel="noopener"
+        target="_blank"
+      >
+        <WhatsApp tamanho={20} />
+        WhatsApp
+      </GlassButton>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-final {
+    padding-block: var(--space-8);
+    background: var(--bg);
+  }
+
+  .cta-final h2 {
+    margin-bottom: var(--space-5);
+  }
+
+  .cta-final__conteudo > :global(p) {
+    max-width: var(--measure);
+  }
+</style>

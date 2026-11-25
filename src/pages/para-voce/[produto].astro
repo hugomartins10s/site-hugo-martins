@@ -1,0 +1,14 @@
+---
+// Produtos da frente pessoal (spec 5.4 e 5.5): /para-voce/10s/, /potencial-humano/, /potencial-corporativo/.
+import ProdutoPagina from '../../components/pagina/ProdutoPagina.astro';
+import { produtosDaFrente, type Produto } from '../../lib/produtos';
+
+export async function getStaticPaths() {
+  const produtos = await produtosDaFrente('pessoal');
+  return produtos.map((produto) => ({ params: { produto: produto.id }, props: { produto } }));
+}
+
+const { produto } = Astro.props as { produto: Produto };
+---
+
+<ProdutoPagina produto={produto} />

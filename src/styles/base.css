@@ -95,6 +95,12 @@ strong {
   overflow-wrap: break-word;
 }
 
+/* Título longo na seção Lumi: a Audiowide é só para títulos curtos (spec 9.2). */
+h1.titulo-longo {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
 /* Rótulo curto em caixa alta espaçada, o único lugar com esse tratamento. */
 .eyebrow {
   display: block;
@@ -202,6 +208,18 @@ a:hover {
 
 .secao {
   padding-block: var(--space-8);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+/* Faixa alternada do conteúdo claro (D23). */
+.faixa {
+  background: var(--surface-2);
 }
 
 .grade {

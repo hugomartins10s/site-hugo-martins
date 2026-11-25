@@ -1,0 +1,21 @@
+---
+// "Atualizado em DD/MM/AAAA" visível (spec 2 e 5), com <time datetime> (spec 7.1).
+// A data vem do front matter; nunca mudar a data sem mudar o conteúdo.
+import { dataCurta, dataIso } from '../../lib/datas';
+
+interface Props {
+  data: Date;
+  rotulo?: string;
+}
+const { data, rotulo = 'Atualizado em' } = Astro.props;
+---
+
+<p class="atualizado small muted">
+  {rotulo} <time datetime={dataIso(data)}>{dataCurta(data)}</time>
+</p>
+
+<style>
+  .atualizado {
+    margin: var(--space-7) 0 0;
+  }
+</style>

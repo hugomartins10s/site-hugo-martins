@@ -1,0 +1,180 @@
+---
+/**
+ * Página de produto (spec 5.4 a 5.6), nas duas frentes. Ordem do padrão da spec 5: trilha, h1,
+ * parágrafo-resposta (`resumo`), "Em resumo", seções (corpo em Markdown), FAQ, data, CTA.
+ *
+ * - Frente pessoal: esteira, aviso legal (spec 3.6) e o pré-requisito 10S linkado (spec 4.3).
+ *   No Potencial Corporativo, o aviso cruzado "É uma empresa? Veja a Lumi" (spec 5.5).
+ * - Frente empresas: identidade Lumi, nó #lumi no JSON-LD e o aviso cruzado inverso (spec 5.6).
+ * - Formato, duração e preço só aparecem quando existirem no front matter (spec 6.3).
+ * - Links obrigatórios (spec 4.3): hub da frente, os outros dois produtos e /contato/.
+ *   Os conceitos do Método entram na fase 4.
+ */
+import { getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../layout/Topo.astro';
+import Lead from '../conteudo/Lead.astro';
+import FactList from '../conteudo/FactList.astro';
+import Faq from '../conteudo/Faq.astro';
+import Disclaimer from '../conteudo/Disclaimer.astro';
+import CrossFrontNotice from '../conteudo/CrossFrontNotice.astro';
+import EsteiraDiagram from '../conteudo/EsteiraDiagram.astro';
+import Atualizado from '../conteudo/Atualizado.astro';
+import GlassButton from '../glass/GlassButton.astro';
+import WhatsApp from '../icones/WhatsApp.astro';
+import ProdutoCards from './ProdutoCards.astro';
+import CtaFinal from './CtaFinal.astro';
+import { linkWhatsApp } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { trilha } from '../../lib/trilha';
+import { caminhoDoProduto, hubs, produtosDaFrente, type Produto } from '../../lib/produtos';
+import { noLumi, noServico } from '../../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+
+interface Props {
+  produto: Produto;
+}
+const { produto } = Astro.props;
+const d = produto.data;
+const pessoal = d.frente === 'pessoal';
+const hub = hubs[d.frente];
+
+const irmaos = (await produtosDaFrente(d.frente)).filter((p) => p.id !== produto.id);
+const pre = d.prerequisito ? await getEntry(d.prerequisito) : undefined;
+const { Content } = await render(produto);
+
+const caminho = trilha([hub.nome, hub.caminho], [d.titulo, caminhoDoProduto(produto)]);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+const schema = [
+  noServico(inicio, urlPagina, { nome: d.titulo, descricao: d.resumo, frente: d.frente }),
+  ...(pessoal ? [] : [noLumi(inicio, urlAbsolutaDoCaminho(url('/para-empresas/'), Astro.site))]),
+];
+
+// Ficha: fatos [C] do arquivo + campos [?] só quando preenchidos.
+const fatos = [
+  ...d.fatos,
+  ...(pre ? [{ rotulo: 'Pré-requisito', valor: pre.data.titulo }] : []),
+  ...(d.publico ? [{ rotulo: 'Público', valor: d.publico }] : []),
+  ...(d.formato ? [{ rotulo: 'Formato', valor: d.formato }] : []),
+  ...(d.duracao ? [{ rotulo: 'Duração', valor: d.duracao }] : []),
+  ...(d.preco ? [{ rotulo: 'Investimento', valor: d.preco }] : []),
+];
+
+const cta = pessoal
+  ? { titulo: 'Como começar', rotulo: 'Falar com o Hugo' }
+  : { titulo: 'Solicitar proposta', rotulo: 'Solicitar proposta' };
+const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da Lumi';
+---
+
+<Base
+  title={d.tituloSeo ?? `${d.titulo} | Hugo Martins`}
+  description={d.resumo}
+  marca={pessoal ? 'hugo' : 'lumi'}
+  trilha={caminho}
+  schema={schema}
+  principal={`${urlPagina}#servico`}
+>
+  <Topo trilha={caminho}>
+    {pessoal ? (
+      <span class="eyebrow">{hub.nome}</span>
+    ) : (
+      <img
+        class="produto__lumi"
+        src={url('/brand/lumi-branco.svg')}
+        width="2777"
+        height="979"
+        alt="Lumi – Soluções Integradas"
+      />
+    )}
+    <h1 class:list={['display', { 'titulo-longo': d.titulo.length > 32 }]}>{d.titulo}</h1>
+    <Lead>{d.resumo}</Lead>
+    {pre && (
+      <p class="produto__pre">
+        Pré-requisito: <a href={url(caminhoDoProduto(pre))}>{pre.data.titulo}</a>, que vem sempre
+        primeiro.
+      </p>
+    )}
+    <div class="acoes">
+      <GlassButton href={url('/contato/')}>{cta.rotulo}</GlassButton>
+      <GlassButton href={linkWhatsApp()} variante="secundario" rel="noopener" target="_blank">
+        <WhatsApp tamanho={20} />
+        WhatsApp
+      </GlassButton>
+    </div>
+  </Topo>
+
+  <div class="container secao produto">
+    <FactList fatos={fatos} />
+    {produto.id === 'potencial-corporativo' && <CrossFrontNotice para="empresas" />}
+    {!pessoal && <CrossFrontNotice para="pessoal" />}
+    <div class="prose produto__corpo">
+      <Content />
+    </div>
+  </div>
+
+  {pessoal && (
+    <section class="faixa secao" aria-labelledby="esteira">
+      <div class="container">
+        <h2 id="esteira">A esteira do trabalho individual</h2>
+        <EsteiraDiagram />
+      </div>
+    </section>
+  )}
+
+  <div class="container secao produto__fim">
+    {pessoal && <Disclaimer />}
+    <Faq itens={d.faq} />
+    <Atualizado data={d.atualizado} />
+  </div>
+
+  <section class="faixa secao" aria-labelledby="irmaos">
+    <div class="container">
+      <h2 id="irmaos">{tituloIrmaos}</h2>
+      <ProdutoCards produtos={irmaos} />
+      <p class="produto__hub">
+        <a href={url(hub.caminho)}>
+          {pessoal ? 'Como funciona o trabalho individual' : 'Conheça a Lumi – Soluções Integradas'}
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <CtaFinal titulo={cta.titulo} rotulo={cta.rotulo} />
+</Base>
+
+<style>
+  .produto__lumi {
+    width: min(100%, 220px);
+    height: auto;
+    margin-bottom: var(--space-6);
+  }
+
+  .produto__pre {
+    margin: var(--space-4) 0 0;
+    color: var(--text);
+  }
+
+  .produto {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .produto__corpo {
+    max-width: var(--measure);
+  }
+
+  .produto__fim {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .produto__fim > :global(*) {
+    margin: 0;
+  }
+
+  .produto__hub {
+    margin: var(--space-6) 0 0;
+    font-weight: 600;
+  }
+</style>

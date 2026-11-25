@@ -1,0 +1,27 @@
+---
+// Grade de cartões de produto (hubs, Home e "outras etapas"). O texto do cartão é a `chamada`
+// [C] da spec 3.1; sem ela, o cartão mostra só o nome.
+import Card from '../conteudo/Card.astro';
+import { url } from '../../lib/links';
+import { caminhoDoProduto, type Produto } from '../../lib/produtos';
+
+interface Props {
+  produtos: Produto[];
+  eyebrow?: (p: Produto) => string | undefined;
+  nivel?: 2 | 3;
+}
+const { produtos, eyebrow, nivel = 3 } = Astro.props;
+---
+
+<div class="grade">
+  {produtos.map((p) => (
+    <Card
+      titulo={p.data.titulo}
+      href={url(caminhoDoProduto(p))}
+      eyebrow={eyebrow?.(p)}
+      nivel={nivel}
+    >
+      {p.data.chamada && <p>{p.data.chamada}</p>}
+    </Card>
+  ))}
+</div>

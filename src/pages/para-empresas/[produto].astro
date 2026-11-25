@@ -1,0 +1,14 @@
+---
+// Produtos da frente empresas, Lumi (spec 5.6): os três treinamentos em /para-empresas/.
+import ProdutoPagina from '../../components/pagina/ProdutoPagina.astro';
+import { produtosDaFrente, type Produto } from '../../lib/produtos';
+
+export async function getStaticPaths() {
+  const produtos = await produtosDaFrente('empresas');
+  return produtos.map((produto) => ({ params: { produto: produto.id }, props: { produto } }));
+}
+
+const { produto } = Astro.props as { produto: Produto };
+---
+
+<ProdutoPagina produto={produto} />
