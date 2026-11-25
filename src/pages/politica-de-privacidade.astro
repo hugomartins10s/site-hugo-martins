@@ -1,0 +1,9 @@
+---
+// Política de privacidade: o texto depende do controlador (P06), do formulário (P29) e do analytics (P30).
+import PaginaTexto from '../components/pagina/PaginaTexto.astro';
+import { pagina } from '../lib/paginas';
+
+const p = await pagina('politica-de-privacidade');
+---
+
+<PaginaTexto pagina={p} caminho="/politica-de-privacidade/" />

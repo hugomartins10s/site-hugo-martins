@@ -1,0 +1,136 @@
+---
+/**
+ * Contato (spec 5.8): WhatsApp em destaque, e-mail, redes, endereço quando confirmado (P03).
+ * O formulário com o seletor "Sou pessoa / Sou empresa" entra na fase 5, junto com o endpoint
+ * (P29). Sem widget de agendamento na v1. JSON-LD: ContactPage.
+ */
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import GlassButton from '../../components/glass/GlassButton.astro';
+import WhatsApp from '../../components/icones/WhatsApp.astro';
+import { empresa, linkWhatsApp } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { trilha } from '../../lib/trilha';
+import { pagina, tituloSeo } from '../../lib/paginas';
+
+const p = await pagina('contato');
+const caminho = trilha(['Contato', '/contato/']);
+const { contato, endereco } = empresa;
+---
+
+<Base title={tituloSeo(p)} description={p.data.resumo} trilha={caminho} tipoPagina="ContactPage">
+  <Topo trilha={caminho}>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+    <div class="acoes">
+      <GlassButton href={linkWhatsApp()} tamanho="grande" rel="noopener" target="_blank">
+        <WhatsApp tamanho={22} />
+        WhatsApp {contato.whatsappExibicao}
+      </GlassButton>
+    </div>
+  </Topo>
+
+  <div class="container secao">
+    <div class="canais">
+      <div class="canal superficie">
+        <h2 class="eyebrow">WhatsApp</h2>
+        <address class="canal__valor">
+          <a href={linkWhatsApp()} rel="noopener" target="_blank">
+            {contato.whatsappExibicao}
+          </a>
+        </address>
+      </div>
+      <div class="canal superficie">
+        <h2 class="eyebrow">E-mail</h2>
+        <address class="canal__valor">
+          <a href={`mailto:${contato.email}`}>{contato.email}</a>
+        </address>
+      </div>
+      <div class="canal superficie">
+        <h2 class="eyebrow">Redes</h2>
+        <ul class="canal__lista">
+          {empresa.redes.map((r) => (
+            <li>
+              <a href={r.url} rel="noopener me" target="_blank">
+                {r.rede} {r.usuario}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {endereco && (
+        <div class="canal superficie">
+          <h2 class="eyebrow">Endereço</h2>
+          <address>
+            {endereco.logradouro}, {endereco.bairro}
+            <br />
+            {endereco.cidade}/{endereco.uf}, CEP {endereco.cep}
+          </address>
+        </div>
+      )}
+    </div>
+
+    <section class="caminhos" aria-labelledby="caminhos">
+      <h2 id="caminhos">Por onde começar</h2>
+      <div class="grade">
+        <p class="superficie">
+          <strong>Para você:</strong> o trabalho individual começa sempre pelo
+          <a href={url('/para-voce/10s/')}>10S</a>.
+        </p>
+        <p class="superficie" data-brand="lumi">
+          <strong>Para empresas:</strong> os treinamentos são da
+          <a href={url('/para-empresas/')}>Lumi – Soluções Integradas</a>.
+        </p>
+      </div>
+    </section>
+
+    <Atualizado data={p.data.atualizado} />
+  </div>
+</Base>
+
+<style>
+  .canais {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  }
+
+  .canal address {
+    font-style: normal;
+  }
+
+  .canal h2 {
+    font-size: 0.8125rem;
+  }
+
+  .canal address,
+  .canal ul {
+    margin: 0;
+  }
+
+  .canal__valor {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .canal__lista {
+    padding: 0;
+    list-style: none;
+  }
+
+  .canal__lista a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+
+  .caminhos {
+    margin-top: var(--space-8);
+  }
+
+  .caminhos p {
+    margin: 0;
+  }
+</style>

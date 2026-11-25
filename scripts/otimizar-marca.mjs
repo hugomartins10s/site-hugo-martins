@@ -68,6 +68,24 @@ for (const [tamanho, destino] of [
   );
 }
 
+// Imprensa (spec 5.8): os PNG originais, no tamanho original, só recomprimidos sem perda e com
+// nome sem acento. Nada do pacote Holos (_descontinuado-holos) entra aqui.
+mkdirSync('public/imprensa', { recursive: true });
+for (const [origem, destino] of [
+  [`${HM}/LOGOPRINCIPAL_SEMFUNDO.png`, 'hugo-martins-logo.png'],
+  [`${HM}/LOGOPRINCIPAL_BRANCA_SEMFUNDO.png`, 'hugo-martins-logo-branco.png'],
+  [`${HM}/LOGOPRINCIPAL_PRETA_SEMFUNDO.png`, 'hugo-martins-logo-preto.png'],
+  [`${HM}/LOGOPRINCIPAL_SEMFUNDO_VARIAÇÃO.png`, 'hugo-martins-horizontal.png'],
+  [`${HM}/SUBMARCA_PRINCIPAL_SEMFUNDO.png`, 'hugo-martins-submarca.png'],
+  [`${LUMI}/Lumi Soluções integradas - Normal PNG.png`, 'lumi.png'],
+]) {
+  tarefas.push(
+    sharp(origem)
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toFile(`public/imprensa/${destino}`),
+  );
+}
+
 await Promise.all(tarefas);
 
 // Lumi: SVGs originais, só com nome sem acento e sem o comentário do gerador.

@@ -1,0 +1,20 @@
+---
+// Aviso legal (spec 5.9): o texto fixo é o `resumo` da página. Dados cadastrais quando houver (P06).
+import PaginaTexto from '../components/pagina/PaginaTexto.astro';
+import { empresa } from '../lib/empresa';
+import { pagina } from '../lib/paginas';
+
+const p = await pagina('aviso-legal');
+const { razaoSocial, cnpj, endereco } = empresa;
+---
+
+<PaginaTexto pagina={p} caminho="/aviso-legal/">
+  {(razaoSocial || cnpj || endereco) && (
+    <p>
+      {razaoSocial}
+      {cnpj && ` · CNPJ ${cnpj}`}
+      {endereco &&
+        ` · ${endereco.logradouro}, ${endereco.bairro}, ${endereco.cidade}/${endereco.uf}, CEP ${endereco.cep}`}
+    </p>
+  )}
+</PaginaTexto>

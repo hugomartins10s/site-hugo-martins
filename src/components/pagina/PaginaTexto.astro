@@ -1,0 +1,35 @@
+---
+/**
+ * Página de texto simples (aviso legal, política de privacidade): topo com o título e o
+ * `resumo`, corpo em Markdown e data. Os dados cadastrais entram quando forem confirmados (P06).
+ */
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../layout/Topo.astro';
+import Lead from '../conteudo/Lead.astro';
+import Atualizado from '../conteudo/Atualizado.astro';
+import { trilha } from '../../lib/trilha';
+import { tituloSeo, type Pagina } from '../../lib/paginas';
+
+interface Props {
+  pagina: Pagina;
+  caminho: string;
+}
+const { pagina, caminho } = Astro.props;
+const { Content } = await render(pagina);
+const t = trilha([pagina.data.titulo, caminho]);
+---
+
+<Base title={tituloSeo(pagina)} description={pagina.data.resumo} trilha={t}>
+  <Topo trilha={t}>
+    <h1>{pagina.data.titulo}</h1>
+    <Lead>{pagina.data.resumo}</Lead>
+  </Topo>
+  <div class="container secao">
+    <div class="prose">
+      <Content />
+      <slot />
+    </div>
+    <Atualizado data={pagina.data.atualizado} />
+  </div>
+</Base>

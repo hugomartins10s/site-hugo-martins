@@ -1,0 +1,65 @@
+---
+/**
+ * Perguntas frequentes (spec 5.8): agrupadas por Empresa · 10S · Esteira · Para empresas · Contato.
+ * Só perguntas com resposta [C]; grupo sem pergunta não aparece. Texto visível, sem FAQPage (spec 8).
+ */
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import Faq from '../../components/conteudo/Faq.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { trilha } from '../../lib/trilha';
+import { pagina, tituloSeo } from '../../lib/paginas';
+
+const p = await pagina('perguntas-frequentes');
+const caminho = trilha(['Perguntas frequentes', '/perguntas-frequentes/']);
+const ordemGrupos = ['Empresa', '10S', 'Esteira', 'Para empresas', 'Contato'] as const;
+const titulos: Record<(typeof ordemGrupos)[number], string> = {
+  Empresa: 'Sobre a empresa',
+  '10S': 'Sobre o 10S',
+  Esteira: 'Sobre a esteira',
+  'Para empresas': 'Para empresas',
+  Contato: 'Contato',
+};
+const todas = await getCollection('faq');
+const grupos = ordemGrupos
+  .map((g) => ({
+    grupo: g,
+    itens: todas
+      .filter((f) => f.data.grupo === g)
+      .sort((a, b) => a.data.ordem - b.data.ordem)
+      .map((f) => f.data),
+  }))
+  .filter((g) => g.itens.length > 0);
+---
+
+<Base title={tituloSeo(p)} description={p.data.resumo} trilha={caminho}>
+  <Topo trilha={caminho}>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+  </Topo>
+
+  <div class="container secao faqs">
+    {grupos.map((g) => (
+      <div data-brand={g.grupo === 'Para empresas' ? 'lumi' : undefined}>
+        <Faq titulo={titulos[g.grupo]} itens={g.itens} />
+      </div>
+    ))}
+    <Atualizado data={p.data.atualizado} />
+  </div>
+
+  <CtaFinal titulo="Ainda tem uma dúvida?" />
+</Base>
+
+<style>
+  .faqs {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .faqs > :global(*) {
+    margin: 0;
+  }
+</style>

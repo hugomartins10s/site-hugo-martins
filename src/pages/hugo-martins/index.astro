@@ -1,0 +1,123 @@
+---
+/**
+ * Página-entidade do Hugo (spec 5.2 e 8): ProfilePage + Person (#hugo).
+ * Ficha "Em resumo" só com fatos [C]; cidade-base (P03) e ano de início (P02) entram sozinhos
+ * quando estiverem em empresa.json. Formações ficam fora até a P05. Foto: P08.
+ * A pergunta-guia e a trajetória vêm do Markdown (pendentes até a entrevista, spec 13).
+ */
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import FactList from '../../components/conteudo/FactList.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import Frentes from '../../components/pagina/Frentes.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { empresa } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { trilha } from '../../lib/trilha';
+import { pagina, tituloSeo } from '../../lib/paginas';
+import { ids, noPessoa } from '../../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+
+const p = await pagina('hugo-martins');
+const { Content } = await render(p);
+const { pessoa, livro } = empresa;
+const caminho = trilha([pessoa.nome, '/hugo-martins/']);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+
+// O que criou (spec 3.2), com link quando a página existe. O Reiki da Alma ganha link na fase 4.
+const conceitos = await getCollection('conceitos');
+const paginaDe: Record<string, string | undefined> = {
+  'Programa 10S': '/para-voce/10s/',
+  'Reiki da Alma': conceitos.some((c) => c.id === 'reiki-da-alma')
+    ? '/metodo/reiki-da-alma/'
+    : undefined,
+};
+
+const fatos = [
+  { rotulo: 'Nome completo', valor: pessoa.nomeCompleto },
+  { rotulo: 'Atuação', valor: pessoa.descricao },
+  { rotulo: 'Criou', valor: pessoa.criacoes.join(', ') },
+  { rotulo: 'Livro', valor: `${livro.titulo} (${livro.editora})` },
+  ...(pessoa.cidadeBase ? [{ rotulo: 'Cidade-base', valor: pessoa.cidadeBase }] : []),
+  ...(pessoa.atuaDesde ? [{ rotulo: 'Atua desde', valor: String(pessoa.atuaDesde) }] : []),
+];
+---
+
+<Base
+  title={tituloSeo(p)}
+  description={p.data.resumo}
+  trilha={caminho}
+  tipoPagina="ProfilePage"
+  schema={[noPessoa(inicio, urlPagina)]}
+  principal={ids(inicio).hugo}
+>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">{pessoa.atuacao}</span>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+  </Topo>
+
+  <div class="container secao hugo">
+    <FactList fatos={fatos} />
+
+    <div class="prose">
+      <Content />
+
+      <h2>O que Hugo Martins criou</h2>
+      <ul>
+        {pessoa.criacoes.map((c) => (
+          <li>{paginaDe[c] ? <a href={url(paginaDe[c]!)}>{c}</a> : c}</li>
+        ))}
+        <li>
+          O livro <a href={url(livro.caminho)}>{livro.titulo}</a>, pela {livro.editora}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="faixa secao" aria-labelledby="frentes">
+    <div class="container">
+      <h2 id="frentes">Como Hugo Martins trabalha hoje</h2>
+      <Frentes />
+    </div>
+  </section>
+
+  <div class="container secao hugo">
+    <section class="prose" aria-labelledby="redes">
+      <h2 id="redes">Onde encontrar Hugo Martins</h2>
+      <ul>
+        {empresa.redes.map((r) => (
+          <li>
+            <a href={r.url} rel="noopener me" target="_blank">
+              {r.rede}: {r.usuario}
+            </a>
+          </li>
+        ))}
+        <li>
+          E-mail: <a href={`mailto:${empresa.contato.email}`}>{empresa.contato.email}</a>
+        </li>
+      </ul>
+      <p class="assinatura">
+        {empresa.assinatura},<br />
+        {pessoa.nome}
+      </p>
+    </section>
+    <Atualizado data={p.data.atualizado} />
+  </div>
+
+  <CtaFinal />
+</Base>
+
+<style>
+  .hugo {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .hugo > :global(*) {
+    margin: 0;
+  }
+</style>

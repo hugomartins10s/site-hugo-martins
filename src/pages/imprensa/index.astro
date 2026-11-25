@@ -1,0 +1,221 @@
+---
+/**
+ * Imprensa / mídia kit (spec 5.8): bios de 50 e 150 palavras (P26), fatos em lista, logos para
+ * download e contato. Fotos entram com a P08. É a fonte pronta para jornalistas, podcasts e IAs.
+ */
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import FactList from '../../components/conteudo/FactList.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import { empresa, linkWhatsApp } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { trilha } from '../../lib/trilha';
+import { pagina, tituloSeo } from '../../lib/paginas';
+import { produtosDaFrente } from '../../lib/produtos';
+
+const p = await pagina('imprensa');
+const { Content } = await render(p);
+const caminho = trilha(['Imprensa', '/imprensa/']);
+const { pessoa, livro, marcas } = empresa;
+const pessoais = await produtosDaFrente('pessoal');
+const treinamentos = await produtosDaFrente('empresas');
+const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
+
+const fatos = [
+  { rotulo: 'Nome', valor: `${pessoa.nome} (${pessoa.nomeCompleto})` },
+  { rotulo: 'Atuação', valor: pessoa.descricao },
+  { rotulo: 'Criou', valor: lista(pessoa.criacoes) },
+  { rotulo: 'Livro', valor: `${livro.titulo} (${livro.editora}, e-ISBN ${livro.isbnEbook})` },
+  { rotulo: 'Empresa', valor: empresa.nome },
+  {
+    rotulo: 'Frente pessoal',
+    valor: `${marcas.pessoal.nome}: ${lista(pessoais.map((x) => x.data.titulo))}. O 10S vem sempre primeiro.`,
+  },
+  {
+    rotulo: 'Frente empresas',
+    valor: `${marcas.empresas.nome}: ${lista(treinamentos.map((x) => x.data.titulo.charAt(0).toLowerCase() + x.data.titulo.slice(1)))}.`,
+  },
+  {
+    rotulo: 'Redes',
+    valor: `${empresa.redes.map((r) => r.rede).join(', ')}: ${empresa.redes[0]!.usuario}`,
+  },
+  ...(pessoa.cidadeBase ? [{ rotulo: 'Cidade-base', valor: pessoa.cidadeBase }] : []),
+  ...(pessoa.atuaDesde ? [{ rotulo: 'Atua desde', valor: String(pessoa.atuaDesde) }] : []),
+];
+
+// Logos (spec 5.8): originais do pacote de marca, sem redesenho (regra 7).
+const logos = [
+  {
+    nome: 'Hugo Martins, logo principal',
+    arquivo: '/imprensa/hugo-martins-logo.png',
+    largura: 1930,
+    altura: 989,
+    formato: 'PNG, 1930 × 989',
+  },
+  {
+    nome: 'Hugo Martins, logo principal branco',
+    arquivo: '/imprensa/hugo-martins-logo-branco.png',
+    largura: 1930,
+    altura: 989,
+    formato: 'PNG, 1930 × 989',
+    escuro: true,
+  },
+  {
+    nome: 'Hugo Martins, logo principal preto',
+    arquivo: '/imprensa/hugo-martins-logo-preto.png',
+    largura: 1930,
+    altura: 989,
+    formato: 'PNG, 1930 × 989',
+  },
+  {
+    nome: 'Hugo Martins, logo horizontal',
+    arquivo: '/imprensa/hugo-martins-horizontal.png',
+    largura: 2436,
+    altura: 411,
+    formato: 'PNG, 2436 × 411',
+  },
+  {
+    nome: 'Hugo Martins, submarca',
+    arquivo: '/imprensa/hugo-martins-submarca.png',
+    largura: 1292,
+    altura: 1477,
+    formato: 'PNG, 1292 × 1477',
+  },
+  {
+    nome: 'Lumi – Soluções Integradas',
+    arquivo: '/imprensa/lumi.png',
+    largura: 2754,
+    altura: 957,
+    formato: 'PNG, 2754 × 957',
+  },
+  {
+    nome: 'Lumi – Soluções Integradas, vetor',
+    arquivo: '/brand/lumi.svg',
+    largura: 2777,
+    altura: 979,
+    formato: 'SVG',
+  },
+  {
+    nome: 'Lumi – Soluções Integradas, vetor branco',
+    arquivo: '/brand/lumi-branco.svg',
+    largura: 2777,
+    altura: 979,
+    formato: 'SVG',
+    escuro: true,
+  },
+  {
+    nome: 'Lumi – Soluções Integradas, vetor preto',
+    arquivo: '/brand/lumi-preto.svg',
+    largura: 2777,
+    altura: 979,
+    formato: 'SVG',
+  },
+];
+---
+
+<Base title={tituloSeo(p)} description={p.data.resumo} trilha={caminho}>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">Mídia kit</span>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+  </Topo>
+
+  <div class="container secao imprensa">
+    <div class="prose">
+      <Content />
+    </div>
+    <FactList titulo="Fatos" fatos={fatos} />
+  </div>
+
+  <section class="faixa secao" aria-labelledby="logos">
+    <div class="container">
+      <h2 id="logos">Logos para download</h2>
+      <ul class="logos">
+        {logos.map((l) => (
+          <li class="logo superficie">
+            <div class:list={['logo__amostra', { 'logo__amostra--escuro': l.escuro }]}>
+              <img src={url(l.arquivo)} width={l.largura} height={l.altura} alt="" loading="lazy" />
+            </div>
+            <a href={url(l.arquivo)} download>
+              {l.nome}
+            </a>
+            <span class="small muted">{l.formato}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="container secao imprensa">
+    <section aria-labelledby="contato-imprensa">
+      <h2 id="contato-imprensa">Contato para imprensa</h2>
+      <address>
+        <a href={`mailto:${empresa.contato.email}`}>{empresa.contato.email}</a>
+        <br />
+        <a href={linkWhatsApp()} rel="noopener" target="_blank">
+          WhatsApp {empresa.contato.whatsappExibicao}
+        </a>
+      </address>
+    </section>
+    <Atualizado data={p.data.atualizado} />
+  </div>
+</Base>
+
+<style>
+  .imprensa {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .imprensa > :global(*) {
+    margin: 0;
+  }
+
+  .imprensa address {
+    font-style: normal;
+    line-height: 2.2;
+  }
+
+  .logos {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .logo {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+
+  .logo__amostra {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    margin-bottom: var(--space-2);
+    padding: var(--space-4);
+    border-radius: calc(var(--radius-card) - 4px);
+    background: var(--bg);
+  }
+
+  .logo__amostra--escuro {
+    background: var(--hm-navy);
+  }
+
+  .logo__amostra img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 7rem;
+    object-fit: contain;
+  }
+
+  .logo a {
+    font-weight: 600;
+  }
+</style>

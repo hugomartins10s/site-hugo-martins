@@ -1,18 +1,192 @@
 ---
-// Home provisória: título e parágrafo-resposta são os rascunhos da spec 5.1, palavra por palavra.
-// A Home completa entra na fase 3.
+/**
+ * Home (spec 5.1). Seções, na ordem da spec: hero · as duas frentes · a esteira · Lumi · quem é o
+ * Hugo · Método (4 conceitos) · livro · últimos 3 posts · contato rápido.
+ * - Slogan "A Perspectiva que mudará a sua Atitude" fica fora até a P33 (só aparece na página
+ *   Holos do manual); entra sozinho quando `slogan` existir em empresa.json.
+ * - Método e posts só aparecem quando as coleções tiverem conteúdo (fase 4).
+ */
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import Lead from '../components/conteudo/Lead.astro';
 import Topo from '../components/layout/Topo.astro';
+import Lead from '../components/conteudo/Lead.astro';
+import Card from '../components/conteudo/Card.astro';
+import EsteiraDiagram from '../components/conteudo/EsteiraDiagram.astro';
+import GlassButton from '../components/glass/GlassButton.astro';
+import Frentes from '../components/pagina/Frentes.astro';
+import ProdutoCards from '../components/pagina/ProdutoCards.astro';
+import CtaFinal from '../components/pagina/CtaFinal.astro';
+import { empresa } from '../lib/empresa';
+import { url } from '../lib/links';
+import { pagina, tituloSeo } from '../lib/paginas';
+import { produtosDaFrente } from '../lib/produtos';
+import { dataCurta } from '../lib/datas';
 
-const titulo = 'Hugo Martins · Desenvolvimento de Potencial Humano | 10S';
-const resumo =
-  'Hugo Martins é terapeuta e formador, criador do 10S e do Reiki da Alma. Seu trabalho, o Desenvolvimento de Potencial Humano, tem duas frentes: para pessoas, uma esteira que começa obrigatoriamente pelo 10S e segue para o Potencial Humano ou o Potencial Corporativo; para empresas, os treinamentos da Lumi – Soluções Integradas.';
+const p = await pagina('inicio');
+const livroPagina = await pagina('livro');
+const { pessoa, livro } = empresa;
+const treinamentos = await produtosDaFrente('empresas');
+const conceitos = (await getCollection('conceitos', (c) => c.data.lote === 1)).slice(0, 4);
+const posts = (await getCollection('posts'))
+  .sort((a, b) => b.data.publicado.getTime() - a.data.publicado.getTime())
+  .slice(0, 3);
+const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
 ---
 
-<Base title={titulo} description={resumo}>
+<Base title={tituloSeo(p)} description={p.data.resumo}>
   <Topo>
-    <h1 class="display">Hugo Martins – Desenvolvimento de Potencial Humano</h1>
-    <Lead>{resumo}</Lead>
+    <h1 class="display">{p.data.titulo}</h1>
+    {empresa.slogan && <p class="inicio__slogan">{empresa.slogan}</p>}
+    <Lead>{p.data.resumo}</Lead>
+    <div class="acoes">
+      <GlassButton href={url('/para-voce/')} tamanho="grande">
+        Para você
+      </GlassButton>
+      <GlassButton href={url('/para-empresas/')} variante="secundario" tamanho="grande">
+        Para empresas
+      </GlassButton>
+    </div>
   </Topo>
+
+  <section class="container secao" aria-labelledby="frentes">
+    <h2 id="frentes">Duas frentes de trabalho</h2>
+    <Frentes />
+  </section>
+
+  <section class="faixa secao" aria-labelledby="esteira">
+    <div class="container">
+      <span class="eyebrow">Para você</span>
+      <h2 id="esteira">A esteira do trabalho individual</h2>
+      <EsteiraDiagram />
+      <p class="inicio__mais">
+        <a href={url('/para-voce/')}>Como funciona o trabalho individual com Hugo Martins</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="secao inicio__lumi" data-brand="lumi" aria-labelledby="lumi">
+    <div class="container">
+      <img
+        class="inicio__lumi-logo"
+        src={url('/brand/lumi.svg')}
+        width="2777"
+        height="979"
+        alt=""
+        loading="lazy"
+      />
+      <h2 id="lumi">Treinamentos para empresas: {empresa.marcas.empresas.nome}</h2>
+      <ProdutoCards produtos={treinamentos} eyebrow={() => 'Treinamento'} />
+      <p class="inicio__mais">
+        <a href={url('/para-empresas/')}>O que é a Lumi – Soluções Integradas</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="faixa secao" aria-labelledby="hugo">
+    <div class="container inicio__hugo">
+      <span class="eyebrow">{pessoa.atuacao}</span>
+      <h2 id="hugo">Quem é Hugo Martins</h2>
+      <p>{pessoa.descricao}</p>
+      <p>
+        Começou pelo {pessoa.comecouPor} e criou {lista(pessoa.criacoes.map((c) => `o ${c}`))}.
+      </p>
+      <p class="inicio__mais">
+        <a href={url('/hugo-martins/')}>Quem é Hugo Martins: história, método e livro</a>
+      </p>
+    </div>
+  </section>
+
+  {conceitos.length > 0 && (
+    <section class="container secao" aria-labelledby="metodo">
+      <h2 id="metodo">O método de Hugo Martins</h2>
+      <div class="grade">
+        {conceitos.map((c) => (
+          <Card titulo={c.data.titulo} href={url(`/metodo/${c.id}/`)} eyebrow="Método">
+            <p>{c.data.pergunta}</p>
+          </Card>
+        ))}
+      </div>
+      <p class="inicio__mais">
+        <a href={url('/metodo/')}>Todos os conceitos do método</a>
+      </p>
+    </section>
+  )}
+
+  <section class="container secao" aria-labelledby="livro">
+    <div class="inicio__livro superficie">
+      <span class="eyebrow">O livro</span>
+      <h2 id="livro">
+        <a href={url(livro.caminho)}>{livro.titulo}</a>
+      </h2>
+      <p>{livroPagina.data.resumo}</p>
+    </div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="faixa secao" aria-labelledby="blog">
+      <div class="container">
+        <h2 id="blog">Do blog</h2>
+        <div class="grade">
+          {posts.map((post) => (
+            <Card
+              titulo={post.data.titulo}
+              href={url(`/blog/${post.id}/`)}
+              meta={`Publicado em ${dataCurta(post.data.publicado)}`}
+            />
+          ))}
+        </div>
+        <p class="inicio__mais">
+          <a href={url('/blog/')}>Todos os textos do blog</a>
+        </p>
+      </div>
+    </section>
+  )}
+
+  <CtaFinal titulo="Falar com o Hugo">
+    <p>
+      E-mail: <a href={`mailto:${empresa.contato.email}`}>{empresa.contato.email}</a>
+    </p>
+  </CtaFinal>
 </Base>
+
+<style>
+  .inicio__slogan {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--text-strong);
+  }
+
+  .inicio__mais {
+    margin: var(--space-6) 0 0;
+    font-weight: 600;
+  }
+
+  .inicio__lumi-logo {
+    width: min(100%, 200px);
+    height: auto;
+    margin-bottom: var(--space-5);
+  }
+
+  .inicio__hugo p {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+  }
+
+  .inicio__livro {
+    border-left: 3px solid var(--filete);
+  }
+
+  .inicio__livro h2 a {
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .inicio__livro h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .inicio__livro p {
+    max-width: var(--measure);
+    margin: 0;
+  }
+</style>

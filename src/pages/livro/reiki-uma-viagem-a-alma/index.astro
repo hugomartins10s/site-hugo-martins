@@ -1,0 +1,79 @@
+---
+/**
+ * Livro (spec 3.3 e 5.8): ficha, sinopse própria (P26) e onde comprar (só links verificados, P21).
+ * Os direitos de edição são da editora: nenhum trecho do livro. O enredo não é biografia do Hugo.
+ * JSON-LD: Book (#livro), autor #hugo.
+ */
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Topo from '../../../components/layout/Topo.astro';
+import Lead from '../../../components/conteudo/Lead.astro';
+import FactList from '../../../components/conteudo/FactList.astro';
+import Atualizado from '../../../components/conteudo/Atualizado.astro';
+import CtaFinal from '../../../components/pagina/CtaFinal.astro';
+import { empresa } from '../../../lib/empresa';
+import { url } from '../../../lib/links';
+import { trilha } from '../../../lib/trilha';
+import { pagina, tituloSeo } from '../../../lib/paginas';
+import { ids, noLivro } from '../../../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../../../lib/seo';
+
+const p = await pagina('livro');
+const { Content } = await render(p);
+const caminho = trilha(['Livro', empresa.livro.caminho]);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+---
+
+<Base
+  title={tituloSeo(p)}
+  description={p.data.resumo}
+  trilha={caminho}
+  schema={[noLivro(inicio, urlPagina, p.data.resumo)]}
+  principal={ids(inicio).livro}
+>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">O livro de Hugo Martins</span>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+  </Topo>
+
+  <div class="container secao livro">
+    <FactList titulo="Ficha" fatos={p.data.fatos} />
+    <p class="livro__autor">
+      Sobre o autor: <a href={url('/hugo-martins/')}>quem é Hugo Martins</a>.
+    </p>
+    <div class="prose">
+      <Content />
+    </div>
+
+    {p.data.lojas.length > 0 && (
+      <section class="prose" aria-labelledby="lojas">
+        <h2 id="lojas">Onde comprar</h2>
+        <ul>
+          {p.data.lojas.map((l) => (
+            <li>
+              <a href={l.url} rel="noopener" target="_blank">
+                {l.nome}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <Atualizado data={p.data.atualizado} />
+  </div>
+
+  <CtaFinal />
+</Base>
+
+<style>
+  .livro {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .livro > :global(*) {
+    margin: 0;
+  }
+</style>
