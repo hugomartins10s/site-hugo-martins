@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
 import { loadEnv } from 'vite';
+import ogImagens from './src/lib/og/integracao.ts';
 
 // .env não é carregado automaticamente no arquivo de configuração (docs Astro).
 const env = { ...loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), ''), ...process.env };
@@ -19,6 +20,8 @@ export default defineConfig({
   // ("escolhePotencial Humano"). true mantém a regra de espaços do HTML.
   compressHTML: true,
   build: { format: 'directory' },
+  // Imagem Open Graph por página, gerada depois do build a partir do h1 (spec 7.1).
+  integrations: [ogImagens()],
   env: {
     schema: {
       HOMOLOGACAO: envField.boolean({ context: 'server', access: 'public', default: false }),

@@ -1,0 +1,11 @@
+---
+// Um único bloco JSON-LD por página (spec 8), com o grafo montado em Base.astro.
+import { serializar, type No } from '../../lib/schema/grafo';
+
+interface Props {
+  grafo: No[];
+}
+const { grafo } = Astro.props;
+---
+
+<script is:inline type="application/ld+json" set:html={serializar(grafo)} />
