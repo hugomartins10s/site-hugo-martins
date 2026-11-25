@@ -24,11 +24,20 @@ const schema = z
     pessoa: z.object({
       nome: z.string(),
       nomeCompleto: z.string(),
+      atuacao: z.string(),
       descricao: z.string(),
+      areas: z.array(z.string()).min(1),
+      criacoes: z.array(z.string()).min(1),
+      comecouPor: z.string(),
       cidadeBase: z.string().optional(),
       atuaDesde: z.number().int().optional(),
     }),
-    livro: z.object({ titulo: z.string(), editora: z.string(), isbnEbook: z.string() }),
+    livro: z.object({
+      titulo: z.string(),
+      editora: z.string(),
+      isbnEbook: z.string(),
+      caminho: z.string().startsWith('/'),
+    }),
     contato: z.object({
       whatsapp: z.string().regex(/^\+\d{12,13}$/),
       whatsappExibicao: z.string(),

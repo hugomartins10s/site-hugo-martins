@@ -43,6 +43,8 @@ interface Props {
   tipoPagina?: string;
   /** Nós extras do JSON-LD desta página (Person, Service, BlogPosting…). */
   schema?: No[];
+  /** @id da entidade principal da página (mainEntity): #hugo, #livro, #servico… */
+  principal?: string;
   tipo?: 'website' | 'article';
   publicado?: string;
   atualizado?: string;
@@ -56,6 +58,7 @@ const {
   trilha = [],
   tipoPagina,
   schema = [],
+  principal,
   tipo,
   publicado,
   atualizado,
@@ -67,7 +70,7 @@ const temTrilha = trilha.length > 1;
 const grafo: No[] = [
   noSite(inicio),
   noOrganizacao(inicio),
-  noPagina(inicio, urlPagina, title, description, temTrilha, tipoPagina),
+  noPagina(inicio, urlPagina, title, description, temTrilha, tipoPagina, principal),
   ...(temTrilha ? [noTrilha(urlPagina, trilha, Astro.site!)] : []),
   ...schema,
 ];
@@ -175,8 +178,9 @@ const grafo: No[] = [
     margin-top: var(--topo-livre);
   }
 
-  /* Página que é só o topo (404, Home provisória): o navy encosta no rodapé, sem faixa clara. */
-  main:has(> :global(.topo:last-child)) {
+  /* Página que termina em navy (só o topo, como a 404, ou a chamada final): o navy encosta no
+     rodapé, sem faixa clara no meio. */
+  main:has(> :global(:is(.topo, .cta-final):last-child)) {
     padding-bottom: 0;
   }
 

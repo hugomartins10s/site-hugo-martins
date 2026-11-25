@@ -17,12 +17,17 @@
   "pessoa": {
     "nome": "Hugo Martins",
     "nomeCompleto": "Hugo David Santos Martins",
-    "descricao": "Terapeuta e formador, especializado em comportamento humano, linguagem não verbal e reprogramação mental e emocional."
+    "atuacao": "Terapeuta e formador",
+    "descricao": "Terapeuta e formador, especializado em comportamento humano, linguagem não verbal e reprogramação mental e emocional.",
+    "areas": ["Comportamento humano", "Linguagem não verbal", "Reprogramação mental e emocional"],
+    "criacoes": ["Reiki da Alma", "Programa 10S", "Liderança para a Mudança"],
+    "comecouPor": "Reiki"
   },
   "livro": {
     "titulo": "Reiki, uma Viagem à Alma",
     "editora": "Editora Viseu",
-    "isbnEbook": "978-65-254-3850-4"
+    "isbnEbook": "978-65-254-3850-4",
+    "caminho": "/livro/reiki-uma-viagem-a-alma/"
   },
   "contato": {
     "whatsapp": "+5545998566093",

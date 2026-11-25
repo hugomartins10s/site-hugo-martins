@@ -23,6 +23,9 @@ const resumo = z.string().refine((t) => palavras(t) >= 40 && palavras(t) <= 80, 
 
 const perguntaResposta = z.object({ pergunta: z.string(), resposta: z.string() });
 
+/** Linha da ficha "Em resumo" (spec 5). Só fatos [C]; o que é [?] fica fora do arquivo. */
+const fato = z.object({ rotulo: z.string(), valor: z.string() });
+
 const temas = defineCollection({
   loader: file('src/data/temas.json'),
   schema: z.object({ nome: z.string() }),
@@ -41,6 +44,9 @@ const produtos = defineCollection({
     tituloSeo: z.string().max(70).optional(),
     pergunta: z.string(),
     resumo,
+    /** Frase curta do cartão (hub e Home): o texto [C] da tabela da spec 3.1. */
+    chamada: z.string().optional(),
+    fatos: z.array(fato).default([]),
     prerequisito: reference('produtos').optional(),
     publico: z.string().optional(),
     formato: z.string().optional(),
@@ -99,16 +105,31 @@ const faq = defineCollection({
   }),
 });
 
+// Páginas avulsas (Home, hubs, Hugo Martins, livro, contato, FAQ, imprensa, legais). As legais não
+// respondem a uma pergunta: o `resumo` delas é a descrição da página e pode ter menos de 40 palavras.
 const paginas = defineCollection({
   loader: glob({ base: './src/content/paginas', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
-    titulo: z.string(),
-    tituloSeo: z.string().max(70).optional(),
-    pergunta: z.string().optional(),
-    resumo,
-    faq: z.array(perguntaResposta).default([]),
-    atualizado: z.coerce.date(),
-  }),
+  schema: z
+    .object({
+      titulo: z.string(),
+      tituloSeo: z.string().max(70).optional(),
+      pergunta: z.string().optional(),
+      resumo: z.string(),
+      legal: z.boolean().default(false),
+      fatos: z.array(fato).default([]),
+      /** Links externos verificados (ex.: onde comprar o livro, P21). Vazio = bloco oculto. */
+      lojas: z.array(z.object({ nome: z.string(), url: z.url() })).default([]),
+      faq: z.array(perguntaResposta).default([]),
+      atualizado: z.coerce.date(),
+    })
+    .refine((p) => p.legal || (palavras(p.resumo) >= 40 && palavras(p.resumo) <= 80), {
+      message: 'O parágrafo-resposta (`resumo`) precisa ter de 40 a 80 palavras (spec 5).',
+      path: ['resumo'],
+    })
+    .refine((p) => palavras(p.resumo) <= 80, {
+      message: 'O `resumo` passa de 80 palavras.',
+      path: ['resumo'],
+    }),
 });
 
 export const collections = { temas, produtos, conceitos, posts, faq, paginas };
