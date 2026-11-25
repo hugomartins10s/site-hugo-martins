@@ -14,7 +14,11 @@
  *   - produtos da frente pessoal com o aviso legal (spec 3.6) e com a identidade Hugo Martins;
  *   - Potencial Humano e Potencial Corporativo linkam o 10S (spec 4.3);
  *   - Potencial Corporativo com "É uma empresa? Veja a Lumi" (spec 5.5);
- *   - /para-empresas/ inteiro com a identidade Lumi e o aviso inverso (spec 5.6).
+ *   - /para-empresas/ inteiro com a identidade Lumi e o aviso inverso (spec 5.6);
+ *   - links internos obrigatórios da spec 4.3, contados só dentro do <main> (o menu e o rodapé
+ *     linkam tudo e mascarariam a falta): produto → hub, os outros dois produtos, 2 a 4
+ *     conceitos e /contato/; conceito → hub Método, outro conceito e um produto;
+ *     post → um conceito e um produto.
  *
  * Uso: node scripts/check-seo.mjs <pasta-do-build>   (sai com 1 se houver erro)
  */
@@ -123,6 +127,61 @@ const avisoCruzadoPara = (html, destino) =>
     new RegExp(`href="[^"]*${destino}"`).test(m[0]),
   );
 
+const PRODUTO = /^(para-voce|para-empresas)\/([a-z0-9-]+)\/index\.html$/;
+const CONCEITO = /^metodo\/([a-z0-9-]+)\/index\.html$/;
+const POST = /^blog\/(?!tema\/|pagina\/)([a-z0-9-]+)\/index\.html$/;
+
+/** Links do <main> (sem o menu e o rodapé), como caminhos; o base do site não importa. */
+function linksDoMain(html) {
+  const main = html.match(/<main\b[\s\S]*?<\/main>/i)?.[0] ?? html;
+  return new Set([...main.matchAll(/<a\b[^>]*\bhref="([^"#?]*)/gi)].map((m) => m[1]));
+}
+
+/** Ids distintos dos links que casam com /prefixo/<id>/ no fim do caminho. */
+const idsLinkados = (links, prefixo) =>
+  new Set(
+    [...links]
+      .map((h) => h.match(new RegExp(`/${prefixo}/([a-z0-9-]+)/$`))?.[1])
+      .filter((id) => id && id !== 'tema' && id !== 'pagina'),
+  );
+const linka = (links, caminho) => [...links].some((h) => h.endsWith(caminho));
+
+/** Links internos obrigatórios (spec 4.3). Devolve a lista de erros. */
+export function verificarLigacoes(html, { arquivo }) {
+  const erros = [];
+  const links = linksDoMain(html);
+  const conceitos = idsLinkados(links, 'metodo');
+  const produtos = new Set([
+    ...idsLinkados(links, 'para-voce'),
+    ...idsLinkados(links, 'para-empresas'),
+  ]);
+
+  const produto = arquivo.match(PRODUTO);
+  if (produto) {
+    const [, frente, id] = produto;
+    const irmaos = [...idsLinkados(links, frente)].filter((x) => x !== id);
+    if (!linka(links, `/${frente}/`)) erros.push(`produto sem link para o hub /${frente}/`);
+    if (irmaos.length < 2) erros.push(`produto linka ${irmaos.length} dos outros dois produtos`);
+    if (conceitos.size < 2 || conceitos.size > 4)
+      erros.push(`produto linka ${conceitos.size} conceitos do Método (precisa de 2 a 4)`);
+    if (!linka(links, '/contato/')) erros.push('produto sem link para /contato/');
+  }
+
+  const conceito = arquivo.match(CONCEITO);
+  if (conceito) {
+    if (!linka(links, '/metodo/')) erros.push('conceito sem link para o hub /metodo/');
+    if ([...conceitos].filter((x) => x !== conceito[1]).length === 0)
+      erros.push('conceito sem link para um conceito vizinho');
+    if (produtos.size === 0) erros.push('conceito sem link para um produto');
+  }
+
+  if (POST.test(arquivo)) {
+    if (conceitos.size === 0) erros.push('post sem link para um conceito');
+    if (produtos.size === 0) erros.push('post sem link para um produto');
+  }
+  return erros;
+}
+
 /** Regras de conteúdo da spec verificáveis no HTML. Devolve a lista de erros. */
 export function verificarRegras(html, { arquivo }) {
   const erros = [];
@@ -169,7 +228,10 @@ export function verificarPasta(pasta) {
       arquivo: rel,
       existeArquivo: (c) => existsSync(join(pasta, c)),
     });
-    r.erros.push(...verificarRegras(html, { arquivo: rel }));
+    r.erros.push(
+      ...verificarRegras(html, { arquivo: rel }),
+      ...verificarLigacoes(html, { arquivo: rel }),
+    );
     if (r.titulo) titulos.set(r.titulo, [...(titulos.get(r.titulo) ?? []), rel]);
     resultados.push({ arquivo: rel, ...r });
   }
@@ -195,6 +257,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(1);
   }
   console.log(
-    `✓ SEO base: ${resultados.length} páginas ok (h1, title, canonical, OG, JSON-LD, regras da spec).`,
+    `✓ SEO base: ${resultados.length} páginas ok (h1, title, canonical, OG, JSON-LD, regras e links da spec).`,
   );
 }
