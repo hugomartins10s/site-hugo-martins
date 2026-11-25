@@ -106,3 +106,29 @@ atualizado: 2026-11-24
 
 Corpo em Markdown, escrito só a partir do acervo. Enquanto faltar texto: [PENDENTE]
 ```
+
+**Produto** em `src/content/produtos/pessoal/<slug>.md` ou `produtos/empresas/<slug>.md` (URL `/para-voce/<slug>/` ou `/para-empresas/<slug>/`). A página é montada por `src/components/pagina/ProdutoPagina.astro`:
+
+```md
+---
+frente: pessoal
+ordem: 2
+titulo: Potencial Humano
+pergunta: O que é o Potencial Humano?
+resumo: Parágrafo-resposta de 40 a 80 palavras.
+chamada: Frase curta do cartão (texto [C] da spec 3.1).
+prerequisito: 10s
+fatos: # ficha "Em resumo"; também vira linha da tabela comparativa
+  - rotulo: Etapa
+    valor: Depois do 10S
+# formato, duracao e preco: só quando confirmados; ausentes, o bloco não aparece
+faq:
+  - pergunta: …
+    resposta: …
+atualizado: 2026-11-25
+---
+
+Seções narrativas em Markdown (## em forma de pergunta). Enquanto faltar texto: [PENDENTE]
+```
+
+**Páginas avulsas** (Home, hubs, Hugo Martins, Livro, Contato, FAQ, Imprensa, legais) ficam em `src/content/paginas/<id>.md`, com `titulo`, `tituloSeo`, `resumo`, `fatos`, `faq` e `atualizado`. As **perguntas frequentes** de `/perguntas-frequentes/` ficam em `src/content/faq/`, uma por arquivo, com `grupo`, `ordem`, `pergunta` e `resposta`.
