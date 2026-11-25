@@ -7,8 +7,8 @@
  *   No Potencial Corporativo, o aviso cruzado "É uma empresa? Veja a Lumi" (spec 5.5).
  * - Frente empresas: identidade Lumi, nó #lumi no JSON-LD e o aviso cruzado inverso (spec 5.6).
  * - Formato, duração e preço só aparecem quando existirem no front matter (spec 6.3).
- * - Links obrigatórios (spec 4.3): hub da frente, os outros dois produtos e /contato/.
- *   Os conceitos do Método entram na fase 4.
+ * - Links obrigatórios (spec 4.3): hub da frente, os outros dois produtos, 2 a 4 conceitos do
+ *   Método (os que citam o produto em `produtosRelacionados`) e /contato/.
  */
 import { getEntry, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
@@ -24,6 +24,8 @@ import GlassButton from '../glass/GlassButton.astro';
 import WhatsApp from '../icones/WhatsApp.astro';
 import ProdutoCards from './ProdutoCards.astro';
 import CtaFinal from './CtaFinal.astro';
+import ConceitoCards from './ConceitoCards.astro';
+import { conceitosDoProduto } from '../../lib/conceitos';
 import { linkWhatsApp } from '../../lib/empresa';
 import { url } from '../../lib/links';
 import { trilha } from '../../lib/trilha';
@@ -42,6 +44,7 @@ const hub = hubs[d.frente];
 const irmaos = (await produtosDaFrente(d.frente)).filter((p) => p.id !== produto.id);
 const pre = d.prerequisito ? await getEntry(d.prerequisito) : undefined;
 const { Content } = await render(produto);
+const conceitos = await conceitosDoProduto(produto.id);
 
 const caminho = trilha([hub.nome, hub.caminho], [d.titulo, caminhoDoProduto(produto)]);
 const inicio = urlInicio(Astro.site);
@@ -111,6 +114,14 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
     <div class="prose produto__corpo">
       <Content />
     </div>
+    {conceitos.length > 0 && (
+      <section class="produto__conceitos" aria-labelledby="conceitos">
+        <h2 id="conceitos">
+          {pessoal ? 'Conceitos do método nesta etapa' : 'Conceitos do método neste treinamento'}
+        </h2>
+        <ConceitoCards conceitos={conceitos} eyebrow={() => 'Método'} />
+      </section>
+    )}
   </div>
 
   {pessoal && (

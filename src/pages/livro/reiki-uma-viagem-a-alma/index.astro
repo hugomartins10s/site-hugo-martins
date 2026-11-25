@@ -4,7 +4,7 @@
  * Os direitos de edição são da editora: nenhum trecho do livro. O enredo não é biografia do Hugo.
  * JSON-LD: Book (#livro), autor #hugo.
  */
-import { render } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import Topo from '../../../components/layout/Topo.astro';
 import Lead from '../../../components/conteudo/Lead.astro';
@@ -14,12 +14,15 @@ import CtaFinal from '../../../components/pagina/CtaFinal.astro';
 import { empresa } from '../../../lib/empresa';
 import { url } from '../../../lib/links';
 import { trilha } from '../../../lib/trilha';
+import { caminhoDoConceito } from '../../../lib/conceitos';
 import { pagina, tituloSeo } from '../../../lib/paginas';
 import { ids, noLivro } from '../../../lib/schema/grafo';
 import { urlAbsolutaDoCaminho, urlInicio } from '../../../lib/seo';
 
 const p = await pagina('livro');
 const { Content } = await render(p);
+// Relação do livro com o Reiki da Alma (spec 5.8): link para o conceito, quando a página existir.
+const reiki = await getEntry('conceitos', 'reiki-da-alma');
 const caminho = trilha(['Livro', empresa.livro.caminho]);
 const inicio = urlInicio(Astro.site);
 const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
@@ -46,6 +49,11 @@ const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
     <div class="prose">
       <Content />
     </div>
+    {reiki && (
+      <p class="livro__autor">
+        No método: <a href={url(caminhoDoConceito(reiki))}>o que é o Reiki da Alma</a>.
+      </p>
+    )}
 
     {p.data.lojas.length > 0 && (
       <section class="prose" aria-labelledby="lojas">

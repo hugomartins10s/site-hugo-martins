@@ -4,9 +4,8 @@
  * Hugo · Método (4 conceitos) · livro · últimos 3 posts · contato rápido.
  * - Slogan "A Perspectiva que mudará a sua Atitude" fica fora até a P33 (só aparece na página
  *   Holos do manual); entra sozinho quando `slogan` existir em empresa.json.
- * - Método e posts só aparecem quando as coleções tiverem conteúdo (fase 4).
+ * - Método: os 4 primeiros conceitos do lote 1, na ordem da spec 4.4. Últimos posts: só com posts.
  */
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Topo from '../components/layout/Topo.astro';
 import Lead from '../components/conteudo/Lead.astro';
@@ -21,15 +20,15 @@ import { url } from '../lib/links';
 import { pagina, tituloSeo } from '../lib/paginas';
 import { produtosDaFrente } from '../lib/produtos';
 import { dataCurta } from '../lib/datas';
+import { caminhoDoConceito, conceitosOrdenados } from '../lib/conceitos';
+import { caminhoDoPost, postsOrdenados } from '../lib/posts';
 
 const p = await pagina('inicio');
 const livroPagina = await pagina('livro');
 const { pessoa, livro } = empresa;
 const treinamentos = await produtosDaFrente('empresas');
-const conceitos = (await getCollection('conceitos', (c) => c.data.lote === 1)).slice(0, 4);
-const posts = (await getCollection('posts'))
-  .sort((a, b) => b.data.publicado.getTime() - a.data.publicado.getTime())
-  .slice(0, 3);
+const conceitos = (await conceitosOrdenados()).filter((c) => c.data.lote === 1).slice(0, 4);
+const posts = (await postsOrdenados()).slice(0, 3);
 const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
 ---
 
@@ -101,7 +100,7 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
       <h2 id="metodo">O método de Hugo Martins</h2>
       <div class="grade">
         {conceitos.map((c) => (
-          <Card titulo={c.data.titulo} href={url(`/metodo/${c.id}/`)} eyebrow="Método">
+          <Card titulo={c.data.titulo} href={url(caminhoDoConceito(c))} eyebrow="Método">
             <p>{c.data.pergunta}</p>
           </Card>
         ))}
@@ -130,7 +129,7 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
           {posts.map((post) => (
             <Card
               titulo={post.data.titulo}
-              href={url(`/blog/${post.id}/`)}
+              href={url(caminhoDoPost(post))}
               meta={`Publicado em ${dataCurta(post.data.publicado)}`}
             />
           ))}
