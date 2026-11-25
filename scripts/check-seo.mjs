@@ -8,6 +8,14 @@
  *   - Open Graph (type, title, description, url, image) e twitter:card; a imagem OG existe em dist;
  *   - um único JSON-LD válido, com @graph, sem tipos proibidos; BreadcrumbList quando há trilha.
  *
+ * E as regras de conteúdo da spec que dá para verificar no HTML (verificarRegras):
+ *   - nenhuma menção à Holos (marca descontinuada, spec 3.1);
+ *   - nenhum preço no JSON-LD (`offers`) enquanto preço for [?] (spec 8);
+ *   - produtos da frente pessoal com o aviso legal (spec 3.6) e com a identidade Hugo Martins;
+ *   - Potencial Humano e Potencial Corporativo linkam o 10S (spec 4.3);
+ *   - Potencial Corporativo com "É uma empresa? Veja a Lumi" (spec 5.5);
+ *   - /para-empresas/ inteiro com a identidade Lumi e o aviso inverso (spec 5.6).
+ *
  * Uso: node scripts/check-seo.mjs <pasta-do-build>   (sai com 1 se houver erro)
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -106,6 +114,44 @@ export function verificarPagina(html, { arquivo, existeArquivo }) {
   return { erros, avisos, titulo };
 }
 
+const PRODUTOS_PESSOAIS = /^para-voce\/(10s|potencial-humano|potencial-corporativo)\/index\.html$/;
+const DEPOIS_DO_10S = /^para-voce\/potencial-(humano|corporativo)\/index\.html$/;
+
+/** Avisos cruzados (CrossFrontNotice): <aside class="cruzado …"> com o link para a outra frente. */
+const avisoCruzadoPara = (html, destino) =>
+  [...html.matchAll(/<aside\b[^>]*class="cruzado[\s\S]*?<\/aside>/gi)].some((m) =>
+    new RegExp(`href="[^"]*${destino}"`).test(m[0]),
+  );
+
+/** Regras de conteúdo da spec verificáveis no HTML. Devolve a lista de erros. */
+export function verificarRegras(html, { arquivo }) {
+  const erros = [];
+  const lumi = /<html\b[^>]*\bdata-brand="lumi"/.test(html);
+
+  if (/holos/i.test(html)) erros.push('menciona a Holos (marca descontinuada)');
+  if (/"offers"\s*:/.test(html)) erros.push('JSON-LD com offers/preço (preço ainda é [?])');
+
+  if (PRODUTOS_PESSOAIS.test(arquivo)) {
+    if (!/<aside\b[^>]*aria-label="Aviso legal"/.test(html))
+      erros.push('produto da frente pessoal sem o aviso legal');
+    if (lumi) erros.push('produto da frente pessoal com a identidade Lumi');
+  }
+  if (DEPOIS_DO_10S.test(arquivo) && !/href="[^"]*\/para-voce\/10s\/"/.test(html))
+    erros.push('não linka o 10S como pré-requisito');
+  if (
+    /^para-voce\/potencial-corporativo\//.test(arquivo) &&
+    !avisoCruzadoPara(html, '/para-empresas/')
+  )
+    erros.push('sem o aviso "É uma empresa? Veja a Lumi"');
+
+  if (/^para-empresas\//.test(arquivo)) {
+    if (!lumi) erros.push('página da Lumi sem data-brand="lumi"');
+    if (!avisoCruzadoPara(html, '/para-voce/'))
+      erros.push('sem o aviso "Procura o trabalho individual? Veja Para você"');
+  }
+  return erros;
+}
+
 function htmls(pasta) {
   return readdirSync(pasta, { recursive: true })
     .map(String)
@@ -118,10 +164,12 @@ export function verificarPasta(pasta) {
   const titulos = new Map();
   for (const arquivo of htmls(pasta)) {
     const rel = relative(pasta, arquivo).split('\\').join('/');
-    const r = verificarPagina(readFileSync(arquivo, 'utf8'), {
+    const html = readFileSync(arquivo, 'utf8');
+    const r = verificarPagina(html, {
       arquivo: rel,
       existeArquivo: (c) => existsSync(join(pasta, c)),
     });
+    r.erros.push(...verificarRegras(html, { arquivo: rel }));
     if (r.titulo) titulos.set(r.titulo, [...(titulos.get(r.titulo) ?? []), rel]);
     resultados.push({ arquivo: rel, ...r });
   }
@@ -146,5 +194,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error(`\n✗ SEO base: ${erros} erro(s) em ${resultados.length} páginas.`);
     process.exit(1);
   }
-  console.log(`✓ SEO base: ${resultados.length} páginas ok (h1, title, canonical, OG, JSON-LD).`);
+  console.log(
+    `✓ SEO base: ${resultados.length} páginas ok (h1, title, canonical, OG, JSON-LD, regras da spec).`,
+  );
 }

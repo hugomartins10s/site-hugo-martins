@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { verificarPagina, verificarPasta } from './check-seo.mjs';
+import { verificarPagina, verificarPasta, verificarRegras } from './check-seo.mjs';
 
 const ld = (grafo) =>
   `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': grafo })}</script>`;
@@ -68,4 +68,58 @@ test('title repetido entre páginas quebra', () => {
   writeFileSync(join(pasta, 'a', 'index.html'), pagina());
   const r = verificarPasta(pasta);
   assert.ok(r.every((p) => p.erros.some((e) => /title repetido/.test(e))));
+});
+
+// Regras de conteúdo da spec (verificarRegras)
+const html = ({ lumi = false, corpo = '' } = {}) =>
+  `<!doctype html><html lang="pt-BR"${lumi ? ' data-brand="lumi"' : ''}><body>${corpo}</body></html>`;
+const aviso =
+  '<aside class="aviso aviso--pagina superficie" aria-label="Aviso legal"><p>x</p></aside>';
+const cruzado = (destino) =>
+  `<aside class="cruzado superficie" aria-label="x"><p><a href="/base${destino}">x</a></p></aside>`;
+const link10s = '<a href="/base/para-voce/10s/">10S</a>';
+
+test('regras: produto pessoal sem aviso legal quebra', () => {
+  const r = verificarRegras(html({ corpo: link10s }), {
+    arquivo: 'para-voce/potencial-humano/index.html',
+  });
+  assert.ok(r.includes('produto da frente pessoal sem o aviso legal'));
+  assert.deepEqual(
+    verificarRegras(html({ corpo: aviso + link10s }), {
+      arquivo: 'para-voce/potencial-humano/index.html',
+    }),
+    [],
+  );
+});
+
+test('regras: Potencial Corporativo exige o aviso para a Lumi e o link do 10S', () => {
+  const arquivo = 'para-voce/potencial-corporativo/index.html';
+  const r = verificarRegras(html({ corpo: aviso }), { arquivo });
+  assert.ok(r.includes('não linka o 10S como pré-requisito'));
+  assert.ok(r.includes('sem o aviso "É uma empresa? Veja a Lumi"'));
+  assert.deepEqual(
+    verificarRegras(html({ corpo: aviso + link10s + cruzado('/para-empresas/') }), { arquivo }),
+    [],
+  );
+});
+
+test('regras: /para-empresas/ exige identidade Lumi e aviso inverso', () => {
+  const arquivo = 'para-empresas/lideranca-de-alta-performance/index.html';
+  assert.equal(verificarRegras(html({ corpo: cruzado('/para-voce/') }), { arquivo }).length, 1);
+  assert.deepEqual(
+    verificarRegras(html({ lumi: true, corpo: cruzado('/para-voce/') }), { arquivo }),
+    [],
+  );
+  assert.ok(
+    verificarRegras(html({ lumi: true }), { arquivo }).includes(
+      'sem o aviso "Procura o trabalho individual? Veja Para você"',
+    ),
+  );
+});
+
+test('regras: Holos e offers quebram em qualquer página', () => {
+  const r = verificarRegras(html({ corpo: 'Holos Consultant <script>{"offers": {}}</script>' }), {
+    arquivo: 'index.html',
+  });
+  assert.equal(r.length, 2);
 });
