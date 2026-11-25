@@ -1,0 +1,88 @@
+---
+/**
+ * Hub Para você (spec 5.3): parágrafo-resposta, esteira, os três produtos, a tabela
+ * 10S × Potencial Humano × Potencial Corporativo (spec 7.1) e a FAQ da esteira.
+ * A tabela só mostra as linhas que os três produtos têm: formato e preço entram sozinhos
+ * quando forem preenchidos nos três (P10, P11).
+ */
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import EsteiraDiagram from '../../components/conteudo/EsteiraDiagram.astro';
+import CompareTable from '../../components/conteudo/CompareTable.astro';
+import Disclaimer from '../../components/conteudo/Disclaimer.astro';
+import Faq from '../../components/conteudo/Faq.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import GlassButton from '../../components/glass/GlassButton.astro';
+import ProdutoCards from '../../components/pagina/ProdutoCards.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { url } from '../../lib/links';
+import { trilha } from '../../lib/trilha';
+import { pagina, tituloSeo } from '../../lib/paginas';
+import { hubs, produtosDaFrente } from '../../lib/produtos';
+import { linhasComparativas } from '../../lib/comparacao';
+
+const p = await pagina('para-voce');
+const { Content } = await render(p);
+const produtos = await produtosDaFrente('pessoal');
+const caminho = trilha([hubs.pessoal.nome, hubs.pessoal.caminho]);
+const linhas = linhasComparativas(produtos);
+---
+
+<Base title={tituloSeo(p)} description={p.data.resumo} trilha={caminho}>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">Trabalho individual</span>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+    <div class="acoes">
+      <GlassButton href={url('/para-voce/10s/')}>Começar pelo 10S</GlassButton>
+      <GlassButton href={url('/contato/')} variante="secundario">
+        Falar com o Hugo
+      </GlassButton>
+    </div>
+  </Topo>
+
+  <section class="container secao" aria-labelledby="esteira">
+    <h2 id="esteira">A esteira em três etapas</h2>
+    <EsteiraDiagram />
+  </section>
+
+  <section class="faixa secao" aria-labelledby="etapas">
+    <div class="container">
+      <h2 id="etapas">As etapas</h2>
+      <ProdutoCards produtos={produtos} />
+    </div>
+  </section>
+
+  <div class="container secao hub">
+    <CompareTable
+      legenda="10S, Potencial Humano e Potencial Corporativo"
+      colunas={['', ...produtos.map((x) => x.data.titulo)]}
+      linhas={linhas}
+    />
+    <div class="prose">
+      <Content />
+    </div>
+    <Disclaimer />
+    <Faq itens={p.data.faq} />
+    <Atualizado data={p.data.atualizado} />
+  </div>
+
+  <CtaFinal titulo="Como começar" />
+</Base>
+
+<style>
+  .hub {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .hub > :global(*) {
+    margin: 0;
+  }
+
+  .hub > .prose:empty {
+    display: none;
+  }
+</style>

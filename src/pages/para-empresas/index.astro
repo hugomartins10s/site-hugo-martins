@@ -1,0 +1,118 @@
+---
+/**
+ * Hub Para empresas, identidade Lumi (spec 5.6): parágrafo-resposta, os três treinamentos, a
+ * tabela "Para você × Para empresas" (spec 7.1), o aviso cruzado e "Solicitar proposta".
+ * Sem logos de clientes, cases ou números até haver autorização (P13). Nó #lumi no JSON-LD.
+ */
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import CompareTable from '../../components/conteudo/CompareTable.astro';
+import CrossFrontNotice from '../../components/conteudo/CrossFrontNotice.astro';
+import Faq from '../../components/conteudo/Faq.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import GlassButton from '../../components/glass/GlassButton.astro';
+import ProdutoCards from '../../components/pagina/ProdutoCards.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { empresa } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { trilha } from '../../lib/trilha';
+import { pagina, tituloSeo } from '../../lib/paginas';
+import { hubs, produtosDaFrente } from '../../lib/produtos';
+import { ids, noLumi } from '../../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+
+const p = await pagina('para-empresas');
+const { Content } = await render(p);
+const treinamentos = await produtosDaFrente('empresas');
+const pessoais = await produtosDaFrente('pessoal');
+const caminho = trilha([hubs.empresas.nome, hubs.empresas.caminho]);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+const minuscula = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+const lista = (xs: string[]) =>
+  xs.length > 1 ? `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}` : (xs[0] ?? '');
+---
+
+<Base
+  title={tituloSeo(p)}
+  description={p.data.resumo}
+  marca="lumi"
+  trilha={caminho}
+  schema={[noLumi(inicio, urlPagina)]}
+  principal={ids(inicio).lumi}
+>
+  <Topo trilha={caminho}>
+    <img class="lumi__logo" src={url('/brand/lumi-branco.svg')} width="2777" height="979" alt="" />
+    <h1>{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+    <div class="acoes">
+      <GlassButton href={url('/contato/')}>Solicitar proposta</GlassButton>
+      <GlassButton href="#treinamentos" variante="secundario">
+        Os treinamentos
+      </GlassButton>
+    </div>
+  </Topo>
+
+  <section class="container secao" id="treinamentos" aria-labelledby="treinamentos-titulo">
+    <h2 id="treinamentos-titulo">Os três treinamentos</h2>
+    <ProdutoCards produtos={treinamentos} eyebrow={() => 'Treinamento'} />
+  </section>
+
+  <section class="faixa secao" aria-labelledby="frentes">
+    <div class="container hub">
+      <h2 id="frentes">Lumi ou trabalho individual?</h2>
+      <CompareTable
+        legenda="Para você × Para empresas"
+        colunas={['', hubs.pessoal.nome, hubs.empresas.nome]}
+        linhas={[
+          {
+            rotulo: 'Marca',
+            valores: [empresa.marcas.pessoal.nome, empresa.marcas.empresas.nome],
+          },
+          { rotulo: 'Quem compra', valores: ['A pessoa', 'A empresa'] },
+          {
+            rotulo: 'O que contrata',
+            valores: [
+              lista(pessoais.map((x) => x.data.titulo)),
+              lista(treinamentos.map((x) => minuscula(x.data.titulo))),
+            ],
+          },
+        ]}
+      />
+      <CrossFrontNotice para="pessoal" />
+    </div>
+  </section>
+
+  <div class="container secao hub">
+    <div class="prose">
+      <Content />
+    </div>
+    <Faq itens={p.data.faq} />
+    <Atualizado data={p.data.atualizado} />
+  </div>
+
+  <CtaFinal titulo="Solicitar proposta" rotulo="Solicitar proposta" />
+</Base>
+
+<style>
+  .lumi__logo {
+    width: min(100%, 260px);
+    height: auto;
+    margin-bottom: var(--space-6);
+  }
+
+  .hub {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .hub > :global(*) {
+    margin: 0;
+  }
+
+  .hub > .prose:empty {
+    display: none;
+  }
+</style>
