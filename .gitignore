@@ -28,3 +28,6 @@ brand/**
 brand/hugo-martins/_descontinuado-holos/
 conteudo-bruto/*
 !conteudo-bruto/README.md
+
+# Ferramentas locais
+.claude/
