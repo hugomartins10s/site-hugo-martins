@@ -6,10 +6,10 @@ interface Props {
   href: string;
   eyebrow?: string;
   meta?: string;
-  nivel?: 2 | 3;
+  nivel?: 2 | 3 | 4;
 }
 const { titulo, href, eyebrow, meta, nivel = 3 } = Astro.props;
-const Titulo = `h${nivel}` as 'h2' | 'h3';
+const Titulo = `h${nivel}` as 'h2' | 'h3' | 'h4';
 ---
 
 <article class="cartao superficie">

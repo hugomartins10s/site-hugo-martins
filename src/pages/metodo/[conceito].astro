@@ -1,0 +1,149 @@
+---
+/**
+ * Página de conceito (spec 4.4 e 5.7), no padrão da spec 5: trilha, h1, parágrafo-resposta,
+ * "Em resumo", seções do corpo (os elementos; como reconhecer no dia a dia), onde isso é
+ * trabalhado, FAQ, caixa de autor, data, leituras relacionadas e CTA.
+ *
+ * Links obrigatórios (spec 4.3): o hub Método, conceitos vizinhos, os produtos onde o conceito é
+ * trabalhado e os posts do mesmo tema (quando houver). Corpo e resumo: cópia do Jonathan a
+ * partir do acervo (P24); `fontesAcervo` é interno e não aparece.
+ * JSON-LD: Article + DefinedTerm no DefinedTermSet "Método Hugo Martins" (spec 8).
+ */
+import { getEntries, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import FactList from '../../components/conteudo/FactList.astro';
+import Faq from '../../components/conteudo/Faq.astro';
+import AuthorBox from '../../components/conteudo/AuthorBox.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import Card from '../../components/conteudo/Card.astro';
+import ConceitoCards from '../../components/pagina/ConceitoCards.astro';
+import OndeTrabalhado from '../../components/pagina/OndeTrabalhado.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import {
+  caminhoDoConceito,
+  conceitosOrdenados,
+  vizinhos,
+  type Conceito,
+} from '../../lib/conceitos';
+import { empresa } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { pagina } from '../../lib/paginas';
+import { caminhoDoPost, postsOrdenados } from '../../lib/posts';
+import { noMetodo, nosConceito } from '../../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+import { trilha } from '../../lib/trilha';
+import { dataCurta } from '../../lib/datas';
+
+export async function getStaticPaths() {
+  const todos = await conceitosOrdenados();
+  return todos.map((conceito) => ({
+    params: { conceito: conceito.id },
+    props: { conceito, todos },
+  }));
+}
+
+interface Props {
+  conceito: Conceito;
+  todos: Conceito[];
+}
+const { conceito, todos } = Astro.props;
+const d = conceito.data;
+const { Content } = await render(conceito);
+const tema = await getEntry(d.tema);
+const produtos = await getEntries(d.produtosRelacionados);
+const proximos = vizinhos(conceito, todos);
+const posts = (await postsOrdenados((p) => p.data.tema.id === d.tema.id)).slice(0, 3);
+const livroPagina = d.livro ? await pagina('livro') : undefined;
+
+const caminho = trilha(['Método', '/metodo/'], [d.titulo, caminhoDoConceito(conceito)]);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+const urlMetodo = urlAbsolutaDoCaminho(url('/metodo/'), Astro.site);
+const schema = [...nosConceito(inicio, urlPagina, d), noMetodo(inicio, urlMetodo)];
+---
+
+<Base
+  title={d.tituloSeo ?? `${d.titulo} · Hugo Martins`}
+  description={d.resumo}
+  trilha={caminho}
+  schema={schema}
+  principal={`${urlPagina}#artigo`}
+  tipo="article"
+  atualizado={d.atualizado.toISOString()}
+>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">Método · {tema?.data.nome}</span>
+    <h1 class:list={['display', { 'titulo-longo': d.titulo.length > 32 }]}>{d.titulo}</h1>
+    <Lead>{d.resumo}</Lead>
+  </Topo>
+
+  <div class="container secao conceito">
+    <FactList fatos={d.fatos} />
+    <div class="prose conceito__corpo">
+      <Content />
+    </div>
+    <OndeTrabalhado produtos={produtos} />
+    <Faq itens={d.faq} />
+    <AuthorBox />
+    <Atualizado data={d.atualizado} />
+  </div>
+
+  <section class="faixa secao" aria-labelledby="relacionados">
+    <div class="container conceito__relacionados">
+      <h2 id="relacionados">Leituras relacionadas</h2>
+      <ConceitoCards conceitos={proximos} eyebrow={() => 'Método'} />
+      {(posts.length > 0 || livroPagina) && (
+        <div class="grade">
+          {livroPagina && (
+            <Card titulo={empresa.livro.titulo} href={url(empresa.livro.caminho)} eyebrow="O livro">
+              <p>{livroPagina.data.resumo}</p>
+            </Card>
+          )}
+          {posts.map((post) => (
+            <Card
+              titulo={post.data.titulo}
+              href={url(caminhoDoPost(post))}
+              eyebrow="Blog"
+              meta={`Publicado em ${dataCurta(post.data.publicado)}`}
+            />
+          ))}
+        </div>
+      )}
+      <p class="conceito__hub">
+        <a href={url('/metodo/')}>Todos os conceitos do método de Hugo Martins</a>
+      </p>
+    </div>
+  </section>
+
+  <CtaFinal titulo="Falar com o Hugo" />
+</Base>
+
+<style>
+  .conceito {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .conceito > :global(*) {
+    margin: 0;
+  }
+
+  .conceito__corpo {
+    max-width: var(--measure);
+  }
+
+  .conceito__relacionados {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .conceito__relacionados > :global(*) {
+    margin: 0;
+  }
+
+  .conceito__hub {
+    font-weight: 600;
+  }
+</style>

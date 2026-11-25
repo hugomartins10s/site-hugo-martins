@@ -1,0 +1,73 @@
+---
+/**
+ * Hub Método (spec 5.7): h1 "O método de Hugo Martins", parágrafo sobre as bases e a grade de
+ * conceitos por tema: uma grade só, na ordem dos temas (temas.json), com o tema no rótulo do
+ * cartão. Com 8 conceitos em 7 temas, uma seção por tema daria grades de um cartão (D43). JSON-LD: CollectionPage + o DefinedTermSet "Método Hugo Martins" (spec 8).
+ * Texto das bases e resumo: cópia do Jonathan a partir do acervo (P24).
+ */
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import ConceitoCards from '../../components/pagina/ConceitoCards.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { conceitosOrdenados, caminhoDoConceito } from '../../lib/conceitos';
+import { url } from '../../lib/links';
+import { pagina, tituloSeo } from '../../lib/paginas';
+import { noMetodo } from '../../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+import { trilha } from '../../lib/trilha';
+import ordemDosTemas from '../../data/temas.json';
+
+const p = await pagina('metodo');
+const { Content } = await render(p);
+const conceitos = await conceitosOrdenados();
+const temas = await getCollection('temas');
+const posicao = (id: string) => ordemDosTemas.findIndex((t) => t.id === id);
+const porTema = [...conceitos].sort(
+  (a, b) => posicao(a.data.tema.id) - posicao(b.data.tema.id) || a.data.ordem - b.data.ordem,
+);
+const nomeDoTema = (id: string) => temas.find((t) => t.id === id)?.data.nome;
+
+const caminho = trilha(['Método', '/metodo/']);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+const termos = conceitos.map(
+  (c) => `${urlAbsolutaDoCaminho(url(caminhoDoConceito(c)), Astro.site)}#termo`,
+);
+---
+
+<Base
+  title={tituloSeo(p)}
+  description={p.data.resumo}
+  trilha={caminho}
+  tipoPagina="CollectionPage"
+  schema={[noMetodo(inicio, urlPagina, termos)]}
+  principal={noMetodo(inicio, urlPagina)['@id'] as string}
+>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">Conceitos</span>
+    <h1 class="display">{p.data.titulo}</h1>
+    <Lead>{p.data.resumo}</Lead>
+  </Topo>
+
+  <div class="container secao">
+    <div class="prose">
+      <Content />
+    </div>
+  </div>
+
+  <section class="faixa secao" aria-labelledby="conceitos">
+    <div class="container">
+      <h2 id="conceitos">Os conceitos, por tema</h2>
+      <ConceitoCards conceitos={porTema} eyebrow={(c) => nomeDoTema(c.data.tema.id)} />
+    </div>
+  </section>
+
+  <div class="container secao">
+    <Atualizado data={p.data.atualizado} />
+  </div>
+
+  <CtaFinal titulo="Falar com o Hugo" />
+</Base>

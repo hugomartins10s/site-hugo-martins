@@ -8,7 +8,7 @@ import { caminhoDoProduto, type Produto } from '../../lib/produtos';
 interface Props {
   produtos: Produto[];
   eyebrow?: (p: Produto) => string | undefined;
-  nivel?: 2 | 3;
+  nivel?: 2 | 3 | 4;
 }
 const { produtos, eyebrow, nivel = 3 } = Astro.props;
 ---

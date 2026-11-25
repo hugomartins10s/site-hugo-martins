@@ -6,6 +6,7 @@
  * MedicalTherapy ou qualquer tipo médico; LocalBusiness só com endereço confirmado e
  * atendimento presencial. A lista fica em ./proibidos.ts e é verificada em scripts/check-seo.mjs.
  */
+import { dataIso } from '../datas';
 import { empresa } from '../empresa';
 
 export type No = Record<string, unknown>;
@@ -21,6 +22,7 @@ export function ids(inicio: string) {
     hugo: `${inicio}#hugo`,
     lumi: `${inicio}#lumi`,
     livro: `${inicio}#livro`,
+    metodo: `${inicio}#metodo`,
   };
 }
 
@@ -168,6 +170,78 @@ export function noLivro(inicio: string, paginaLivro: string, descricao: string):
       bookFormat: 'https://schema.org/EBook',
       isbn: livro.isbnEbook,
     },
+  };
+}
+
+/**
+ * O conjunto de termos do Método (`#metodo`, spec 8). Vai no hub /metodo/, com a lista dos
+ * termos, e em cada conceito, para o DefinedTerm ter a que pertencer.
+ */
+export function noMetodo(inicio: string, paginaMetodo: string, termos: string[] = []): No {
+  return {
+    '@type': 'DefinedTermSet',
+    '@id': ids(inicio).metodo,
+    name: 'Método Hugo Martins',
+    url: paginaMetodo,
+    inLanguage: 'pt-BR',
+    creator: { '@id': ids(inicio).hugo },
+    ...(termos.length && { hasDefinedTerm: termos.map((t) => ({ '@id': t })) }),
+  };
+}
+
+type Texto = { titulo: string; resumo: string; atualizado: Date };
+
+/**
+ * Página de conceito (spec 8): `Article` sobre um `DefinedTerm` do conjunto "Método Hugo Martins".
+ * Sem `datePublished`: o conceito só tem a data de atualização.
+ */
+export function nosConceito(inicio: string, url: string, conceito: Texto): No[] {
+  return [
+    {
+      '@type': 'Article',
+      '@id': `${url}#artigo`,
+      headline: conceito.titulo,
+      description: conceito.resumo,
+      url,
+      inLanguage: 'pt-BR',
+      dateModified: dataIso(conceito.atualizado),
+      author: { '@id': ids(inicio).hugo },
+      publisher: { '@id': ids(inicio).org },
+      mainEntityOfPage: { '@id': `${url}#pagina` },
+      about: { '@id': `${url}#termo` },
+    },
+    {
+      '@type': 'DefinedTerm',
+      '@id': `${url}#termo`,
+      name: conceito.titulo,
+      description: conceito.resumo,
+      url,
+      inDefinedTermSet: { '@id': ids(inicio).metodo },
+    },
+  ];
+}
+
+/** Post do blog (spec 8). `about` aponta para os termos do Método que o post linka. */
+export function noPost(
+  inicio: string,
+  url: string,
+  post: Texto & { publicado: Date; imagem: string; tema: string; termos: string[] },
+): No {
+  return {
+    '@type': 'BlogPosting',
+    '@id': `${url}#post`,
+    headline: post.titulo,
+    description: post.resumo,
+    url,
+    inLanguage: 'pt-BR',
+    datePublished: dataIso(post.publicado),
+    dateModified: dataIso(post.atualizado),
+    author: { '@id': ids(inicio).hugo },
+    publisher: { '@id': ids(inicio).org },
+    image: post.imagem,
+    articleSection: post.tema,
+    mainEntityOfPage: { '@id': `${url}#pagina` },
+    ...(post.termos.length && { about: post.termos.map((t) => ({ '@id': t })) }),
   };
 }
 

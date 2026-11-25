@@ -1,0 +1,27 @@
+---
+// Grade de cartões de conceito (hub Método, Home, produtos, conceitos vizinhos e posts).
+// O texto do cartão é a pergunta-alvo da spec 4.4, que já é um texto âncora descritivo (spec 4.3).
+import Card from '../conteudo/Card.astro';
+import { url } from '../../lib/links';
+import { caminhoDoConceito, type Conceito } from '../../lib/conceitos';
+
+interface Props {
+  conceitos: Conceito[];
+  eyebrow?: (c: Conceito) => string | undefined;
+  nivel?: 2 | 3 | 4;
+}
+const { conceitos, eyebrow, nivel = 3 } = Astro.props;
+---
+
+<div class="grade">
+  {conceitos.map((c) => (
+    <Card
+      titulo={c.data.titulo}
+      href={url(caminhoDoConceito(c))}
+      eyebrow={eyebrow?.(c)}
+      nivel={nivel}
+    >
+      <p>{c.data.pergunta}</p>
+    </Card>
+  ))}
+</div>

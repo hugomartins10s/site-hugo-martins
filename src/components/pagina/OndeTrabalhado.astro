@@ -1,0 +1,62 @@
+---
+/**
+ * "Onde isso é trabalhado" (spec 4.3 e 5.7): os produtos ligados a um conceito ou post,
+ * separados por frente para não misturar as duas (spec 3.1). O grupo da Lumi leva a
+ * identidade dela (data-brand="lumi") e diz que quem contrata é a empresa.
+ */
+import ProdutoCards from './ProdutoCards.astro';
+import { hubs, type Produto } from '../../lib/produtos';
+
+interface Props {
+  produtos: Produto[];
+  id?: string;
+  titulo?: string;
+}
+const { produtos, id = 'onde', titulo = 'Onde isso é trabalhado' } = Astro.props;
+const ordem = (lista: Produto[]) => [...lista].sort((a, b) => a.data.ordem - b.data.ordem);
+const grupos = [
+  {
+    frente: 'pessoal' as const,
+    nome: `${hubs.pessoal.nome}: trabalho individual`,
+    lista: ordem(produtos.filter((p) => p.data.frente === 'pessoal')),
+  },
+  {
+    frente: 'empresas' as const,
+    nome: `${hubs.empresas.nome}: treinamentos da Lumi`,
+    lista: ordem(produtos.filter((p) => p.data.frente === 'empresas')),
+  },
+].filter((g) => g.lista.length > 0);
+---
+
+{grupos.length > 0 && (
+  <section class="onde" aria-labelledby={id}>
+    <h2 id={id}>{titulo}</h2>
+    {grupos.map((g) => (
+      <div class="onde__grupo" data-brand={g.frente === 'empresas' ? 'lumi' : undefined}>
+        <h3 class="onde__frente">{g.nome}</h3>
+        <ProdutoCards produtos={g.lista} nivel={4} />
+      </div>
+    ))}
+  </section>
+)}
+
+<style>
+  .onde {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .onde > h2 {
+    margin: 0;
+  }
+
+  .onde__frente {
+    margin-bottom: var(--space-3);
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-rotulo);
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+</style>
