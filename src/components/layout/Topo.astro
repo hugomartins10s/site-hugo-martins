@@ -1,0 +1,26 @@
+---
+// Topo navy de cada página (direção "Misto", D23): hero com título, parágrafo-resposta e ações.
+// Fica atrás do cabeçalho flutuante e usa as cores do contexto navy. O resto da página é claro.
+interface Props {
+  class?: string;
+}
+const { class: extra } = Astro.props;
+---
+
+<div class:list={['topo', 'tema-navy', extra]}>
+  <div class="container topo__conteudo">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .topo {
+    padding-top: calc(var(--topo-livre) + var(--space-7));
+    padding-bottom: var(--space-9);
+    background: var(--bg);
+  }
+
+  .topo__conteudo > :global(:last-child) {
+    margin-bottom: 0;
+  }
+</style>

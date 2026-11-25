@@ -1,8 +1,10 @@
 /*
  * Identidade Lumi – Soluções Integradas, aplicada em /para-empresas/** via data-brand="lumi".
- * Cores e fontes do manual da Lumi (2023): azul #0079B6 e #024B98, Audiowide (títulos curtos)
- * e Montserrat (texto). O site mantém o tema escuro único (spec 9.2); por isso o texto de link
- * usa um azul clareado derivado [P], já que #0079B6 sobre o fundo escuro não atinge 4,5:1.
+ * Cores e fontes do manual da Lumi (2023): azul #0079B6 e #024B98, Audiowide (só no h1, títulos
+ * curtos) e Montserrat (texto). Mesma estrutura do resto do site (D23): conteúdo claro, topo navy.
+ *
+ * Sobre o papel, #0079B6 dá 4,3:1 (abaixo de 4,5): texto e links usam #024B98 (7,8:1), e #0079B6
+ * fica nos filetes e no botão. Sobre navy, o link usa um azul clareado derivado [P].
  */
 
 @font-face {
@@ -28,41 +30,38 @@
 }
 
 [data-brand='lumi'] {
-  --brand-1: #0079b6;
-  --brand-2: #024b98;
   --font-display: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
   --font-body: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
-  --font-h1: 'Audiowide', 'Montserrat', system-ui, sans-serif; /* só títulos curtos */
-  --tracking-display: 0.08em;
-
-  /* Derivados [P] para o tema escuro */
-  --link: #5cb8e6;
-  --link-hover: #9ad6f5;
-  --focus: #5cb8e6;
-  --eyebrow: #5cb8e6;
-  --surface-1: #06102f;
-  --surface-2: #0a1a46;
-  --surface-3: #10245a;
-
-  --glow-1: rgba(0, 121, 182, 0.34);
-  --glow-2: rgba(2, 75, 152, 0.4);
-  --glow-3: rgba(0, 121, 182, 0.16);
-
-  --glass-tint-camada: linear-gradient(135deg, rgba(0, 121, 182, 0.55), rgba(2, 75, 152, 0.35));
-  --glass-tint-camada-hover: linear-gradient(
-    135deg,
-    rgba(0, 121, 182, 0.65),
-    rgba(2, 75, 152, 0.45)
-  );
-  --glass-tint-base: rgba(0, 5, 35, 0.4);
-  --glass-tint: var(--glass-tint-camada), var(--glass-tint-base);
-  --glass-tint-hover: var(--glass-tint-camada-hover), var(--glass-tint-base);
+  --font-h1: 'Audiowide', 'Montserrat', system-ui, sans-serif;
+  --tracking-heading: 0;
 
   /* Montserrat é mais larga: corpo um pouco menor mantém a medida de 60–72 caracteres */
   --step-0: 1.0625rem; /* 17px, mínimo da spec */
+
+  --brand-1: #0079b6;
+  --brand-2: #024b98;
+  --link: #024b98;
+  --link-hover: #0079b6;
+  --focus: #024b98;
+  --filete: #0079b6;
+
+  --tint-bg: linear-gradient(135deg, rgba(2, 75, 152, 0.94), rgba(2, 60, 128, 0.9));
+  --tint-bg-hover: linear-gradient(135deg, rgba(0, 101, 160, 0.95), rgba(2, 75, 152, 0.92));
+  --tint-border: rgba(2, 75, 152, 0.6);
+  --tint-opaco: #024b98;
 }
 
-/* O padrão de cérebros é da marca Hugo Martins: fica fora da seção Lumi. */
-[data-brand='lumi'] {
-  --pattern-opacity: 0;
+/* Lumi sobre navy (o data-brand pode estar no próprio elemento ou num ancestral) */
+[data-brand='lumi'] .tema-navy,
+[data-brand='lumi'].tema-navy {
+  --link: #5cb8e6;
+  --link-hover: #9ad6f5;
+  --focus: #5cb8e6;
+  --filete: #0079b6;
+
+  --tint-bg: linear-gradient(135deg, rgba(0, 121, 182, 0.94), rgba(2, 75, 152, 0.9));
+  --tint-bg-hover: linear-gradient(135deg, rgba(0, 135, 200, 0.96), rgba(2, 85, 168, 0.92));
+  --tint-text: #ffffff;
+  --tint-border: rgba(255, 255, 255, 0.3);
+  --tint-opaco: #0079b6;
 }

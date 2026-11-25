@@ -1,18 +1,26 @@
 /*
- * Tokens de design (spec 9.2). Cores da marca extraídas do manual de identidade (2020);
- * "derivados" são decisões de arquitetura [P]. Tema escuro único na v1.
+ * Tokens de design. Cores da marca extraídas do manual de identidade (2020); "derivados" são
+ * decisões de arquitetura [P].
+ *
+ * Direção "Misto" (DECISOES D23, substitui o tema escuro único da spec 9.2): o conteúdo fica em
+ * fundo claro cor de papel; o topo de cada página (.topo) e a camada flutuante (cabeçalho,
+ * WhatsApp, CTA fixa) ficam em navy. Sem manchas de luz nem padrão de cérebros no fundo; ciano e
+ * teal só no logo e em filetes decorativos.
+ *
+ * Os papéis (--bg, --text, --link…) têm dois conjuntos: o claro em :root e o navy em .tema-navy.
+ * Componentes usam só os papéis, nunca as cores cruas, e funcionam nos dois contextos.
  *
  * Fontes web [P]: as do logo (Typeface 6781, P22 Underground) não têm licença web confirmada
- * (PENDENCIAS P31). Título: Jost (sans geométrica). Corpo: Source Sans 3 (sans humanista).
+ * (PENDENCIAS P31). Títulos: Source Serif 4 (serifada, sóbria). Corpo e interface: Source Sans 3.
  * Todas OFL, auto-hospedadas, subconjunto latino.
  */
 
 @font-face {
-  font-family: 'Jost';
+  font-family: 'Source Serif 4';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 200 900;
   font-display: swap;
-  src: url('/fonts/jost-var.woff2') format('woff2');
+  src: url('/fonts/source-serif-4-var.woff2') format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -40,78 +48,37 @@
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-:root {
-  color-scheme: dark;
+/* ---------- Constantes da marca e escalas (iguais nos dois contextos) ---------- */
 
+:root {
   /* Hugo Martins (manual de identidade) */
-  --hm-navy: #000523; /* fundo principal */
-  --hm-cyan: #01ffff; /* destaque, brilho, foco */
-  --hm-teal: #02b9ca; /* links e ícones */
+  --hm-navy: #000523;
+  --hm-cyan: #01ffff; /* só no logo e no foco sobre navy */
+  --hm-teal: #02b9ca; /* filetes decorativos; links só sobre navy */
   --hm-white: #ffffff;
 
   /* Derivados [P] */
-  --surface-1: #060c33; /* cartão sólido */
-  --surface-2: #0b1445;
-  --surface-3: #121d57; /* hover de superfícies sólidas */
-  --text: #eaf4fb;
-  --text-muted: #9fb0d0;
-  --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.22);
-
-  /* Papéis (a seção Lumi sobrescreve estes) */
-  --bg: var(--hm-navy);
-  --brand-1: var(--hm-cyan);
-  --brand-2: var(--hm-teal);
-  --link: var(--hm-teal);
-  --link-hover: var(--hm-cyan);
-  --focus: var(--hm-cyan);
-  --eyebrow: var(--hm-teal);
-
-  /* Manchas de luz do fundo (spec 9.1) */
-  --glow-1: rgba(1, 255, 255, 0.2);
-  --glow-2: rgba(2, 185, 202, 0.22);
-  --glow-3: rgba(2, 185, 202, 0.12);
-  --pattern-opacity: 0.06;
-
-  /* Vidro (spec 9.3) */
-  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
-  --glass-bg-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
-  /* Botão primário: o tingimento da spec sobre uma base navy translúcida. A base garante
-     contraste ≥ 4,5:1 do texto branco sobre a mancha de luz mais clara (scripts/check-contraste.mjs). */
-  --glass-tint-camada: linear-gradient(135deg, rgba(1, 255, 255, 0.28), rgba(2, 185, 202, 0.14));
-  --glass-tint-camada-hover: linear-gradient(
-    135deg,
-    rgba(1, 255, 255, 0.34),
-    rgba(2, 185, 202, 0.2)
-  );
-  --glass-tint-base: rgba(0, 5, 35, 0.45);
-  --glass-tint: var(--glass-tint-camada), var(--glass-tint-base);
-  --glass-tint-hover: var(--glass-tint-camada-hover), var(--glass-tint-base);
-  --glass-solid: rgba(11, 20, 69, 0.92); /* sem backdrop-filter */
-  --glass-border: rgba(255, 255, 255, 0.22);
-  --glass-blur: blur(18px) saturate(170%);
-  --glass-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 30px rgba(0, 5, 35, 0.35);
-  --glass-shadow-hover:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.12),
-    0 12px 34px rgba(0, 5, 35, 0.45);
+  --papel: #f6f4ef; /* fundo do conteúdo */
+  --papel-2: #efece5; /* faixas alternadas */
+  --creme: #f3f0e8; /* texto forte e botão primário sobre navy */
+  --teal-escuro: #00707d; /* teal com contraste sobre papel (5,3:1) */
 
   /* Tipografia */
-  --font-display: 'Jost', 'Avenir Next', 'Century Gothic', system-ui, sans-serif;
+  --font-display: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
   --font-body: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-ui: var(--font-body);
   --font-h1: var(--font-display);
-  --tracking-display: 0.14em; /* caixa alta espaçada, no espírito do logo */
-  --tracking-heading: 0.01em;
+  --tracking-heading: -0.01em;
+  --tracking-rotulo: 0.14em; /* só nos rótulos curtos em caixa alta (.eyebrow) */
 
   --step--1: 0.9375rem; /* 15px: legendas, metadados */
   --step-0: 1.125rem; /* 18px: corpo (spec: ≥ 17px) */
   --step-1: clamp(1.25rem, 1.15rem + 0.4vw, 1.4rem);
   --step-2: clamp(1.45rem, 1.25rem + 0.9vw, 1.85rem);
   --step-3: clamp(1.8rem, 1.45rem + 1.6vw, 2.5rem);
-  --step-4: clamp(2.2rem, 1.6rem + 2.8vw, 3.5rem);
+  --step-4: clamp(2.3rem, 1.6rem + 3vw, 3.75rem);
   --leading: 1.6;
-  --leading-tight: 1.2;
+  --leading-tight: 1.15;
   --measure: 68ch; /* 60 a 72 caracteres */
 
   /* Espaçamento */
@@ -126,12 +93,13 @@
   --space-9: 7rem;
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
   --container: 72rem;
+  --topo-livre: 7.5rem; /* espaço do cabeçalho flutuante */
 
   /* Formas */
   --radius-pill: 999px;
-  --radius-panel: 26px; /* painéis de vidro: 24–28px */
-  --radius-card: 18px;
-  --radius-field: 12px;
+  --radius-panel: 24px; /* painéis de vidro: 24–28px */
+  --radius-card: 14px;
+  --radius-field: 10px;
 
   /* Movimento (150–250 ms; desligado em prefers-reduced-motion) */
   --dur-1: 150ms;
@@ -139,11 +107,104 @@
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   /* Camadas */
-  --z-bg: -1;
   --z-float: 50;
   --z-nav: 60;
   --z-sheet: 70;
 
   /* Alvos de toque ≥ 44 px */
   --tap: 44px;
+
+  --glass-blur: blur(18px) saturate(150%);
+}
+
+/* ---------- Contexto claro (padrão): conteúdo ---------- */
+
+:root {
+  color-scheme: light;
+
+  --bg: var(--papel);
+  --surface-1: #ffffff; /* cartão */
+  --surface-2: var(--papel-2); /* faixa alternada, superfície elevada */
+  --surface-3: #e8e4da; /* hover */
+  --campo: #ffffff;
+  --text: #2b3044;
+  --text-strong: var(--hm-navy); /* títulos, rótulos, destaque */
+  --text-muted: #5b6178;
+  --line: rgba(0, 5, 35, 0.1);
+  --line-strong: rgba(0, 5, 35, 0.24);
+
+  --brand-1: var(--hm-teal); /* decorativo (filetes, marcadores) */
+  --brand-2: var(--teal-escuro);
+  --link: var(--hm-navy);
+  --link-hover: var(--teal-escuro);
+  --focus: var(--hm-navy);
+  --eyebrow: var(--text-muted);
+  --filete: var(--hm-teal);
+
+  /* Vidro neutro (botão secundário) */
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5));
+  --glass-bg-hover: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.7));
+  --glass-text: var(--hm-navy);
+  --glass-border: rgba(0, 5, 35, 0.22);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 5, 35, 0.06);
+  --glass-shadow-hover: inset 0 1px 0 #fff, 0 6px 18px rgba(0, 5, 35, 0.1);
+  --glass-solid: #ffffff; /* sem backdrop-filter */
+  --glass-opaco: #ffffff; /* transparência reduzida, contraste alto */
+  --glass-opaco-borda: var(--hm-navy);
+
+  /* Vidro tingido (botão primário): navy quase opaco */
+  --tint-bg: linear-gradient(135deg, rgba(14, 20, 60, 0.92), rgba(0, 5, 35, 0.88));
+  --tint-bg-hover: linear-gradient(135deg, rgba(26, 34, 82, 0.94), rgba(0, 5, 35, 0.9));
+  --tint-text: #ffffff;
+  --tint-border: rgba(0, 5, 35, 0.6);
+  --tint-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 14px rgba(0, 5, 35, 0.18);
+  --tint-opaco: var(--hm-navy);
+}
+
+/* ---------- Contexto navy: topo das páginas e camada flutuante ---------- */
+
+.tema-navy {
+  color-scheme: dark;
+
+  --bg: var(--hm-navy);
+  --surface-1: #0a0f30;
+  --surface-2: #0e1438;
+  --surface-3: #141b47;
+  --campo: #0e1438;
+  --text: #c9ccd6;
+  --text-strong: var(--creme);
+  --text-muted: #9aa0b3;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.24);
+
+  --brand-1: var(--hm-teal);
+  --brand-2: var(--hm-teal);
+  --link: var(--hm-teal);
+  --link-hover: var(--hm-cyan);
+  --focus: var(--hm-cyan);
+  --eyebrow: var(--text-muted);
+  --filete: var(--hm-teal);
+
+  /* Vidro neutro: navy translúcido. Opaco o bastante para o cabeçalho ser legível sobre o papel. */
+  --glass-bg: linear-gradient(135deg, rgba(20, 26, 66, 0.9), rgba(0, 5, 35, 0.86));
+  --glass-bg-hover: linear-gradient(135deg, rgba(30, 38, 84, 0.92), rgba(0, 5, 35, 0.88));
+  --glass-text: var(--creme);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 30px rgba(0, 5, 35, 0.22);
+  --glass-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 34px rgba(0, 5, 35, 0.3);
+  --glass-solid: rgba(0, 5, 35, 0.96);
+  --glass-opaco: var(--hm-navy);
+  --glass-opaco-borda: rgba(255, 255, 255, 0.6);
+
+  /* Vidro tingido: creme quase opaco, texto navy */
+  --tint-bg: linear-gradient(135deg, rgba(243, 240, 232, 0.96), rgba(243, 240, 232, 0.88));
+  --tint-bg-hover: linear-gradient(135deg, #fff, rgba(243, 240, 232, 0.94));
+  --tint-text: var(--hm-navy);
+  --tint-border: rgba(255, 255, 255, 0.5);
+  --tint-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 14px rgba(0, 0, 0, 0.25);
+  --tint-opaco: var(--creme);
 }

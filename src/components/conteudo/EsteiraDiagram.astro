@@ -57,7 +57,7 @@ const { titulo } = Astro.props;
       class="esteira__linha"
       marker-end="url(#seta-l)"
     ></path>
-    <text x="345" y="155" text-anchor="middle" class="esteira__rotulo esteira__rotulo--meio">
+    <text x="352" y="155" text-anchor="middle" class="esteira__rotulo esteira__rotulo--meio">
       em qualquer ordem
     </text>
 
@@ -190,7 +190,7 @@ const { titulo } = Astro.props;
   }
 
   .esteira__caixa {
-    fill: var(--surface-2);
+    fill: var(--surface-1);
     stroke: var(--line-strong);
     stroke-width: 1.5;
   }
@@ -201,14 +201,13 @@ const { titulo } = Astro.props;
   }
 
   .esteira__nome {
-    fill: var(--hm-white);
+    fill: var(--text-strong);
     font-size: 21px;
     font-weight: 500;
   }
 
   .esteira__nome--grande {
     font-size: 40px;
-    letter-spacing: 0.06em;
   }
 
   .esteira__sub {
@@ -219,13 +218,15 @@ const { titulo } = Astro.props;
 
   .esteira__rotulo {
     fill: var(--eyebrow);
+    font-family: var(--font-ui);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.14em;
   }
 
   .esteira__rotulo--meio {
+    letter-spacing: 0.08em;
     paint-order: stroke;
     stroke: var(--bg);
     stroke-width: 6px;

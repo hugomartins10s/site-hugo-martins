@@ -44,7 +44,7 @@ h4 {
   font-weight: 500;
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-heading);
-  color: var(--hm-white);
+  color: var(--text-strong);
   text-wrap: balance;
 }
 
@@ -64,6 +64,11 @@ h4 {
   font-weight: 600;
 }
 
+/* Contexto navy: o texto herda as cores do contexto (os papéis são redefinidos em tokens.css) */
+.tema-navy {
+  color: var(--text);
+}
+
 p,
 ul,
 ol,
@@ -80,40 +85,37 @@ p {
 
 strong {
   font-weight: 650;
-  color: var(--hm-white);
+  color: var(--text-strong);
 }
 
-/* Caixa alta espaçada, no espírito do logo: hero, rótulos e chamadas. */
+/* Título do hero: serifada grande, em caixa normal (D23). */
 .display {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-display);
-  font-weight: 400;
+  max-width: 18ch;
+  font-size: var(--step-4);
   overflow-wrap: break-word;
 }
 
-/* Em caixa alta espaçada, palavras longas ("DESENVOLVIMENTO") estouravam a largura do celular e
-   alargavam a página inteira. O título display acompanha a largura da tela. */
-h1.display,
-.display.display--grande {
-  font-size: min(var(--step-4), 7.4vw);
-}
-
-@media (max-width: 30rem) {
-  .display {
-    letter-spacing: 0.08em;
-  }
-}
-
+/* Rótulo curto em caixa alta espaçada, o único lugar com esse tratamento. */
 .eyebrow {
   display: block;
   margin-bottom: var(--space-3);
-  font-family: var(--font-display);
-  font-size: var(--step--1);
-  font-weight: 500;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
   text-transform: uppercase;
-  letter-spacing: var(--tracking-display);
+  letter-spacing: var(--tracking-rotulo);
   color: var(--eyebrow);
+}
+
+/* Filete decorativo em teal: o único uso da cor da marca fora do logo e do navy. */
+.filete {
+  display: block;
+  width: 3rem;
+  height: 2px;
+  margin-bottom: var(--space-5);
+  background: var(--filete);
+  border: 0;
 }
 
 /* Parágrafo-resposta (spec 5): o trecho que queremos ver citado. */
@@ -161,8 +163,8 @@ a:hover {
   z-index: 100;
   padding: var(--space-3) var(--space-5);
   border-radius: var(--radius-pill);
-  background: var(--surface-2);
-  color: var(--hm-white);
+  background: var(--hm-navy);
+  color: var(--creme);
   font-weight: 600;
   transform: translateY(-200%);
 }
@@ -230,7 +232,7 @@ dl {
 
 dt {
   font-weight: 600;
-  color: var(--hm-white);
+  color: var(--text-strong);
 }
 
 dd {
@@ -259,15 +261,15 @@ td {
 }
 
 thead th {
-  font-family: var(--font-display);
-  font-weight: 500;
-  color: var(--hm-white);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--text-strong);
   border-bottom-color: var(--line-strong);
 }
 
 tbody th {
   font-weight: 600;
-  color: var(--hm-white);
+  color: var(--text-strong);
 }
 
 /* ---------- Formulário (campos sólidos; só o botão é vidro) ---------- */
@@ -276,7 +278,7 @@ label {
   display: block;
   margin-bottom: var(--space-2);
   font-weight: 600;
-  color: var(--hm-white);
+  color: var(--text-strong);
 }
 
 input:not([type='checkbox'], [type='radio']),
@@ -287,7 +289,7 @@ textarea {
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-field);
-  background: var(--surface-2);
+  background: var(--campo);
   color: var(--text);
   font: inherit;
   transition: border-color var(--dur-1) var(--ease);
@@ -307,7 +309,7 @@ textarea::placeholder {
 input:hover,
 select:hover,
 textarea:hover {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: var(--text-muted);
 }
 
 input:focus-visible,
@@ -344,7 +346,7 @@ fieldset {
 legend {
   margin-bottom: var(--space-3);
   font-weight: 600;
-  color: var(--hm-white);
+  color: var(--text-strong);
 }
 
 .opcao {
@@ -377,7 +379,14 @@ details > summary {
 
 @media (prefers-contrast: more) {
   :root {
-    --text-muted: #c9d6ec;
+    --text: var(--hm-navy);
+    --text-muted: #3a4058;
+    --line: rgba(0, 5, 35, 0.35);
+    --line-strong: rgba(0, 5, 35, 0.7);
+  }
+  .tema-navy {
+    --text: #eceef3;
+    --text-muted: #c9ccd6;
     --line: rgba(255, 255, 255, 0.35);
     --line-strong: rgba(255, 255, 255, 0.6);
   }

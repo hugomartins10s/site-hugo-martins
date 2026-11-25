@@ -1,5 +1,6 @@
 ---
-// Cartão de vidro em destaque sobre o hero (spec 9.1: no máximo um grupo por página).
+// Cartão de vidro em destaque sobre o hero (spec 9.1: no máximo um grupo por página). Fica no
+// topo navy (.topo), então usa as cores do contexto navy.
 // O texto vem do slot; o título é um link que cobre o cartão inteiro.
 interface Props {
   titulo: string;
@@ -12,6 +13,7 @@ const Titulo = `h${nivel}` as 'h2' | 'h3';
 ---
 
 <article class="destaque glass glass--painel">
+  <span class="filete" aria-hidden="true"></span>
   {eyebrow && <span class="eyebrow">{eyebrow}</span>}
   <Titulo class="destaque__titulo">
     <a href={href}>{titulo}</a>
@@ -41,7 +43,7 @@ const Titulo = `h${nivel}` as 'h2' | 'h3';
   }
 
   .destaque__titulo a {
-    color: var(--hm-white);
+    color: var(--text-strong);
     text-decoration: none;
   }
 
@@ -61,13 +63,8 @@ const Titulo = `h${nivel}` as 'h2' | 'h3';
     outline-offset: 3px;
   }
 
-  .destaque .eyebrow {
-    color: var(--hm-white);
-    opacity: 0.85;
-  }
-
   .destaque__texto {
-    color: var(--hm-white);
+    color: var(--text);
   }
 
   .destaque__texto :global(p:last-child) {

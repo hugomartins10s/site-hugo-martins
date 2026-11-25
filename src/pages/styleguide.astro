@@ -9,6 +9,7 @@ import GlassButton from '../components/glass/GlassButton.astro';
 import FeaturedGlassCard from '../components/glass/FeaturedGlassCard.astro';
 import StickyCta from '../components/glass/StickyCta.astro';
 import Lead from '../components/conteudo/Lead.astro';
+import Topo from '../components/layout/Topo.astro';
 import FactList from '../components/conteudo/FactList.astro';
 import Card from '../components/conteudo/Card.astro';
 import CompareTable from '../components/conteudo/CompareTable.astro';
@@ -20,26 +21,33 @@ import CrossFrontNotice from '../components/conteudo/CrossFrontNotice.astro';
 import WhatsApp from '../components/icones/WhatsApp.astro';
 import { empresa, linkWhatsApp } from '../lib/empresa';
 import { url } from '../lib/links';
-import { avaliar, piorFundo, vidros } from '../lib/contraste';
+import { avaliar, piorFundo } from '../lib/contraste';
 
 const contraste = avaliar();
 
 const cores = [
-  { nome: '--hm-navy', valor: '#000523', papel: 'Fundo principal (manual)' },
-  { nome: '--hm-cyan', valor: '#01FFFF', papel: 'Destaque, brilho, foco (manual)' },
-  { nome: '--hm-teal', valor: '#02B9CA', papel: 'Links e ícones (manual)' },
-  { nome: '--hm-white', valor: '#FFFFFF', papel: 'Texto sobre vidro (manual)' },
-  { nome: '--surface-1', valor: '#060C33', papel: 'Cartão sólido [P]' },
-  { nome: '--surface-2', valor: '#0B1445', papel: 'Superfície elevada [P]' },
-  { nome: '--surface-3', valor: '#121D57', papel: 'Hover de superfície [P]' },
-  { nome: '--text', valor: '#EAF4FB', papel: 'Texto [P]' },
-  { nome: '--text-muted', valor: '#9FB0D0', papel: 'Texto secundário [P]' },
+  { nome: '--hm-navy', valor: '#000523', papel: 'Topo, cabeçalho, títulos no claro (manual)' },
+  { nome: '--hm-cyan', valor: '#01FFFF', papel: 'Logo; foco sobre navy (manual)' },
+  { nome: '--hm-teal', valor: '#02B9CA', papel: 'Filetes; links sobre navy (manual)' },
+  { nome: '--hm-white', valor: '#FFFFFF', papel: 'Cartões (manual)' },
+  { nome: '--papel', valor: '#F6F4EF', papel: 'Fundo do conteúdo [P]' },
+  { nome: '--papel-2', valor: '#EFECE5', papel: 'Faixa alternada [P]' },
+  { nome: '--creme', valor: '#F3F0E8', papel: 'Títulos e botão primário no navy [P]' },
+  { nome: '--teal-escuro', valor: '#00707D', papel: 'Hover de link no claro [P]' },
+  { nome: '--text (claro)', valor: '#2B3044', papel: 'Texto do conteúdo [P]' },
+  { nome: '--text-muted (claro)', valor: '#5B6178', papel: 'Texto secundário [P]' },
+  { nome: '--text (navy)', valor: '#C9CCD6', papel: 'Texto no topo [P]' },
+  { nome: '--text-muted (navy)', valor: '#9AA0B3', papel: 'Secundário no topo [P]' },
 ];
 
 const coresLumi = [
-  { nome: '--brand-1', valor: '#0079B6', papel: 'Azul Lumi (manual)' },
-  { nome: '--brand-2', valor: '#024B98', papel: 'Azul escuro Lumi (manual)' },
-  { nome: '--link', valor: '#5CB8E6', papel: 'Link no tema escuro [P]' },
+  { nome: '--brand-1', valor: '#0079B6', papel: 'Azul Lumi: filetes e botão (manual)' },
+  {
+    nome: '--brand-2',
+    valor: '#024B98',
+    papel: 'Azul escuro Lumi: texto e links no claro (manual)',
+  },
+  { nome: '--link (navy)', valor: '#5CB8E6', papel: 'Link sobre navy [P]' },
 ];
 
 const simulacoes = [
@@ -68,7 +76,43 @@ const rascunho = {
   description="Guia visual interno do site Hugo Martins: tokens, tipografia, vidro e componentes."
   noindex
 >
+  <!-- 1. Topo navy (hero) -->
+  <Topo class="sg-topo">
+    <div class="sg-hero">
+      <div class="sg-hero__texto">
+        <span class="eyebrow">1 · Topo navy (hero)</span>
+        <h1 class="display">Hugo Martins – Desenvolvimento de Potencial Humano</h1>
+        <Lead>{rascunho.home}</Lead>
+        <div class="sg-acoes">
+          <GlassButton href={url('/para-voce/')} tamanho="grande">
+            Para você
+          </GlassButton>
+          <GlassButton href={url('/para-empresas/')} variante="secundario" tamanho="grande">
+            Para empresas
+          </GlassButton>
+        </div>
+      </div>
+      <div class="sg-destaques">
+        <FeaturedGlassCard titulo="Para você" href={url('/para-voce/')} eyebrow="Hugo Martins">
+          <p>Quem compra é a pessoa. 10S, Potencial Humano e Potencial Corporativo.</p>
+        </FeaturedGlassCard>
+        <FeaturedGlassCard
+          titulo="Para empresas"
+          href={url('/para-empresas/')}
+          eyebrow="Lumi – Soluções Integradas"
+        >
+          <p>Quem compra é a empresa. Os contratos são firmados e faturados pela Lumi.</p>
+        </FeaturedGlassCard>
+      </div>
+    </div>
+  </Topo>
+
   <div class="container sg">
+    <p class="small muted sg-nota">
+      Cartões de vidro em destaque: no máximo um grupo por página (spec 9.1). O slogan não aparece
+      até a pendência P33 ser resolvida.
+    </p>
+
     <!-- Barra de simulação de fallbacks -->
     <section class="sg-barra superficie" aria-labelledby="sg-simular">
       <h2 id="sg-simular" class="eyebrow">
@@ -90,39 +134,6 @@ const rascunho = {
       </p>
     </section>
 
-    <!-- 1. Hero -->
-    <section class="sg-secao sg-hero" aria-labelledby="sg-hero">
-      <span class="eyebrow">1 · Hero</span>
-      <h1 id="sg-hero" class="display">
-        Hugo Martins – Desenvolvimento de Potencial Humano
-      </h1>
-      <Lead>{rascunho.home}</Lead>
-      <div class="sg-acoes">
-        <GlassButton href={url('/para-voce/')} tamanho="grande">
-          Para você
-        </GlassButton>
-        <GlassButton href={url('/para-empresas/')} variante="secundario" tamanho="grande">
-          Para empresas
-        </GlassButton>
-      </div>
-      <div class="sg-destaques">
-        <FeaturedGlassCard titulo="Para você" href={url('/para-voce/')} eyebrow="Hugo Martins">
-          <p>Quem compra é a pessoa. 10S, Potencial Humano e Potencial Corporativo.</p>
-        </FeaturedGlassCard>
-        <FeaturedGlassCard
-          titulo="Para empresas"
-          href={url('/para-empresas/')}
-          eyebrow="Lumi – Soluções Integradas"
-        >
-          <p>Quem compra é a empresa. Os contratos são firmados e faturados pela Lumi.</p>
-        </FeaturedGlassCard>
-      </div>
-      <p class="small muted">
-        Cartões de vidro em destaque: no máximo um grupo por página (spec 9.1). O slogan não aparece
-        até a pendência P33 ser resolvida.
-      </p>
-    </section>
-
     <!-- 2. Cores -->
     <section class="sg-secao" aria-labelledby="sg-cores">
       <span class="eyebrow">2 · Cores</span>
@@ -139,11 +150,11 @@ const rascunho = {
       </ul>
       <h3>Contraste WCAG 2.2</h3>
       <p class="measure">
-        Texto exige 4,5:1; elementos gráficos e foco, 3:1. O vidro é medido contra o pior fundo
-        possível: o pico da mancha de luz com o padrão no pixel mais claro (Hugo Martins{' '}
-        <code>{piorFundo.hugo}</code>, Lumi <code>{piorFundo.lumi}</code>). Calculado no build a
-        partir de
-        <code>src/lib/contraste.ts</code>; o mesmo cálculo roda em <code>npm run lint</code>.
+        Texto exige 4,5:1; elementos gráficos e foco, 3:1. Cada vidro é medido contra o pior fundo
+        possível: o cabeçalho navy translúcido sobre branco puro (<code>{piorFundo.claro}</code>), o
+        secundário claro sobre a faixa alternada (<code>{piorFundo.faixa}</code>), sempre na ponta
+        menos opaca do gradiente. Calculado no build a partir de <code>src/lib/contraste.ts</code>;
+        o mesmo cálculo roda em <code>npm run lint</code>.
       </p>
       <div
         class="tabela-contraste superficie"
@@ -178,28 +189,29 @@ const rascunho = {
           </tbody>
         </table>
       </div>
-      <h3>Vidro sobre o pior fundo</h3>
-      <div class="sg-palco" style={`background:${piorFundo.hugo}`}>
-        <GlassButton href="#sg-cores">Botão primário</GlassButton>
-        <GlassButton href="#sg-cores" variante="secundario">
-          Botão secundário
-        </GlassButton>
-        <span
-          class="small"
-          style={`color:#fff;background:${vidros.primario};padding:.4rem .8rem;border-radius:8px`}
-        >
-          cor resultante do primário: {vidros.primario}
-        </span>
+      <h3>Botões nos dois contextos</h3>
+      <div class="sg-palcos">
+        <div class="sg-palco sg-palco--claro">
+          <GlassButton href="#sg-cores">Primário</GlassButton>
+          <GlassButton href="#sg-cores" variante="secundario">
+            Secundário
+          </GlassButton>
+        </div>
+        <div class="sg-palco tema-navy">
+          <GlassButton href="#sg-cores">Primário</GlassButton>
+          <GlassButton href="#sg-cores" variante="secundario">
+            Secundário
+          </GlassButton>
+        </div>
       </div>
     </section>
 
     <!-- 3. Tipografia -->
     <section class="sg-secao" aria-labelledby="sg-tipo">
       <span class="eyebrow">3 · Tipografia</span>
-      <h2 id="sg-tipo">Jost nos títulos, Source Sans 3 no corpo</h2>
+      <h2 id="sg-tipo">Source Serif 4 nos títulos, Source Sans 3 no corpo</h2>
       <div class="superficie stack">
-        <p class="display display--grande sg-tipo-display">Hugo Martins</p>
-        <p class="sg-tipo-h1">O que é o 10S de Hugo Martins?</p>
+        <p class="display sg-tipo-display">O que é o 10S de Hugo Martins?</p>
         <h2>Como funciona o trabalho individual com Hugo Martins?</h2>
         <h3>O que é o Potencial Corporativo? É para empresas?</h3>
         <h4>Quem é Hugo Martins (10S)?</h4>
@@ -255,10 +267,26 @@ const rascunho = {
           Grande
         </GlassButton>
       </div>
+      <div class="sg-acoes sg-palco tema-navy">
+        <GlassButton href={url('/contato/')}>Falar com o Hugo</GlassButton>
+        <GlassButton href={url('/para-empresas/')} variante="secundario">
+          Para empresas
+        </GlassButton>
+        <GlassButton
+          href={linkWhatsApp()}
+          variante="icone"
+          rotulo="Conversar com Hugo Martins no WhatsApp"
+          rel="noopener"
+          target="_blank"
+        >
+          <WhatsApp tamanho={22} />
+        </GlassButton>
+      </div>
       <p class="small muted measure">
-        Hover clareia o gradiente e reforça o brilho; pressionado reduz para 0,97 e escurece; foco
-        com anel de 2 px e afastamento. Transições de 150 a 220 ms, desligadas com movimento
-        reduzido. No Chromium, o primário e o cabeçalho ganham refração.
+        O botão segue o contexto: no claro, primário navy e secundário branco translúcido; no topo
+        navy, primário creme e secundário navy translúcido. Hover clareia; pressionado reduz para
+        0,97; foco com anel de 2 px (navy no claro, ciano no navy). Transições de 150 a 220 ms,
+        desligadas com movimento reduzido. No Chromium, o primário e o cabeçalho ganham refração.
       </p>
     </section>
 
@@ -268,10 +296,11 @@ const rascunho = {
       <h2 id="sg-nav">Cabeçalho, WhatsApp e CTA fixa</h2>
       <ul class="measure">
         <li>
-          <strong>Cabeçalho</strong> (topo desta página): pílula de vidro; submenus de “Para você” e
-          “Para empresas” abrem pela seta; abaixo de 1152 px vira botão “Menu”. Encolhe e fica mais
-          opaco ao rolar (Chrome e Edge; nos demais fica estático). Sem JavaScript, tudo continua
-          funcionando por &lt;details&gt;.
+          <strong>Cabeçalho</strong> (topo desta página): pílula de vidro navy, legível tanto sobre
+          o topo navy quanto sobre o conteúdo claro; submenus de “Para você” e “Para empresas” abrem
+          pela seta; abaixo de 1152 px vira botão “Menu”. Encolhe e fica mais opaco ao rolar (Chrome
+          e Edge; nos demais fica estático). Sem JavaScript, tudo continua funcionando por
+          &lt;details&gt;.
         </li>
         <li>
           <strong>WhatsApp</strong>: canto inferior direito, em todas as páginas.
@@ -417,26 +446,30 @@ const rascunho = {
 
   <!-- 8. Lumi -->
   <section class="sg-lumi" data-brand="lumi" aria-labelledby="sg-lumi">
-    <div class="container sg-secao">
-      <span class="eyebrow">8 · Identidade Lumi (/para-empresas/)</span>
-      <img
-        class="sg-lumi__logo"
-        src={url('/brand/lumi-branco.svg')}
-        width="2777"
-        height="979"
-        alt="Lumi – Soluções Integradas"
-        loading="lazy"
-      />
-      <h2 id="sg-lumi" class="sg-lumi__titulo">
-        Lumi – Soluções Integradas
-      </h2>
-      <Lead>{rascunho.lumi}</Lead>
-      <div class="sg-acoes">
-        <GlassButton href={url('/contato/')}>Solicitar proposta</GlassButton>
-        <GlassButton href={url('/para-empresas/')} variante="secundario">
-          Treinamentos
-        </GlassButton>
+    <div class="tema-navy sg-lumi__topo">
+      <div class="container">
+        <span class="eyebrow">8 · Identidade Lumi (/para-empresas/)</span>
+        <img
+          class="sg-lumi__logo"
+          src={url('/brand/lumi-branco.svg')}
+          width="2777"
+          height="979"
+          alt="Lumi – Soluções Integradas"
+          loading="lazy"
+        />
+        <h2 id="sg-lumi" class="sg-lumi__titulo">
+          Lumi – Soluções Integradas
+        </h2>
+        <Lead>{rascunho.lumi}</Lead>
+        <div class="sg-acoes">
+          <GlassButton href={url('/contato/')}>Solicitar proposta</GlassButton>
+          <GlassButton href={url('/para-empresas/')} variante="secundario">
+            Treinamentos
+          </GlassButton>
+        </div>
       </div>
+    </div>
+    <div class="container sg-secao sg-lumi__corpo">
       <div class="grade sg-lumi__cartoes">
         <Card
           titulo="Equipes de alta performance (All Stars)"
@@ -454,6 +487,12 @@ const rascunho = {
           eyebrow="Treinamento"
         />
       </div>
+      <div class="sg-acoes">
+        <GlassButton href={url('/contato/')}>Solicitar proposta</GlassButton>
+        <GlassButton href={url('/para-empresas/')} variante="secundario">
+          Treinamentos
+        </GlassButton>
+      </div>
       <ul class="sg-cores">
         {coresLumi.map((c) => (
           <li class="sg-cor superficie">
@@ -466,9 +505,9 @@ const rascunho = {
       </ul>
       <CrossFrontNotice para="pessoal" />
       <p class="small muted">
-        Audiowide só no título curto; Montserrat no resto. O padrão de cérebros (marca Hugo Martins)
-        não aparece; as manchas de luz ficam azuis. Na página real, data-brand="lumi" vai no
-        &lt;html&gt; e troca também o fundo fixo.
+        Mesma estrutura do resto do site: topo navy e conteúdo claro. Audiowide só no título curto;
+        Montserrat no resto. Sobre o papel, texto e links usam o azul escuro #024B98, porque o
+        #0079B6 não atinge 4,5:1. Na página real, data-brand="lumi" vai no &lt;html&gt;.
       </p>
     </div>
   </section>
@@ -501,9 +540,25 @@ const rascunho = {
     border-top: 1px solid var(--line);
   }
 
+  .sg-nota {
+    margin-top: var(--space-6);
+  }
+
   .sg-hero {
-    border-top: 0;
-    padding-top: var(--space-5);
+    display: grid;
+    gap: var(--space-7);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+  }
+
+  .sg-hero .sg-acoes {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 56rem) {
+    .sg-hero {
+      grid-template-columns: 1fr;
+    }
   }
 
   .sg-acoes {
@@ -516,9 +571,7 @@ const rascunho = {
 
   .sg-destaques {
     display: grid;
-    gap: var(--space-5);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-    margin-bottom: var(--space-4);
+    gap: var(--space-4);
   }
 
   .sg-cores {
@@ -561,6 +614,12 @@ const rascunho = {
     font-weight: 600;
   }
 
+  .sg-palcos {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+
   .sg-palco {
     display: flex;
     flex-wrap: wrap;
@@ -568,20 +627,23 @@ const rascunho = {
     align-items: center;
     padding: var(--space-6);
     border-radius: var(--radius-card);
+    border: 1px solid var(--line);
+  }
+
+  .sg-palco.tema-navy {
+    background: var(--bg);
+  }
+
+  .sg-palco--claro {
+    background: var(--surface-2);
   }
 
   .sg-tipo-display {
-    font-size: var(--step-4);
-    color: var(--hm-white);
-    margin: 0;
-  }
-
-  .sg-tipo-h1 {
     font-family: var(--font-h1);
-    font-size: var(--step-4);
     font-weight: 500;
     line-height: var(--leading-tight);
-    color: var(--hm-white);
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-strong);
   }
 
   .sg-duas {
@@ -596,12 +658,17 @@ const rascunho = {
   }
 
   .sg-lumi {
-    position: relative;
-    isolation: isolate;
-    background:
-      radial-gradient(ellipse 60% 50% at 15% 10%, var(--glow-1), transparent 70%),
-      radial-gradient(ellipse 50% 45% at 90% 60%, var(--glow-2), transparent 70%), #000523;
     font-family: var(--font-body);
+    font-size: var(--step-0);
+  }
+
+  .sg-lumi__topo {
+    padding-block: var(--space-8);
+    background: var(--bg);
+  }
+
+  .sg-lumi__corpo {
+    border-top: 0;
   }
 
   .sg-lumi__logo {
@@ -611,7 +678,7 @@ const rascunho = {
 
   .sg-lumi__titulo {
     font-family: var(--font-h1);
-    font-size: var(--step-4);
+    font-size: var(--step-3);
     font-weight: 400;
   }
 

@@ -3,8 +3,11 @@
  * possível (spec 9.3: "medido contra o pior fundo possível"). Usado pelo /styleguide e por
  * scripts/check-contraste.mjs.
  *
- * O pior fundo é o pico da mancha de luz mais clara, com o padrão de cérebros no pixel mais claro
- * (#6bfbf8), sem considerar o desfoque (que só escurece o pico): é uma estimativa conservadora.
+ * Direção "Misto" (D23). Pior fundo de cada vidro:
+ *   - vidro navy (cabeçalho, WhatsApp, CTA fixa): passa sobre o conteúdo claro → branco puro;
+ *   - botão primário no claro: branco; no navy: o próprio navy;
+ *   - botão secundário no claro: a faixa alternada (#efece5), a mais escura do conteúdo.
+ * De cada gradiente vale a ponta menos opaca. O desfoque não entra (só aproxima as cores).
  * Os valores abaixo espelham src/styles/tokens.css e brand-lumi.css; mudou lá, mude aqui.
  */
 
@@ -44,107 +47,92 @@ export function razao(a: string, b: string): number {
   return Math.round(((l1 + 0.05) / (l2 + 0.05)) * 100) / 100;
 }
 
-const PATTERN_CLARO = '#6bfbf8';
-
-/** Pior fundo atrás do vidro em cada marca. */
 export const piorFundo = {
-  hugo: compor('#000523', [
-    { cor: '#01ffff', alfa: 0.2 }, // --glow-1
-    { cor: PATTERN_CLARO, alfa: 0.06 }, // --pattern-opacity
-  ]),
-  lumi: compor('#000523', [{ cor: '#0079b6', alfa: 0.34 }]), // --glow-1 Lumi; sem padrão
+  claro: '#ffffff',
+  faixa: '#efece5',
+  navy: '#000523',
 };
 
-/** Cor resultante de cada vidro sobre o pior fundo (o lado mais claro de cada gradiente). */
+/** Cor resultante de cada vidro sobre o seu pior fundo (a ponta menos opaca do gradiente). */
 export const vidros = {
-  neutro: compor(piorFundo.hugo, [{ cor: '#ffffff', alfa: 0.14 }]),
-  neutroHover: compor(piorFundo.hugo, [{ cor: '#ffffff', alfa: 0.2 }]),
-  primario: compor(piorFundo.hugo, [
-    { cor: '#000523', alfa: 0.45 },
-    { cor: '#01ffff', alfa: 0.28 },
-  ]),
-  primarioHover: compor(piorFundo.hugo, [
-    { cor: '#000523', alfa: 0.45 },
-    { cor: '#01ffff', alfa: 0.34 },
-  ]),
-  semBackdrop: compor(piorFundo.hugo, [{ cor: '#0b1445', alfa: 0.92 }]),
-  lumiNeutro: compor(piorFundo.lumi, [{ cor: '#ffffff', alfa: 0.14 }]),
-  lumiPrimario: compor(piorFundo.lumi, [
-    { cor: '#000523', alfa: 0.4 },
-    { cor: '#0079b6', alfa: 0.55 },
-  ]),
-  lumiPrimarioHover: compor(piorFundo.lumi, [
-    { cor: '#000523', alfa: 0.4 },
-    { cor: '#0079b6', alfa: 0.65 },
-  ]),
+  navy: compor(piorFundo.claro, [{ cor: '#000523', alfa: 0.86 }]),
+  navyHover: compor(piorFundo.claro, [{ cor: '#000523', alfa: 0.88 }]),
+  primarioClaro: compor(piorFundo.claro, [{ cor: '#000523', alfa: 0.88 }]),
+  primarioNavy: compor(piorFundo.navy, [{ cor: '#f3f0e8', alfa: 0.88 }]),
+  secundarioClaro: compor(piorFundo.faixa, [{ cor: '#ffffff', alfa: 0.5 }]),
+  lumiPrimarioClaro: compor(piorFundo.claro, [{ cor: '#023c80', alfa: 0.9 }]),
+  lumiPrimarioNavy: compor(piorFundo.navy, [{ cor: '#024b98', alfa: 0.9 }]),
 };
 
 export type Par = { nome: string; texto: string; fundo: string; minimo: number };
 
 /** Pares verificados. Mínimo 4,5 para texto; 3 para elementos gráficos e foco (WCAG 1.4.11). */
 export const pares: Par[] = [
-  { nome: 'Texto · fundo navy', texto: '#eaf4fb', fundo: '#000523', minimo: 4.5 },
-  { nome: 'Texto · superfície 1', texto: '#eaf4fb', fundo: '#060c33', minimo: 4.5 },
-  { nome: 'Texto · superfície 2', texto: '#eaf4fb', fundo: '#0b1445', minimo: 4.5 },
-  { nome: 'Texto · superfície 3 (hover)', texto: '#eaf4fb', fundo: '#121d57', minimo: 4.5 },
-  { nome: 'Texto secundário · superfície 1', texto: '#9fb0d0', fundo: '#060c33', minimo: 4.5 },
-  { nome: 'Texto secundário · superfície 2', texto: '#9fb0d0', fundo: '#0b1445', minimo: 4.5 },
-  { nome: 'Link teal · navy', texto: '#02b9ca', fundo: '#000523', minimo: 4.5 },
-  { nome: 'Link teal · superfície 1', texto: '#02b9ca', fundo: '#060c33', minimo: 4.5 },
-  { nome: 'Link teal · superfície 2', texto: '#02b9ca', fundo: '#0b1445', minimo: 4.5 },
-  { nome: 'Link hover ciano · superfície 2', texto: '#01ffff', fundo: '#0b1445', minimo: 4.5 },
-  { nome: 'Foco ciano · navy (gráfico)', texto: '#01ffff', fundo: '#000523', minimo: 3 },
+  // Conteúdo claro
+  { nome: 'Texto · papel', texto: '#2b3044', fundo: '#f6f4ef', minimo: 4.5 },
+  { nome: 'Texto · cartão branco', texto: '#2b3044', fundo: '#ffffff', minimo: 4.5 },
+  { nome: 'Texto · faixa alternada', texto: '#2b3044', fundo: '#efece5', minimo: 4.5 },
+  { nome: 'Texto secundário · papel', texto: '#5b6178', fundo: '#f6f4ef', minimo: 4.5 },
+  { nome: 'Texto secundário · faixa alternada', texto: '#5b6178', fundo: '#efece5', minimo: 4.5 },
+  { nome: 'Títulos e links navy · papel', texto: '#000523', fundo: '#f6f4ef', minimo: 4.5 },
+  { nome: 'Link hover teal escuro · papel', texto: '#00707d', fundo: '#f6f4ef', minimo: 4.5 },
+  { nome: 'Link hover teal escuro · faixa', texto: '#00707d', fundo: '#efece5', minimo: 4.5 },
+  { nome: 'Foco navy · papel (gráfico)', texto: '#000523', fundo: '#f6f4ef', minimo: 3 },
+  // Topo navy
+  { nome: 'Navy · texto · fundo', texto: '#c9ccd6', fundo: '#000523', minimo: 4.5 },
+  { nome: 'Navy · texto · superfície 2', texto: '#c9ccd6', fundo: '#0e1438', minimo: 4.5 },
+  { nome: 'Navy · secundário · fundo', texto: '#9aa0b3', fundo: '#000523', minimo: 4.5 },
+  { nome: 'Navy · secundário · superfície 2', texto: '#9aa0b3', fundo: '#0e1438', minimo: 4.5 },
+  { nome: 'Navy · títulos creme · fundo', texto: '#f3f0e8', fundo: '#000523', minimo: 4.5 },
+  { nome: 'Navy · link teal · superfície 2', texto: '#02b9ca', fundo: '#0e1438', minimo: 4.5 },
   {
-    nome: 'Branco · vidro neutro (pior fundo)',
-    texto: '#ffffff',
-    fundo: vidros.neutro,
+    nome: 'Navy · link hover ciano · superfície 2',
+    texto: '#01ffff',
+    fundo: '#0e1438',
     minimo: 4.5,
   },
-  { nome: 'Branco · vidro neutro hover', texto: '#ffffff', fundo: vidros.neutroHover, minimo: 4.5 },
+  { nome: 'Navy · foco ciano (gráfico)', texto: '#01ffff', fundo: '#000523', minimo: 3 },
+  // Vidro
   {
-    nome: 'Branco · botão primário (pior fundo)',
-    texto: '#ffffff',
-    fundo: vidros.primario,
+    nome: 'Creme · cabeçalho navy sobre branco',
+    texto: '#f3f0e8',
+    fundo: vidros.navy,
     minimo: 4.5,
   },
+  { nome: 'Creme · cabeçalho hover', texto: '#f3f0e8', fundo: vidros.navyHover, minimo: 4.5 },
   {
-    nome: 'Branco · botão primário hover',
+    nome: 'Branco · primário no claro',
     texto: '#ffffff',
-    fundo: vidros.primarioHover,
-    minimo: 4.5,
-  },
-  {
-    nome: 'Branco · vidro sem backdrop-filter',
-    texto: '#ffffff',
-    fundo: vidros.semBackdrop,
-    minimo: 4.5,
-  },
-  { nome: 'Lumi · texto · superfície 1', texto: '#eaf4fb', fundo: '#06102f', minimo: 4.5 },
-  {
-    nome: 'Lumi · texto secundário · superfície 2',
-    texto: '#9fb0d0',
-    fundo: '#0a1a46',
-    minimo: 4.5,
-  },
-  { nome: 'Lumi · link · superfície 1', texto: '#5cb8e6', fundo: '#06102f', minimo: 4.5 },
-  { nome: 'Lumi · link · superfície 2', texto: '#5cb8e6', fundo: '#0a1a46', minimo: 4.5 },
-  {
-    nome: 'Lumi · azul da marca #0079B6 · navy (gráfico)',
-    texto: '#0079b6',
-    fundo: '#000523',
-    minimo: 3,
-  },
-  { nome: 'Lumi · branco · vidro neutro', texto: '#ffffff', fundo: vidros.lumiNeutro, minimo: 4.5 },
-  {
-    nome: 'Lumi · branco · botão primário',
-    texto: '#ffffff',
-    fundo: vidros.lumiPrimario,
+    fundo: vidros.primarioClaro,
     minimo: 4.5,
   },
   {
-    nome: 'Lumi · branco · botão primário hover',
+    nome: 'Navy · primário creme no navy',
+    texto: '#000523',
+    fundo: vidros.primarioNavy,
+    minimo: 4.5,
+  },
+  {
+    nome: 'Navy · secundário no claro',
+    texto: '#000523',
+    fundo: vidros.secundarioClaro,
+    minimo: 4.5,
+  },
+  // Lumi
+  { nome: 'Lumi · link #024B98 · papel', texto: '#024b98', fundo: '#f6f4ef', minimo: 4.5 },
+  { nome: 'Lumi · link #024B98 · faixa', texto: '#024b98', fundo: '#efece5', minimo: 4.5 },
+  { nome: 'Lumi · #0079B6 · papel (gráfico)', texto: '#0079b6', fundo: '#f6f4ef', minimo: 3 },
+  { nome: 'Lumi · link no navy', texto: '#5cb8e6', fundo: '#0e1438', minimo: 4.5 },
+  {
+    nome: 'Lumi · branco · primário no claro',
     texto: '#ffffff',
-    fundo: vidros.lumiPrimarioHover,
+    fundo: vidros.lumiPrimarioClaro,
+    minimo: 4.5,
+  },
+  {
+    nome: 'Lumi · branco · primário no navy',
+    texto: '#ffffff',
+    fundo: vidros.lumiPrimarioNavy,
     minimo: 4.5,
   },
 ];

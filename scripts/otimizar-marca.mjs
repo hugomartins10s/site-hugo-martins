@@ -41,11 +41,6 @@ const tarefas = [
   webp(`${HM}/LOGOPRINCIPAL_SEMFUNDO.png`, 'public/brand/hugo-martins-principal.webp', 640),
   // Submarca (o cérebro): menu móvel e espaços pequenos.
   webp(`${HM}/SUBMARCA_PRINCIPAL_SEMFUNDO.png`, 'public/brand/hugo-martins-submarca.webp', 160),
-  // Padrão de fundo (spec 9.1), usado em baixa opacidade.
-  sharp(`${HM}/PATTERN.jpg`)
-    .resize({ width: 540 })
-    .webp({ quality: 60 })
-    .toFile('public/img/pattern.webp'),
 ];
 
 // Favicons a partir da submarca, centralizada sobre o navy da marca.

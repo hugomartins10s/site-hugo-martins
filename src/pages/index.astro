@@ -3,6 +3,7 @@
 // A Home completa entra na fase 3.
 import Base from '../layouts/Base.astro';
 import Lead from '../components/conteudo/Lead.astro';
+import Topo from '../components/layout/Topo.astro';
 
 const titulo = 'Hugo Martins · Desenvolvimento de Potencial Humano | 10S';
 const resumo =
@@ -10,8 +11,8 @@ const resumo =
 ---
 
 <Base title={titulo} description={resumo}>
-  <div class="container">
+  <Topo>
     <h1 class="display">Hugo Martins – Desenvolvimento de Potencial Humano</h1>
     <Lead>{resumo}</Lead>
-  </div>
+  </Topo>
 </Base>

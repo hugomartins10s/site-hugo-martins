@@ -1,9 +1,14 @@
 /*
  * Liquid Glass (spec 9.3). Só na camada flutuante e nos botões; conteúdo fica em superfície sólida.
  *
+ * Direção "Misto" (D23): o vidro é discreto. A camada flutuante é navy translúcido (contexto
+ * .tema-navy) e passa por cima tanto do topo navy quanto do conteúdo claro. Os botões seguem o
+ * contexto onde estão: no claro, primário navy e secundário branco translúcido; no navy, primário
+ * creme e secundário navy translúcido. As cores vêm dos papéis --glass-* e --tint-* (tokens.css).
+ *
  * Fallbacks, nesta ordem de força:
- *   1. sem suporte a backdrop-filter  → vidro sólido translúcido (--glass-solid)
- *   2. prefers-reduced-transparency   → superfície sólida, borda reforçada
+ *   1. sem suporte a backdrop-filter  → vidro sólido (--glass-solid)
+ *   2. prefers-reduced-transparency   → superfície opaca, borda reforçada
  *   3. prefers-contrast: more         → idem
  *   4. forced-colors                  → cores do sistema
  *   5. prefers-reduced-motion         → sem transições (base.css)
@@ -19,7 +24,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   box-shadow: var(--glass-shadow);
-  color: var(--hm-white);
+  color: var(--glass-text);
 }
 
 .glass--painel {
@@ -27,7 +32,10 @@
 }
 
 .glass--tint {
-  background: var(--glass-tint);
+  background: var(--tint-bg);
+  border-color: var(--tint-border);
+  box-shadow: var(--tint-shadow);
+  color: var(--tint-text);
 }
 
 /* Refração (aprimoramento só em Chromium; a classe .lente-ok é posta por JS em Base.astro). */
@@ -44,15 +52,13 @@
   justify-content: center;
   gap: var(--space-2);
   min-height: var(--tap);
-  padding: 0.7rem 1.5rem;
-  font-family: var(--font-display);
+  padding: 0.7rem 1.4rem;
+  font-family: var(--font-ui);
   font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   text-decoration: none;
   line-height: 1.1;
-  color: var(--hm-white);
   cursor: pointer;
   transition:
     background var(--dur-2) var(--ease),
@@ -64,26 +70,26 @@
 
 button.btn {
   font: inherit;
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .btn:hover {
-  color: var(--hm-white);
+  color: var(--glass-text);
   background: var(--glass-bg-hover);
   box-shadow: var(--glass-shadow-hover);
 }
 
 .btn.glass--tint:hover {
-  background: var(--glass-tint-hover);
+  color: var(--tint-text);
+  background: var(--tint-bg-hover);
+  box-shadow: var(--tint-shadow);
 }
 
 .btn:active {
   transform: scale(0.97);
-  filter: brightness(0.88);
+  filter: brightness(0.92);
 }
 
 .btn:focus-visible {
@@ -94,7 +100,7 @@ button.btn {
 
 .btn--grande {
   min-height: 52px;
-  padding: 0.9rem 1.9rem;
+  padding: 0.9rem 1.8rem;
   font-size: 1.0625rem;
 }
 
@@ -111,7 +117,7 @@ button.btn {
     background: var(--glass-solid);
   }
   .glass--tint {
-    background: var(--glass-tint-camada), var(--glass-solid);
+    background: var(--tint-opaco);
   }
 }
 
@@ -121,36 +127,37 @@ button.btn {
   background: var(--glass-solid);
 }
 :root[data-simular~='sem-backdrop'] .glass--tint {
-  background: var(--glass-tint-camada), var(--glass-solid);
+  background: var(--tint-opaco);
 }
 
 /* ---------- Fallbacks 2 e 3: transparência reduzida, contraste alto ---------- */
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .glass,
-  .glass--tint,
-  .btn:hover,
-  .btn.glass--tint:hover {
-    background: var(--surface-2);
+  .btn:hover {
+    background: var(--glass-opaco);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: var(--glass-opaco-borda);
   }
-  .glass--tint {
-    border-color: var(--brand-1);
+  .glass--tint,
+  .btn.glass--tint:hover {
+    background: var(--tint-opaco);
+    border-color: var(--glass-opaco-borda);
   }
 }
 
-:root[data-simular~='sem-transparencia'] :is(.glass, .glass--tint, .btn:hover),
-:root[data-simular~='contraste'] :is(.glass, .glass--tint, .btn:hover) {
-  background: var(--surface-2);
+:root[data-simular~='sem-transparencia'] :is(.glass, .btn:hover),
+:root[data-simular~='contraste'] :is(.glass, .btn:hover) {
+  background: var(--glass-opaco);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: var(--glass-opaco-borda);
 }
-:root[data-simular~='sem-transparencia'] .glass--tint,
-:root[data-simular~='contraste'] .glass--tint {
-  border-color: var(--brand-1);
+:root[data-simular~='sem-transparencia'] :is(.glass--tint, .btn.glass--tint:hover),
+:root[data-simular~='contraste'] :is(.glass--tint, .btn.glass--tint:hover) {
+  background: var(--tint-opaco);
+  border-color: var(--glass-opaco-borda);
 }
 
 /* ---------- Fallback 4: cores forçadas (Windows alto contraste) ---------- */

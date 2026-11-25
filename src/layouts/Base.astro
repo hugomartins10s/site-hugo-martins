@@ -1,6 +1,8 @@
 ---
 /**
  * Layout base. Head completo (canonical, OG, JSON-LD) e rodapé entram na fase 2.
+ * - Fundo claro; cada página abre com um <Topo> navy (D23). Sem Topo, o conteúdo ganha o espaço
+ *   do cabeçalho flutuante.
  * - marca="lumi" aplica a identidade Lumi na página inteira (data-brand no <html>).
  * - noindex: sempre na homologação; em produção, só onde a página pedir (404, styleguide).
  */
@@ -10,7 +12,6 @@ import '../styles/brand-lumi.css';
 import '../styles/base.css';
 import '../styles/glass.css';
 import '../styles/prose.css';
-import Background from '../components/layout/Background.astro';
 import GlassNav from '../components/glass/GlassNav.astro';
 import WhatsAppFab from '../components/glass/WhatsAppFab.astro';
 import { url } from '../lib/links';
@@ -38,7 +39,7 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
     <!-- Uma fonte crítica pré-carregada: a do título (spec 6.1) -->
     <link
       rel="preload"
-      href={url(marca === 'lumi' ? '/fonts/audiowide.woff2' : '/fonts/jost-var.woff2')}
+      href={url(marca === 'lumi' ? '/fonts/audiowide.woff2' : '/fonts/source-serif-4-var.woff2')}
       as="font"
       type="font/woff2"
       crossorigin
@@ -66,7 +67,6 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
     <a class="pular-conteudo" href="#conteudo">
       Pular para o conteúdo
     </a>
-    <Background />
 
     <!-- Filtro de refração do vidro: deslocamento suave a partir de ruído de baixa frequência -->
     <svg class="sr-only" aria-hidden="true" focusable="false" width="0" height="0">
@@ -112,8 +112,11 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
 
 <style>
   main {
-    padding-top: 7.5rem;
     padding-bottom: var(--space-8);
+  }
+
+  main > :global(:first-child:not(.topo)) {
+    margin-top: var(--topo-livre);
   }
 
   main:focus {

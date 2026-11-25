@@ -17,7 +17,7 @@ const atual = Astro.url.pathname;
 const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href));
 ---
 
-<header class="nav" data-nav>
+<header class="nav tema-navy" data-nav>
   <div class="nav__vidro glass glass--lente" aria-hidden="true"></div>
 
   <a class="nav__marca" href={url('/')}>
@@ -154,7 +154,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     width: min(100% - 2 * var(--space-3), var(--container));
     padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
     transform: translateX(-50%);
-    color: var(--hm-white);
+    color: var(--text-strong);
   }
 
   .nav__vidro {
@@ -207,14 +207,14 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     min-height: var(--tap);
     padding-inline: var(--space-3);
     border-radius: var(--radius-pill);
-    color: var(--hm-white);
+    color: var(--text-strong);
     font-weight: 500;
     text-decoration: none;
     white-space: nowrap;
   }
 
   .nav__link:hover {
-    color: var(--hm-white);
+    color: var(--text-strong);
     background: rgba(255, 255, 255, 0.08);
   }
 
@@ -237,7 +237,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     margin-left: calc(-1 * var(--space-2));
     border-radius: var(--radius-pill);
     list-style: none;
-    color: var(--hm-white);
+    color: var(--text-strong);
   }
 
   .nav__abrir::-webkit-details-marker {
@@ -256,6 +256,12 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     background: rgba(255, 255, 255, 0.08);
   }
 
+  /* Painéis com muitos links passam sobre o conteúdo claro: vidro mais opaco, para leitura. */
+  .nav__painel,
+  .nav__folha {
+    background: linear-gradient(135deg, rgba(14, 20, 56, 0.96), rgba(0, 5, 35, 0.94));
+  }
+
   .nav__painel {
     position: absolute;
     top: calc(100% + var(--space-3));
@@ -272,7 +278,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     min-height: var(--tap);
     padding: var(--space-2) var(--space-4);
     border-radius: 14px;
-    color: var(--hm-white);
+    color: var(--text-strong);
     text-decoration: none;
   }
 
@@ -336,7 +342,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
       display: flex;
       align-items: center;
       min-height: var(--tap);
-      color: var(--hm-white);
+      color: var(--text-strong);
       text-decoration: none;
     }
 

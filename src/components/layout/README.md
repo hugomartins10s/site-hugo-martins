@@ -1,3 +1,3 @@
 # layout
 
-Estrutura de página: Header, Footer, Breadcrumb, Background (fundo navy com manchas de luz e PATTERN).
+Estrutura de página: Topo (faixa navy do hero), Footer, Breadcrumb.
