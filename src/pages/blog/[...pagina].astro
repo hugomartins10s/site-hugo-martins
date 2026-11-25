@@ -1,0 +1,154 @@
+---
+/**
+ * Blog (spec 4.5): lista paginada, do mais novo para o mais antigo, com os temas que têm posts.
+ * /blog/ é a página 1; as seguintes ficam em /blog/pagina/2/ (src/lib/posts.ts).
+ * Sem posts, a /blog/ existe (o menu aponta para ela) e diz que ainda não há textos.
+ */
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import PostLista from '../../components/pagina/PostLista.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { url } from '../../lib/links';
+import { pagina as paginaAvulsa, tituloSeo } from '../../lib/paginas';
+import {
+  caminhoDaPagina,
+  caminhoDoTema,
+  paginas,
+  postsOrdenados,
+  temasComPosts,
+  type Post,
+} from '../../lib/posts';
+import { trilha } from '../../lib/trilha';
+
+export async function getStaticPaths() {
+  const lotes = paginas(await postsOrdenados());
+  return lotes.map((posts, i) => ({
+    params: { pagina: i === 0 ? undefined : `pagina/${i + 1}` },
+    props: { posts, numero: i + 1, total: lotes.length },
+  }));
+}
+
+interface Props {
+  posts: Post[];
+  numero: number;
+  total: number;
+}
+const { posts, numero, total } = Astro.props;
+const p = await paginaAvulsa('blog');
+const temas = await getCollection('temas');
+const comPosts = (await temasComPosts()).filter((t) => t.posts.length > 0);
+
+const primeira = numero === 1;
+const caminho = primeira
+  ? trilha(['Blog', '/blog/'])
+  : trilha(['Blog', '/blog/'], [`Página ${numero}`, caminhoDaPagina(numero)]);
+const titulo = primeira ? tituloSeo(p) : `Blog · página ${numero} de ${total} · Hugo Martins`;
+---
+
+<Base title={titulo} description={p.data.resumo} trilha={caminho} tipoPagina="CollectionPage">
+  <Topo trilha={caminho}>
+    <h1 class="display">{primeira ? p.data.titulo : `Blog · página ${numero}`}</h1>
+    {primeira && <Lead>{p.data.resumo}</Lead>}
+  </Topo>
+
+  <div class="container secao blog">
+    {comPosts.length > 0 && (
+      <nav class="blog__temas" aria-label="Temas do blog">
+        <h2 class="blog__rotulo">Temas</h2>
+        <ul>
+          {comPosts.map(({ tema, posts }) => (
+            <li>
+              <a href={url(caminhoDoTema(tema.id))}>
+                {tema.data.nome} <span class="muted">({posts.length})</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+    {posts.length > 0 ? (
+      <section aria-labelledby="textos">
+        <h2 id="textos" class="sr-only">
+          Textos
+        </h2>
+        <PostLista posts={posts} temas={temas} />
+      </section>
+    ) : (
+      <p class="blog__vazio">
+        Ainda não há textos publicados. Enquanto isso, conheça
+        <a href={url('/metodo/')}>os conceitos do método de Hugo Martins</a>.
+      </p>
+    )}
+
+    {total > 1 && (
+      <nav class="blog__paginas" aria-label="Páginas do blog">
+        {numero > 1 && <a href={url(caminhoDaPagina(numero - 1))}>Textos mais novos</a>}
+        <span>
+          Página {numero} de {total}
+        </span>
+        {numero < total && <a href={url(caminhoDaPagina(numero + 1))}>Textos mais antigos</a>}
+      </nav>
+    )}
+  </div>
+
+  <CtaFinal titulo="Falar com o Hugo" />
+</Base>
+
+<style>
+  .blog {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .blog > :global(*) {
+    margin: 0;
+  }
+
+  .blog__rotulo {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-rotulo);
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .blog__temas ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .blog__temas a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+
+  .blog__vazio {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+  }
+
+  .blog__paginas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .blog__paginas a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+  }
+</style>

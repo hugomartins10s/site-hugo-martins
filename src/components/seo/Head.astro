@@ -6,6 +6,7 @@
  */
 import { HOMOLOGACAO } from 'astro:env/server';
 import { empresa } from '../../lib/empresa';
+import { urlAbsoluta } from '../../lib/links';
 import {
   arquivoOg,
   OG_ALTURA,
@@ -46,6 +47,12 @@ const bloquear = HOMOLOGACAO || noindex;
 <meta name="description" content={description} />
 {bloquear && <meta name="robots" content="noindex, nofollow" />}
 {canonical && <link rel="canonical" href={urlPagina} />}
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`Blog · ${empresa.nome}`}
+  href={urlAbsoluta('/rss.xml', site)}
+/>
 
 <meta property="og:type" content={tipo} />
 <meta property="og:locale" content="pt_BR" />

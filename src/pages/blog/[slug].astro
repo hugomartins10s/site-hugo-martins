@@ -1,0 +1,157 @@
+---
+/**
+ * Post do blog (spec 4.5 e 5.8): título, parágrafo-resposta, datas, corpo, assinatura
+ * "Abraço de Alma", caixa de autor, os conceitos e o produto do post, relacionados do mesmo tema
+ * e CTA para a frente certa (`produtoCta`).
+ * Links obrigatórios (spec 4.3): pelo menos 1 conceito (o schema exige) e 1 produto.
+ * JSON-LD: BlogPosting, com `about` apontando para os termos do Método (spec 8).
+ */
+import { getCollection, getEntries, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Topo from '../../components/layout/Topo.astro';
+import Lead from '../../components/conteudo/Lead.astro';
+import AuthorBox from '../../components/conteudo/AuthorBox.astro';
+import Atualizado from '../../components/conteudo/Atualizado.astro';
+import ConceitoCards from '../../components/pagina/ConceitoCards.astro';
+import OndeTrabalhado from '../../components/pagina/OndeTrabalhado.astro';
+import PostLista from '../../components/pagina/PostLista.astro';
+import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import { caminhoDoConceito } from '../../lib/conceitos';
+import { dataCurta, dataIso } from '../../lib/datas';
+import { empresa } from '../../lib/empresa';
+import { url } from '../../lib/links';
+import { caminhoDoPost, caminhoDoTema, postsOrdenados, type Post } from '../../lib/posts';
+import { noPost } from '../../lib/schema/grafo';
+import { arquivoOg, semBase, urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+import { trilha } from '../../lib/trilha';
+
+export async function getStaticPaths() {
+  return (await postsOrdenados()).map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: Post;
+}
+const { post } = Astro.props;
+const d = post.data;
+const { Content } = await render(post);
+const tema = (await getEntry(d.tema))!;
+const conceitos = await getEntries(d.conceitos);
+const produto = (await getEntry(d.produtoCta))!;
+const relacionados = (
+  await postsOrdenados((p) => p.data.tema.id === d.tema.id && p.id !== post.id)
+).slice(0, 3);
+const temas = await getCollection('temas');
+
+const caminho = trilha(['Blog', '/blog/'], [d.titulo, caminhoDoPost(post)]);
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+const termos = conceitos.map(
+  (c) => `${urlAbsolutaDoCaminho(url(caminhoDoConceito(c)), Astro.site)}#termo`,
+);
+const imagem = new URL(arquivoOg(semBase(Astro.url.pathname)), inicio).href;
+const schema = [noPost(inicio, urlPagina, { ...d, imagem, tema: tema.data.nome, termos })];
+const pessoal = produto.data.frente === 'pessoal';
+const cta = pessoal
+  ? { titulo: 'Como começar', rotulo: 'Falar com o Hugo' }
+  : { titulo: 'Solicitar proposta para a sua empresa', rotulo: 'Solicitar proposta' };
+---
+
+<Base
+  title={d.tituloSeo ?? `${d.titulo} · Hugo Martins`}
+  description={d.resumo}
+  trilha={caminho}
+  schema={schema}
+  principal={`${urlPagina}#post`}
+  tipo="article"
+  publicado={d.publicado.toISOString()}
+  atualizado={d.atualizado.toISOString()}
+>
+  <Topo trilha={caminho}>
+    <a class="eyebrow post__tema" href={url(caminhoDoTema(tema.id))}>
+      {tema.data.nome}
+    </a>
+    <h1 class:list={['display', { 'titulo-longo': d.titulo.length > 32 }]}>{d.titulo}</h1>
+    <Lead>{d.resumo}</Lead>
+    <p class="post__datas">
+      Por <a href={url('/hugo-martins/')}>{empresa.pessoa.nome}</a> · Publicado em
+      <time datetime={dataIso(d.publicado)}>{dataCurta(d.publicado)}</time>
+    </p>
+  </Topo>
+
+  <div class="container secao post">
+    <div class="prose post__corpo">
+      <Content />
+      <p class="post__assinatura">
+        {empresa.assinatura},<br />
+        {empresa.pessoa.nome}
+      </p>
+    </div>
+    <AuthorBox />
+    <Atualizado data={d.atualizado} />
+  </div>
+
+  <section class="faixa secao" aria-labelledby="conceitos">
+    <div class="container post__ligacoes">
+      <h2 id="conceitos">Conceitos deste texto</h2>
+      <ConceitoCards conceitos={conceitos} eyebrow={() => 'Método'} />
+      <OndeTrabalhado produtos={[produto]} id="onde" />
+    </div>
+  </section>
+
+  {relacionados.length > 0 && (
+    <section class="container secao" aria-labelledby="relacionados">
+      <h2 id="relacionados">Mais sobre {tema.data.nome.toLocaleLowerCase('pt-BR')}</h2>
+      <PostLista posts={relacionados} temas={temas} semTema />
+    </section>
+  )}
+
+  <CtaFinal titulo={cta.titulo} rotulo={cta.rotulo} />
+</Base>
+
+<style>
+  .post__tema {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    text-decoration: none;
+  }
+
+  .post__tema:hover {
+    text-decoration: underline;
+  }
+
+  .post__datas {
+    margin: var(--space-5) 0 0;
+    color: var(--text-muted);
+  }
+
+  .post {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .post > :global(*) {
+    margin: 0;
+  }
+
+  .post__corpo {
+    max-width: var(--measure);
+  }
+
+  .post__assinatura {
+    margin-top: var(--space-7);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--text-strong);
+  }
+
+  .post__ligacoes {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .post__ligacoes > :global(*) {
+    margin: 0;
+  }
+</style>

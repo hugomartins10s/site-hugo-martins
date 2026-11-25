@@ -1,0 +1,31 @@
+---
+// Lista de posts (blog, arquivo por tema e "relacionados"): título, tema, data e o `resumo`.
+import Card from '../conteudo/Card.astro';
+import { url } from '../../lib/links';
+import { dataCurta } from '../../lib/datas';
+import { caminhoDoPost, type Post, type Tema } from '../../lib/posts';
+
+interface Props {
+  posts: Post[];
+  temas: Tema[];
+  /** Esconde o tema no rótulo (no arquivo de um tema, todos são do mesmo). */
+  semTema?: boolean;
+  nivel?: 2 | 3 | 4;
+}
+const { posts, temas, semTema = false, nivel = 3 } = Astro.props;
+const nome = (id: string) => temas.find((t) => t.id === id)?.data.nome;
+---
+
+<div class="grade">
+  {posts.map((post) => (
+    <Card
+      titulo={post.data.titulo}
+      href={url(caminhoDoPost(post))}
+      eyebrow={semTema ? undefined : nome(post.data.tema.id)}
+      meta={`Publicado em ${dataCurta(post.data.publicado)}`}
+      nivel={nivel}
+    >
+      <p>{post.data.resumo}</p>
+    </Card>
+  ))}
+</div>

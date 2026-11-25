@@ -1,0 +1,60 @@
+---
+/**
+ * Arquivo de um tema do blog (spec 4.5). Só existe para tema com pelo menos um post: tema vazio
+ * seria página sem conteúdo. A description é composta do nome do tema (página de arquivo, sem
+ * parágrafo-resposta próprio).
+ */
+import { getCollection } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Topo from '../../../components/layout/Topo.astro';
+import PostLista from '../../../components/pagina/PostLista.astro';
+import CtaFinal from '../../../components/pagina/CtaFinal.astro';
+import { empresa } from '../../../lib/empresa';
+import { url } from '../../../lib/links';
+import { caminhoDoTema, temasComPosts, type Post, type Tema } from '../../../lib/posts';
+import { trilha } from '../../../lib/trilha';
+
+export async function getStaticPaths() {
+  return (await temasComPosts())
+    .filter(({ posts }) => posts.length > 0)
+    .map(({ tema, posts }) => ({ params: { tema: tema.id }, props: { tema, posts } }));
+}
+
+interface Props {
+  tema: Tema;
+  posts: Post[];
+}
+const { tema, posts } = Astro.props;
+const temas = await getCollection('temas');
+const nome = tema.data.nome;
+const caminho = trilha(['Blog', '/blog/'], [nome, caminhoDoTema(tema.id)]);
+const descricao = `Textos de ${empresa.pessoa.nome} sobre ${nome.toLocaleLowerCase('pt-BR')}, no blog do Desenvolvimento de Potencial Humano.`;
+---
+
+<Base
+  title={`${nome} · Blog de ${empresa.pessoa.nome}`}
+  description={descricao}
+  trilha={caminho}
+  tipoPagina="CollectionPage"
+>
+  <Topo trilha={caminho}>
+    <span class="eyebrow">Tema do blog</span>
+    <h1 class="display">{nome}</h1>
+  </Topo>
+
+  <div class="container secao tema">
+    <PostLista posts={posts} temas={temas} semTema nivel={2} />
+    <p class="tema__voltar">
+      <a href={url('/blog/')}>Todos os textos do blog</a>
+    </p>
+  </div>
+
+  <CtaFinal titulo="Falar com o Hugo" />
+</Base>
+
+<style>
+  .tema__voltar {
+    margin: var(--space-7) 0 0;
+    font-weight: 600;
+  }
+</style>
