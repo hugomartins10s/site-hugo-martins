@@ -1,12 +1,14 @@
 ---
 /**
- * Layout base. Head completo (canonical, OG, JSON-LD) e rodapé entram na fase 2.
- * - Fundo claro; cada página abre com um <Topo> navy (D23). Sem Topo, o conteúdo ganha o espaço
- *   do cabeçalho flutuante.
+ * Layout base de todas as páginas.
+ * - <Head>: title, description, canonical, Open Graph, Twitter (spec 7.1).
+ * - JSON-LD: WebSite + Organization (#org) + WebPage + BreadcrumbList em todas as páginas; cada
+ *   página acrescenta os nós dela em `schema` (spec 8).
+ * - Fundo claro; cada página abre com um <Topo> navy (D23), que recebe a mesma `trilha`. Sem
+ *   Topo, o conteúdo ganha o espaço do cabeçalho flutuante.
  * - marca="lumi" aplica a identidade Lumi na página inteira (data-brand no <html>).
  * - noindex: sempre na homologação; em produção, só onde a página pedir (404, styleguide).
  */
-import { HOMOLOGACAO } from 'astro:env/server';
 import '../styles/tokens.css';
 import '../styles/brand-lumi.css';
 import '../styles/base.css';
@@ -14,15 +16,61 @@ import '../styles/glass.css';
 import '../styles/prose.css';
 import GlassNav from '../components/glass/GlassNav.astro';
 import WhatsAppFab from '../components/glass/WhatsAppFab.astro';
+import Footer from '../components/layout/Footer.astro';
+import Head from '../components/seo/Head.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
 import { url } from '../lib/links';
+import {
+  noOrganizacao,
+  noPagina,
+  noSite,
+  noTrilha,
+  type ItemTrilha,
+  type No,
+} from '../lib/schema/grafo';
+import { urlAbsolutaDoCaminho, urlInicio } from '../lib/seo';
 
 interface Props {
   title: string;
   description: string;
   marca?: 'hugo' | 'lumi';
   noindex?: boolean;
+  /** false só na 404. */
+  canonical?: boolean;
+  /** Trilha completa (lib/trilha.ts); a mesma vai para o <Topo>. Omitir na Home. */
+  trilha?: ItemTrilha[];
+  /** Tipo do nó da página no JSON-LD (WebPage, ProfilePage, ContactPage…). */
+  tipoPagina?: string;
+  /** Nós extras do JSON-LD desta página (Person, Service, BlogPosting…). */
+  schema?: No[];
+  tipo?: 'website' | 'article';
+  publicado?: string;
+  atualizado?: string;
 }
-const { title, description, marca = 'hugo', noindex = false } = Astro.props;
+const {
+  title,
+  description,
+  marca = 'hugo',
+  noindex = false,
+  canonical = true,
+  trilha = [],
+  tipoPagina,
+  schema = [],
+  tipo,
+  publicado,
+  atualizado,
+} = Astro.props;
+
+const inicio = urlInicio(Astro.site);
+const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
+const temTrilha = trilha.length > 1;
+const grafo: No[] = [
+  noSite(inicio),
+  noOrganizacao(inicio),
+  noPagina(inicio, urlPagina, title, description, temTrilha, tipoPagina),
+  ...(temTrilha ? [noTrilha(urlPagina, trilha, Astro.site!)] : []),
+  ...schema,
+];
 ---
 
 <!doctype html>
@@ -30,9 +78,15 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    {(HOMOLOGACAO || noindex) && <meta name="robots" content="noindex, nofollow" />}
+    <Head
+      title={title}
+      description={description}
+      noindex={noindex}
+      canonical={canonical}
+      tipo={tipo}
+      publicado={publicado}
+      atualizado={atualizado}
+    />
     <meta name="theme-color" content="#000523" />
     <link rel="icon" href={url('/favicon-32.png')} sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
@@ -62,6 +116,7 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
         if (chromium && !evitar && !p) d.classList.add('lente-ok');
       })();
     </script>
+    <JsonLd grafo={grafo} />
   </head>
   <body>
     <a class="pular-conteudo" href="#conteudo">
@@ -105,6 +160,7 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
       <slot />
     </main>
 
+    <Footer />
     <slot name="depois" />
     <WhatsAppFab />
   </body>
@@ -117,6 +173,11 @@ const { title, description, marca = 'hugo', noindex = false } = Astro.props;
 
   main > :global(:first-child:not(.topo)) {
     margin-top: var(--topo-livre);
+  }
+
+  /* Página que é só o topo (404, Home provisória): o navy encosta no rodapé, sem faixa clara. */
+  main:has(> :global(.topo:last-child)) {
+    padding-bottom: 0;
   }
 
   main:focus {

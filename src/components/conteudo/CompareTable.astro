@@ -13,7 +13,7 @@ interface Props {
 const { legenda, colunas, linhas } = Astro.props;
 ---
 
-<div class="tabela superficie" role="region" aria-label={legenda} tabindex="0">
+<section class="tabela superficie" aria-label={legenda} tabindex="0">
   <table>
     <caption>{legenda}</caption>
     <thead>
@@ -34,7 +34,7 @@ const { legenda, colunas, linhas } = Astro.props;
       ))}
     </tbody>
   </table>
-</div>
+</section>
 
 <style>
   .tabela {

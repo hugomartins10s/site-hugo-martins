@@ -5,17 +5,21 @@ interface Props {
   variante?: 'pagina' | 'rodape';
 }
 const { variante = 'pagina' } = Astro.props;
+const texto =
+  'O trabalho de Hugo Martins é de desenvolvimento pessoal e profissional. Não é tratamento médico nem psicológico, não faz diagnóstico e não substitui o acompanhamento de profissionais de saúde.';
+// No rodapé não é um landmark: aparece em toda página, e o "Aviso legal" da própria página
+// (produtos da frente pessoal) já é o <aside>. Dois landmarks com o mesmo nome confundem.
 ---
 
-<aside
-  class:list={['aviso', `aviso--${variante}`, variante === 'pagina' && 'superficie']}
-  aria-label="Aviso legal"
->
-  <p>
-    O trabalho de Hugo Martins é de desenvolvimento pessoal e profissional. Não é tratamento médico
-    nem psicológico, não faz diagnóstico e não substitui o acompanhamento de profissionais de saúde.
-  </p>
-</aside>
+{variante === 'pagina' ? (
+  <aside class="aviso aviso--pagina superficie" aria-label="Aviso legal">
+    <p>{texto}</p>
+  </aside>
+) : (
+  <div class="aviso aviso--rodape">
+    <p>{texto}</p>
+  </div>
+)}
 
 <style>
   .aviso p {
@@ -23,7 +27,7 @@ const { variante = 'pagina' } = Astro.props;
   }
 
   .aviso--pagina {
-    border-left: 3px solid var(--brand-2);
+    border-left: 3px solid var(--filete);
     max-width: var(--measure);
   }
 

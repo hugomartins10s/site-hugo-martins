@@ -1,0 +1,73 @@
+---
+// Trilha de navegação visível (spec 4.2), em todas as páginas internas. Recebe a trilha completa
+// (com "Início" e a página atual); a última entrada é a página atual e não vira link.
+// O mesmo array alimenta o BreadcrumbList do JSON-LD (Base.astro).
+import type { ItemTrilha } from '../../lib/schema/grafo';
+
+interface Props {
+  itens: ItemTrilha[];
+}
+const { itens } = Astro.props;
+---
+
+{itens.length > 1 && (
+  <nav class="trilha" aria-label="Trilha de navegação">
+    <ol>
+      {itens.map((item, i) =>
+        i === itens.length - 1 ? (
+          <li aria-current="page">{item.nome}</li>
+        ) : (
+          <li>
+            <a href={item.href}>{item.nome}</a>
+          </li>
+        ),
+      )}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .trilha {
+    margin-bottom: var(--space-6);
+    font-size: var(--step--1);
+  }
+
+  .trilha ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trilha li {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+  }
+
+  .trilha li + li::before {
+    content: '/';
+    margin-inline: var(--space-3);
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .trilha a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--text);
+    text-decoration-color: var(--line-strong);
+  }
+
+  .trilha a:hover {
+    color: var(--link-hover);
+  }
+
+  .trilha [aria-current='page'] {
+    color: var(--text-strong);
+  }
+</style>

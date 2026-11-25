@@ -19,11 +19,38 @@ Requer Node 24 (veja `.nvmrc`; o Astro 7 exige ≥ 22.23.4).
 npm install
 npm run dev              # http://localhost:4321
 npm run lint             # astro check + prettier
-npm test                 # testes da trava de pendências
+npm test                 # testes (trava de pendências, SEO, imagem OG)
 npm run build            # build de produção (falha se houver conteúdo pendente)
 npm run build:homologacao  # build com noindex e robots Disallow; só lista pendências
 npm run preview          # serve o dist/ gerado
 ```
+
+Todo build termina com duas verificações sobre o `dist/`, e qualquer erro quebra o build:
+
+- `npm run check:html`: HTML válido (html-validate, regras recomendadas).
+- `npm run check:seo`: em cada página, um `h1`, title (até 70 caracteres) único, description, canonical absoluto, Open Graph, Twitter Card, imagem OG existente e um JSON-LD válido sem tipos proibidos.
+
+As imagens Open Graph (`dist/og/*.png`) são geradas no build, a partir do `h1` de cada página.
+
+## Como montar uma página
+
+```astro
+---
+import Base from '../layouts/Base.astro';
+import Topo from '../components/layout/Topo.astro';
+import { trilha } from '../lib/trilha';
+const caminho = trilha(['Para você', '/para-voce/'], ['10S', '/para-voce/10s/']);
+---
+
+<Base title="…" description="(o resumo)" trilha={caminho} schema={[/* nós extras */]}>
+  <Topo trilha={caminho}>
+    <h1>…</h1>
+  </Topo>
+  …
+</Base>
+```
+
+A mesma `trilha` vai para o `Base` (gera o BreadcrumbList do JSON-LD) e para o `Topo` (a trilha visível). A Home não tem trilha.
 
 Variáveis de ambiente: copie `.env.example` para `.env`. Em desenvolvimento nenhuma é obrigatória.
 

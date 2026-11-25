@@ -14,22 +14,30 @@
     "check:pendentes:dist": "node scripts/check-pendentes.mjs dist",
     "prebuild": "npm run check:pendentes",
     "build": "astro build",
-    "postbuild": "npm run check:pendentes:dist",
-    "build:homologacao": "HOMOLOGACAO=true astro build && node scripts/check-pendentes.mjs --aviso dist",
+    "postbuild": "npm run check:pendentes:dist && npm run check:html && npm run check:seo",
+    "build:homologacao": "HOMOLOGACAO=true astro build && node scripts/check-pendentes.mjs --aviso dist && npm run check:html && npm run check:seo",
     "lint": "astro check && prettier --check . && npm run check:contraste",
     "format": "prettier --write .",
     "test": "node --test \"scripts/*.test.mjs\"",
     "check:contraste": "node scripts/check-contraste.mjs",
-    "marca": "node scripts/otimizar-marca.mjs"
+    "marca": "node scripts/otimizar-marca.mjs",
+    "check:html": "html-validate \"dist/**/*.html\"",
+    "check:seo": "node scripts/check-seo.mjs dist"
   },
   "dependencies": {
     "astro": "7.4.13"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
+    "@fontsource/montserrat": "5.3.0",
+    "@fontsource/source-sans-3": "5.3.1",
+    "@fontsource/source-serif-4": "5.3.1",
     "@types/node": "24.19.2",
+    "html-validate": "11.21.1",
     "prettier": "3.10.1",
     "prettier-plugin-astro": "1.1.2",
+    "satori": "0.63.2",
+    "sharp": "0.35.5",
     "typescript": "6.0.3"
   }
 }

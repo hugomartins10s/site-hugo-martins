@@ -1,21 +1,27 @@
 ---
-// Topo navy de cada página (direção "Misto", D23): hero com título, parágrafo-resposta e ações.
+// Topo navy de cada página (direção "Misto", D23): trilha, título, parágrafo-resposta e ações.
 // Fica atrás do cabeçalho flutuante e usa as cores do contexto navy. O resto da página é claro.
+// A trilha é a mesma passada ao Base (que gera o BreadcrumbList do JSON-LD).
+import type { ItemTrilha } from '../../lib/schema/grafo';
+import Breadcrumb from './Breadcrumb.astro';
+
 interface Props {
+  trilha?: ItemTrilha[];
   class?: string;
 }
-const { class: extra } = Astro.props;
+const { trilha, class: extra } = Astro.props;
 ---
 
 <div class:list={['topo', 'tema-navy', extra]}>
   <div class="container topo__conteudo">
+    {trilha && <Breadcrumb itens={trilha} />}
     <slot />
   </div>
 </div>
 
 <style>
   .topo {
-    padding-top: calc(var(--topo-livre) + var(--space-7));
+    padding-top: calc(var(--topo-livre) + var(--space-6));
     padding-bottom: var(--space-9);
     background: var(--bg);
   }

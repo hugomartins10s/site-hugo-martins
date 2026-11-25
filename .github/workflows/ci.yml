@@ -21,9 +21,9 @@ jobs:
       - run: npm ci
       - name: Lint (astro check + prettier)
         run: npm run lint
-      - name: Testes da trava de pendências
+      - name: Testes (trava de pendências, SEO, imagem OG)
         run: npm test
-      - name: Build de homologação
+      - name: Build de homologação (HTML válido, SEO base)
         run: npm run build:homologacao
         env:
           SITE_URL: https://hugomartins10s.github.io

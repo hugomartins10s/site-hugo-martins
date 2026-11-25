@@ -21,9 +21,11 @@ import CrossFrontNotice from '../components/conteudo/CrossFrontNotice.astro';
 import WhatsApp from '../components/icones/WhatsApp.astro';
 import { empresa, linkWhatsApp } from '../lib/empresa';
 import { url } from '../lib/links';
+import { trilha } from '../lib/trilha';
 import { avaliar, piorFundo } from '../lib/contraste';
 
 const contraste = avaliar();
+const caminho = trilha(['Styleguide', '/styleguide/']);
 
 const cores = [
   { nome: '--hm-navy', valor: '#000523', papel: 'Topo, cabeçalho, títulos no claro (manual)' },
@@ -75,9 +77,10 @@ const rascunho = {
   title="Styleguide · Hugo Martins"
   description="Guia visual interno do site Hugo Martins: tokens, tipografia, vidro e componentes."
   noindex
+  trilha={caminho}
 >
   <!-- 1. Topo navy (hero) -->
-  <Topo class="sg-topo">
+  <Topo class="sg-topo" trilha={caminho}>
     <div class="sg-hero">
       <div class="sg-hero__texto">
         <span class="eyebrow">1 · Topo navy (hero)</span>
@@ -156,12 +159,7 @@ const rascunho = {
         menos opaca do gradiente. Calculado no build a partir de <code>src/lib/contraste.ts</code>;
         o mesmo cálculo roda em <code>npm run lint</code>.
       </p>
-      <div
-        class="tabela-contraste superficie"
-        role="region"
-        aria-label="Pares de contraste"
-        tabindex="0"
-      >
+      <section class="tabela-contraste superficie" aria-label="Pares de contraste" tabindex="0">
         <table>
           <thead>
             <tr>
@@ -188,7 +186,7 @@ const rascunho = {
             ))}
           </tbody>
         </table>
-      </div>
+      </section>
       <h3>Botões nos dois contextos</h3>
       <div class="sg-palcos">
         <div class="sg-palco sg-palco--claro">
@@ -422,7 +420,7 @@ const rascunho = {
         </fieldset>
         <div class="campo">
           <label for="sg-nome">Nome</label>
-          <input id="sg-nome" name="nome" autocomplete="name" />
+          <input id="sg-nome" name="nome" type="text" autocomplete="name" />
         </div>
         <div class="campo">
           <label for="sg-email">E-mail</label>

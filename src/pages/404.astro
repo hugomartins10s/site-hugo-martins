@@ -1,0 +1,33 @@
+---
+// 404 (spec 4.1 e 7.4): noindex, sem canonical. Links para a Home e o contato.
+import Base from '../layouts/Base.astro';
+import Topo from '../components/layout/Topo.astro';
+import GlassButton from '../components/glass/GlassButton.astro';
+import { url } from '../lib/links';
+---
+
+<Base
+  title="Página não encontrada · Hugo Martins"
+  description="Este endereço não existe no site Hugo Martins – Desenvolvimento de Potencial Humano."
+  noindex
+  canonical={false}
+>
+  <Topo>
+    <h1 class="display">Página não encontrada</h1>
+    <p class="lead">Este endereço não existe ou mudou de lugar.</p>
+    <div class="acoes-404">
+      <GlassButton href={url('/')}>Ir para o início</GlassButton>
+      <GlassButton href={url('/contato/')} variante="secundario">
+        Falar com o Hugo
+      </GlassButton>
+    </div>
+  </Topo>
+</Base>
+
+<style>
+  .acoes-404 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>
