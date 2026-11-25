@@ -1,0 +1,150 @@
+#!/usr/bin/env node
+/**
+ * Verifica o SEO base de cada página gerada (spec 7.1 e 8; critério de pronto da fase 2):
+ *   - <html lang="pt-BR">, exatamente um <h1>;
+ *   - <title> presente, até 70 caracteres (aviso acima de 60) e único entre as páginas;
+ *   - meta description presente (é o resumo; o tamanho é decisão da spec);
+ *   - canonical absoluto, igual ao og:url (a 404 não tem canonical);
+ *   - Open Graph (type, title, description, url, image) e twitter:card; a imagem OG existe em dist;
+ *   - um único JSON-LD válido, com @graph, sem tipos proibidos; BreadcrumbList quando há trilha.
+ *
+ * Uso: node scripts/check-seo.mjs <pasta-do-build>   (sai com 1 se houver erro)
+ */
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { tiposProibidos } from '../src/lib/schema/proibidos.ts';
+
+const entidades = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+const decodificar = (t) =>
+  t.replace(/&(#x[\da-f]+|#\d+|\w+);/gi, (m, c) =>
+    c[0] === '#'
+      ? String.fromCodePoint(c[1] === 'x' ? parseInt(c.slice(2), 16) : parseInt(c.slice(1), 10))
+      : (entidades[c.toLowerCase()] ?? m),
+  );
+
+function atributos(tag) {
+  const r = {};
+  for (const [, nome, valor] of tag.matchAll(/([\w:-]+)="([^"]*)"/g)) r[nome] = decodificar(valor);
+  return r;
+}
+
+function metas(html) {
+  const r = {};
+  for (const [tag] of html.matchAll(/<meta\b[^>]*>/gi)) {
+    const a = atributos(tag);
+    const chave = a.property ?? a.name;
+    if (chave && a.content !== undefined) r[chave] = a.content;
+  }
+  return r;
+}
+
+function tipos(no, acc = []) {
+  if (Array.isArray(no)) no.forEach((n) => tipos(n, acc));
+  else if (no && typeof no === 'object') {
+    if (no['@type']) acc.push(...[no['@type']].flat());
+    Object.values(no).forEach((v) => tipos(v, acc));
+  }
+  return acc;
+}
+
+/** Verifica uma página. Devolve { erros, avisos, titulo }. */
+export function verificarPagina(html, { arquivo, existeArquivo }) {
+  const erros = [];
+  const avisos = [];
+  const e404 = /(^|\/)404\.html$/.test(arquivo);
+
+  if (!/<html\b[^>]*\blang="pt-BR"/.test(html)) erros.push('<html> sem lang="pt-BR"');
+
+  const h1s = html.match(/<h1\b/gi)?.length ?? 0;
+  if (h1s !== 1) erros.push(`${h1s} <h1> (precisa de exatamente 1)`);
+
+  const titulo = decodificar(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? '');
+  if (!titulo) erros.push('sem <title>');
+  else if (titulo.length > 70) erros.push(`title com ${titulo.length} caracteres (máx. 70)`);
+  else if (titulo.length > 60) avisos.push(`title com ${titulo.length} caracteres (ideal ≤ 60)`);
+
+  const m = metas(html);
+  // A description é o `resumo` (40–80 palavras), por decisão da spec 7.1: passa de 160
+  // caracteres de propósito, então aqui só se exige que exista.
+  if (!m.description) erros.push('sem meta description');
+
+  const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*>/i);
+  const href = canonical ? atributos(canonical[0]).href : undefined;
+  if (e404) {
+    if (href) erros.push('a 404 não deve ter canonical');
+  } else if (!href) erros.push('sem canonical');
+  else if (!/^https?:\/\//.test(href)) erros.push(`canonical não é absoluto: ${href}`);
+  else if (m['og:url'] !== href) erros.push(`og:url (${m['og:url']}) diferente do canonical`);
+
+  for (const p of ['og:type', 'og:title', 'og:description', 'og:url', 'og:image', 'twitter:card'])
+    if (!m[p]) erros.push(`sem ${p}`);
+  if (m['og:image']) {
+    const caminho = m['og:image'].match(/\/(og\/.+\.png)$/)?.[1];
+    if (!/^https?:\/\//.test(m['og:image'])) erros.push('og:image não é absoluta');
+    else if (!caminho || !existeArquivo(caminho))
+      erros.push(`imagem OG não encontrada no build: ${m['og:image']}`);
+  }
+
+  const blocos = [
+    ...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi),
+  ];
+  if (blocos.length !== 1) erros.push(`${blocos.length} blocos JSON-LD (precisa de exatamente 1)`);
+  else {
+    try {
+      const dados = JSON.parse(blocos[0][1]);
+      if (!Array.isArray(dados['@graph'])) erros.push('JSON-LD sem @graph');
+      const t = tipos(dados);
+      for (const proibido of tiposProibidos)
+        if (t.includes(proibido)) erros.push(`JSON-LD com tipo proibido: ${proibido}`);
+      if (/<nav\b[^>]*class="trilha/.test(html) && !t.includes('BreadcrumbList'))
+        erros.push('trilha visível sem BreadcrumbList no JSON-LD');
+    } catch (err) {
+      erros.push(`JSON-LD inválido: ${err.message}`);
+    }
+  }
+
+  return { erros, avisos, titulo };
+}
+
+function htmls(pasta) {
+  return readdirSync(pasta, { recursive: true })
+    .map(String)
+    .filter((f) => f.endsWith('.html'))
+    .map((f) => join(pasta, f));
+}
+
+export function verificarPasta(pasta) {
+  const resultados = [];
+  const titulos = new Map();
+  for (const arquivo of htmls(pasta)) {
+    const rel = relative(pasta, arquivo).split('\\').join('/');
+    const r = verificarPagina(readFileSync(arquivo, 'utf8'), {
+      arquivo: rel,
+      existeArquivo: (c) => existsSync(join(pasta, c)),
+    });
+    if (r.titulo) titulos.set(r.titulo, [...(titulos.get(r.titulo) ?? []), rel]);
+    resultados.push({ arquivo: rel, ...r });
+  }
+  for (const [titulo, arquivos] of titulos)
+    if (arquivos.length > 1)
+      for (const r of resultados)
+        if (arquivos.includes(r.arquivo))
+          r.erros.push(`title repetido em ${arquivos.length} páginas: "${titulo}"`);
+  return resultados;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const pasta = process.argv[2] ?? 'dist';
+  const resultados = verificarPasta(pasta);
+  let erros = 0;
+  for (const { arquivo, erros: e, avisos: a } of resultados) {
+    for (const x of e) console.error(`✗ ${arquivo}: ${x}`);
+    for (const x of a) console.warn(`! ${arquivo}: ${x}`);
+    erros += e.length;
+  }
+  if (erros) {
+    console.error(`\n✗ SEO base: ${erros} erro(s) em ${resultados.length} páginas.`);
+    process.exit(1);
+  }
+  console.log(`✓ SEO base: ${resultados.length} páginas ok (h1, title, canonical, OG, JSON-LD).`);
+}
