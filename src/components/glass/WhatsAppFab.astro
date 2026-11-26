@@ -5,7 +5,8 @@ import WhatsApp from '../icones/WhatsApp.astro';
 ---
 
 <a
-  class="fab glass tema-navy"
+  class="fab vidro tema-navy"
+  data-vidro-auto
   href={linkWhatsApp()}
   aria-label="Conversar com Hugo Martins no WhatsApp"
   rel="noopener"
@@ -34,8 +35,7 @@ import WhatsApp from '../icones/WhatsApp.astro';
 
   .fab:hover {
     color: var(--text-strong);
-    background: var(--glass-bg-hover);
-    box-shadow: var(--glass-shadow-hover);
+    transform: scale(1.04);
   }
 
   .fab:active {

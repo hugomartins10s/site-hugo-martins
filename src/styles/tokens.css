@@ -121,7 +121,7 @@
   /* Alvos de toque ≥ 44 px */
   --tap: 44px;
 
-  --glass-blur: blur(18px) saturate(150%);
+  --glass-blur: blur(22px) saturate(180%);
 }
 
 /* ---------- Contexto claro (padrão): conteúdo ---------- */

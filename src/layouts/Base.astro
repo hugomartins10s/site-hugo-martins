@@ -166,6 +166,49 @@ const grafo: No[] = [
     <Footer />
     <slot name="depois" />
     <WhatsAppFab />
+    <script>
+      // Liquid Glass adaptável (D50): cada elemento flutuante [data-vidro-auto] fica escuro
+      // (.tema-navy) quando o centro dele está sobre uma área navy da página, e claro sobre o
+      // papel. Sem este script, o vidro fica navy quase opaco, legível em qualquer fundo.
+      const raiz = document.documentElement;
+      const flutuantes = [...document.querySelectorAll<HTMLElement>('[data-vidro-auto]')];
+      const areasNavy = () =>
+        [...document.querySelectorAll<HTMLElement>('.tema-navy')].filter(
+          (el) => !el.closest('[data-vidro-auto]'),
+        );
+      let areas = areasNavy();
+      let pendente = false;
+
+      const atualizar = () => {
+        pendente = false;
+        for (const el of flutuantes) {
+          const alvo = el.querySelector<HTMLElement>('[data-vidro-medida]') ?? el;
+          const r = alvo.getBoundingClientRect();
+          if (!r.width) continue;
+          const x = r.left + r.width / 2;
+          const y = r.top + r.height / 2;
+          const escuro = areas.some((a) => {
+            const b = a.getBoundingClientRect();
+            return x >= b.left && x <= b.right && y >= b.top && y <= b.bottom;
+          });
+          el.classList.toggle('tema-navy', escuro);
+        }
+      };
+      const agendar = () => {
+        if (!pendente) {
+          pendente = true;
+          requestAnimationFrame(atualizar);
+        }
+      };
+
+      raiz.classList.add('vidro-auto');
+      atualizar();
+      addEventListener('scroll', agendar, { passive: true });
+      addEventListener('resize', () => {
+        areas = areasNavy();
+        agendar();
+      });
+    </script>
   </body>
 </html>
 

@@ -60,6 +60,10 @@ export const vidros = {
   primarioClaro: compor(piorFundo.claro, [{ cor: '#000523', alfa: 0.88 }]),
   primarioNavy: compor(piorFundo.navy, [{ cor: '#f3f0e8', alfa: 0.88 }]),
   secundarioClaro: compor(piorFundo.faixa, [{ cor: '#ffffff', alfa: 0.5 }]),
+  // Liquid Glass da camada flutuante (D50): claro sobre o papel, mas medido sobre o navy (pior caso);
+  // escuro (receita da spec 9.3) só aparece sobre o navy.
+  flutuanteClaro: compor(piorFundo.navy, [{ cor: '#ffffff', alfa: 0.6 }]),
+  flutuanteEscuro: compor(piorFundo.navy, [{ cor: '#ffffff', alfa: 0.14 }]),
   lumiPrimarioClaro: compor(piorFundo.claro, [{ cor: '#023c80', alfa: 0.9 }]),
   lumiPrimarioNavy: compor(piorFundo.navy, [{ cor: '#024b98', alfa: 0.9 }]),
 };
@@ -100,6 +104,26 @@ export const pares: Par[] = [
     minimo: 4.5,
   },
   { nome: 'Creme · cabeçalho hover', texto: '#f3f0e8', fundo: vidros.navyHover, minimo: 4.5 },
+  { nome: 'Navy · flutuante claro', texto: '#000523', fundo: vidros.flutuanteClaro, minimo: 4.5 },
+  { nome: 'Texto · flutuante claro', texto: '#2b3044', fundo: vidros.flutuanteClaro, minimo: 4.5 },
+  {
+    nome: 'Navy · detalhe no flutuante claro (gráfico)',
+    texto: '#000523',
+    fundo: vidros.flutuanteClaro,
+    minimo: 3,
+  },
+  {
+    nome: 'Creme · flutuante escuro',
+    texto: '#f3f0e8',
+    fundo: vidros.flutuanteEscuro,
+    minimo: 4.5,
+  },
+  {
+    nome: 'Texto · flutuante escuro',
+    texto: '#c9ccd6',
+    fundo: vidros.flutuanteEscuro,
+    minimo: 4.5,
+  },
   {
     nome: 'Branco · primário no claro',
     texto: '#ffffff',

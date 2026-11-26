@@ -8,8 +8,8 @@
  *   três produtos. Os textos são os [C] da spec 3.1 (lib/frentes.ts).
  * - O vidro fica numa camada própria (.nav__vidro), não no <header>: um elemento com
  *   backdrop-filter isolaria o backdrop dos filhos e os painéis de vidro perderiam o efeito.
- * - No topo da página a pílula é quase transparente sobre o navy; ao rolar, ganha o vidro navy
- *   (animation-timeline: scroll(), com fallback estático no vidro).
+ * - Liquid Glass fosco e transparente (D50): escuro sobre as áreas navy, claro sobre o papel. Quem
+ *   alterna é o script de Base.astro ([data-vidro-auto]); sem JS fica o vidro navy quase opaco.
  * - É a moldura do site inteiro: usa sempre as fontes e cores Hugo Martins, também nas páginas
  *   da Lumi (onde a marca Lumi aparece só no painel "Para empresas", com o logo dela).
  */
@@ -24,18 +24,25 @@ const atual = Astro.url.pathname;
 const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href));
 ---
 
-<header class="nav tema-navy" data-nav>
-  <div class="nav__barra">
-    <div class="nav__vidro glass glass--lente" aria-hidden="true"></div>
+<header class="nav tema-navy" data-nav data-vidro-auto>
+  <div class="nav__barra" data-vidro-medida>
+    <div class="nav__vidro vidro glass--lente" aria-hidden="true"></div>
 
     <a class="nav__marca" href={url('/')}>
       <img
-        class="nav__logo"
+        class="nav__logo nav__logo--navy"
         src={url('/brand/hugo-martins-horizontal.webp')}
         width="480"
         height="81"
         alt={empresa.nome}
         fetchpriority="high"
+      />
+      <img
+        class="nav__logo nav__logo--claro"
+        src={url('/brand/hugo-martins-horizontal-preto.webp')}
+        width="480"
+        height="81"
+        alt={empresa.nome}
       />
       <img
         class="nav__logo-compacto"
@@ -67,17 +74,27 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
                       />
                     </svg>
                   </summary>
-                  <div class="nav__painel glass glass--painel">
+                  <div class="nav__painel vidro vidro--painel">
                     <div class="nav__painel-frente">
                       {frente?.lumi ? (
-                        <img
-                          class="nav__painel-lumi"
-                          src={url('/brand/lumi-branco.svg')}
-                          width="2777"
-                          height="979"
-                          alt={frente.marca}
-                          loading="lazy"
-                        />
+                        <>
+                          <img
+                            class="nav__painel-lumi nav__logo--navy"
+                            src={url('/brand/lumi-branco.svg')}
+                            width="2777"
+                            height="979"
+                            alt={frente.marca}
+                            loading="lazy"
+                          />
+                          <img
+                            class="nav__painel-lumi nav__logo--claro"
+                            src={url('/brand/lumi.svg')}
+                            width="2777"
+                            height="979"
+                            alt={frente.marca}
+                            loading="lazy"
+                          />
+                        </>
                       ) : (
                         <p class="nav__painel-marca">{frente?.marca}</p>
                       )}
@@ -133,7 +150,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
         <span class="nav__menu-abrir">Menu</span>
         <span class="nav__menu-fechar">Fechar</span>
       </summary>
-      <nav class="nav__folha glass glass--painel" aria-label="Principal (celular)">
+      <nav class="nav__folha vidro vidro--painel vidro--denso" aria-label="Principal (celular)">
         <ul class="nav__folha-lista">
           {navegacao.principal.map((item) => {
             const frente = frenteDoItem(item.href);
@@ -233,11 +250,26 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 </script>
 
 <style>
-  /* Moldura Hugo Martins em qualquer página (inclusive Lumi): fontes e botão creme. */
-  :root .nav.tema-navy {
+  /* Moldura Hugo Martins em qualquer página (inclusive Lumi): fontes e cores do Hugo nos dois
+     modos do vidro. Escuro (sobre navy): botão creme. Claro (sobre papel): botão navy. */
+  :root .nav {
     --font-display: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
     --font-body: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
     --font-ui: var(--font-body);
+    --link: var(--hm-navy);
+    --link-hover: var(--teal-escuro);
+    --focus: var(--hm-navy);
+    --eyebrow: var(--hm-navy); /* teal escuro não tem contraste sobre o vidro claro */
+    --tint-bg: linear-gradient(135deg, rgba(14, 20, 60, 0.92), rgba(0, 5, 35, 0.88));
+    --tint-bg-hover: linear-gradient(135deg, rgba(26, 34, 82, 0.94), rgba(0, 5, 35, 0.9));
+    --tint-text: #ffffff;
+    --tint-border: rgba(0, 5, 35, 0.6);
+    --tint-opaco: var(--hm-navy);
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+
+  :root .nav.tema-navy {
     --link: var(--hm-teal);
     --link-hover: var(--hm-cyan);
     --focus: var(--hm-cyan);
@@ -291,6 +323,20 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     height: auto;
   }
 
+  /* Logo colorido sobre o vidro escuro; versão preta oficial sobre o vidro claro. */
+  .nav__logo--claro,
+  .nav.tema-navy .nav__logo--claro {
+    display: none;
+  }
+
+  .nav:not(.tema-navy) .nav__logo--navy {
+    display: none;
+  }
+
+  .nav:not(.tema-navy) .nav__logo--claro {
+    display: block;
+  }
+
   .nav__logo-compacto {
     display: none;
     width: 34px;
@@ -322,7 +368,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     min-height: var(--tap);
     padding-inline: 14px;
     border-radius: var(--radius-pill);
-    color: rgba(243, 240, 232, 0.82);
+    color: var(--text);
     font-size: 0.97rem;
     font-weight: 500;
     letter-spacing: 0.005em;
@@ -341,8 +387,8 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 
   .nav__link:hover,
   .nav__sub[open] > .nav__link {
-    color: var(--creme);
-    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-strong);
+    background: color-mix(in srgb, var(--text-strong) 8%, transparent);
     text-decoration: none;
   }
 
@@ -357,7 +403,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 
   /* Seção atual: texto cheio e um ponto teal embaixo. */
   .nav__link--ativo {
-    color: var(--creme);
+    color: var(--text-strong);
   }
 
   .nav__link--ativo::after {
@@ -368,7 +414,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: var(--hm-teal);
+    background: var(--eyebrow);
     transform: translateX(-50%);
   }
 
@@ -387,7 +433,6 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     gap: var(--space-2);
     width: 38rem;
     padding: var(--space-3);
-    background: linear-gradient(160deg, rgba(16, 22, 60, 0.97), rgba(0, 5, 35, 0.97));
     animation: painel-entra var(--dur-2) var(--ease);
   }
 
@@ -410,7 +455,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     flex-direction: column;
     padding: var(--space-4);
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--text-strong) 5%, transparent);
   }
 
   .nav__painel-marca {
@@ -418,7 +463,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     font-family: var(--font-display);
     font-size: 1.375rem;
     line-height: 1.15;
-    color: var(--creme);
+    color: var(--text-strong);
   }
 
   .nav__painel-lumi {
@@ -438,15 +483,15 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     margin-top: auto;
     min-height: 32px;
     font-size: 0.9375rem;
-    color: var(--creme);
+    color: var(--text-strong);
   }
 
   .nav__painel-geral::after {
-    color: var(--hm-teal);
+    color: var(--eyebrow);
   }
 
   .nav__painel-geral:hover {
-    color: var(--creme);
+    color: var(--text-strong);
   }
 
   .nav__painel-lista {
@@ -468,19 +513,19 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     font-family: var(--font-display);
     font-size: 1.125rem;
     line-height: 1.25;
-    color: var(--creme);
+    color: var(--text-strong);
     text-decoration: none;
     transition: background var(--dur-1) var(--ease);
   }
 
   .nav__painel-lista li + li a {
-    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.07);
+    box-shadow: 0 -1px 0 var(--line);
   }
 
   .nav__painel-lista span {
     flex: none;
     font-family: var(--font-ui);
-    color: var(--hm-teal);
+    color: var(--eyebrow);
     opacity: 0;
     transform: translateX(-6px);
     transition:
@@ -490,7 +535,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 
   .nav__painel-lista a:hover,
   .nav__painel-lista a[aria-current='page'] {
-    background: rgba(255, 255, 255, 0.07);
+    background: color-mix(in srgb, var(--text-strong) 8%, transparent);
     box-shadow: none;
   }
 
@@ -578,7 +623,6 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
       overflow-y: auto;
       overscroll-behavior: contain;
       padding: var(--space-5) var(--space-5) var(--space-5);
-      background: linear-gradient(160deg, rgba(16, 22, 60, 0.98), rgba(0, 5, 35, 0.98));
       animation: painel-entra var(--dur-2) var(--ease);
     }
 
@@ -602,12 +646,12 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
       min-height: 56px;
       font-family: var(--font-display);
       font-size: 1.5rem;
-      color: var(--creme);
+      color: var(--text-strong);
       text-decoration: none;
     }
 
     .nav__folha-link[aria-current='page'] {
-      color: var(--hm-teal);
+      color: var(--eyebrow);
     }
 
     .nav__folha-quem {
@@ -628,8 +672,8 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 
     .nav__folha-filhos a:hover,
     .nav__folha-filhos a[aria-current='page'] {
-      border-left-color: var(--hm-teal);
-      color: var(--creme);
+      border-left-color: var(--eyebrow);
+      color: var(--text-strong);
     }
 
     :global(html:has(.nav__movel[open])) {
@@ -650,31 +694,12 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
   }
 
   @media (max-width: 22rem) {
-    .nav__logo {
+    .nav .nav__logo,
+    .nav:not(.tema-navy) .nav__logo--claro {
       display: none;
     }
     .nav__logo-compacto {
       display: block;
-    }
-  }
-
-  /* ---------- No topo: vidro leve sobre o navy; ao rolar: vidro navy ---------- */
-
-  @supports (animation-timeline: scroll()) {
-    @media (prefers-reduced-motion: no-preference) and (prefers-reduced-transparency: no-preference) and (prefers-contrast: no-preference) {
-      .nav__vidro {
-        animation: nav-vidro linear both;
-        animation-timeline: scroll(root);
-        animation-range: 0 140px;
-      }
-    }
-  }
-
-  @keyframes nav-vidro {
-    from {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.1);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
   }
 </style>

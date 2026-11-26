@@ -37,6 +37,12 @@ const tarefas = [
     'public/brand/hugo-martins-horizontal-branco.webp',
     480,
   ),
+  // Versão preta oficial: cabeçalho de vidro claro, sobre o papel.
+  webp(
+    `${HM}/LOGO_PRETA_SEMFUNDO_VARIAÇÃO.png`,
+    'public/brand/hugo-martins-horizontal-preto.webp',
+    480,
+  ),
   // Logo principal empilhado (rodapé, imprensa).
   webp(`${HM}/LOGOPRINCIPAL_SEMFUNDO.png`, 'public/brand/hugo-martins-principal.webp', 640),
   // Submarca (o cérebro): menu móvel e espaços pequenos.
