@@ -2,122 +2,191 @@
 /**
  * Cabeçalho flutuante em pílula de vidro (spec 4.2, 9.1, 9.3).
  *
- * - Funciona sem JS: submenus e menu móvel são <details>. O JS só fecha os outros ao abrir um,
- *   fecha com Esc e com clique fora.
+ * - Funciona sem JS: os submenus e o menu do celular são <details>. O JS só abre os submenus no
+ *   hover (mouse), deixa um aberto por vez e fecha com Esc e com clique fora.
+ * - "Para você" e "Para empresas" abrem um painel com a frente (quem compra), a visão geral e os
+ *   três produtos. Os textos são os [C] da spec 3.1 (lib/frentes.ts).
  * - O vidro fica numa camada própria (.nav__vidro), não no <header>: um elemento com
- *   backdrop-filter isolaria o backdrop dos filhos e os submenus de vidro perderiam o efeito.
- * - Encolhe e fica mais opaco ao rolar (animation-timeline: scroll(), com fallback estático).
+ *   backdrop-filter isolaria o backdrop dos filhos e os painéis de vidro perderiam o efeito.
+ * - No topo da página a pílula é quase transparente sobre o navy; ao rolar, ganha o vidro navy
+ *   (animation-timeline: scroll(), com fallback estático no vidro).
+ * - É a moldura do site inteiro: usa sempre as fontes e cores Hugo Martins, também nas páginas
+ *   da Lumi (onde a marca Lumi aparece só no painel "Para empresas", com o logo dela).
  */
 import navegacao from '../../data/navegacao.json';
-import { empresa } from '../../lib/empresa';
+import { empresa, linkWhatsApp } from '../../lib/empresa';
+import { frenteDoItem } from '../../lib/frentes';
 import { url } from '../../lib/links';
 import GlassButton from './GlassButton.astro';
+import WhatsApp from '../icones/WhatsApp.astro';
 
 const atual = Astro.url.pathname;
 const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href));
 ---
 
 <header class="nav tema-navy" data-nav>
-  <div class="nav__vidro glass glass--lente" aria-hidden="true"></div>
+  <div class="nav__barra">
+    <div class="nav__vidro glass glass--lente" aria-hidden="true"></div>
 
-  <a class="nav__marca" href={url('/')}>
-    <img
-      class="nav__logo"
-      src={url('/brand/hugo-martins-horizontal.webp')}
-      width="480"
-      height="81"
-      alt={empresa.nome}
-      fetchpriority="high"
-    />
-    <img
-      class="nav__logo-compacto"
-      src={url('/brand/hugo-martins-submarca.webp')}
-      width="160"
-      height="183"
-      alt={empresa.nome}
-    />
-  </a>
+    <a class="nav__marca" href={url('/')}>
+      <img
+        class="nav__logo"
+        src={url('/brand/hugo-martins-horizontal.webp')}
+        width="480"
+        height="81"
+        alt={empresa.nome}
+        fetchpriority="high"
+      />
+      <img
+        class="nav__logo-compacto"
+        src={url('/brand/hugo-martins-submarca.webp')}
+        width="160"
+        height="183"
+        alt={empresa.nome}
+      />
+    </a>
 
-  <nav class="nav__principal" aria-label="Principal">
-    <ul class="nav__lista">
-      {navegacao.principal.map((item) => (
-        <li class="nav__item">
-          <a
-            class="nav__link"
-            href={url(item.href)}
-            aria-current={ativo(item.href) ? 'page' : undefined}
-          >
-            {item.rotulo}
-          </a>
-          {item.filhos && (
-            <details class="nav__sub" data-nav-details>
-              <summary class="nav__abrir" aria-label={`Abrir o submenu ${item.rotulo}`}>
-                <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12">
-                  <path
-                    d="M2 4.5 6 8.5 10 4.5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                  />
-                </svg>
-              </summary>
-              <ul class="nav__painel glass glass--painel">
-                {item.filhos.map((filho) => (
-                  <li>
-                    <a
-                      href={url(filho.href)}
-                      aria-current={atual === url(filho.href) ? 'page' : undefined}
-                    >
-                      {filho.rotulo}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-        </li>
-      ))}
-    </ul>
-  </nav>
-
-  <GlassButton href={url(navegacao.cta.href)} class="nav__cta">
-    {navegacao.cta.rotulo}
-  </GlassButton>
-
-  <details class="nav__movel" data-nav-details>
-    <summary class="btn glass nav__menu">Menu</summary>
-    <nav class="nav__folha glass glass--painel" aria-label="Principal (celular)">
-      <ul>
-        {navegacao.principal.map((item) => (
-          <li>
-            <a
-              class="nav__folha-link"
-              href={url(item.href)}
-              aria-current={ativo(item.href) ? 'page' : undefined}
-            >
-              {item.rotulo}
-            </a>
-            {item.filhos && (
-              <ul class="nav__folha-filhos">
-                {item.filhos.map((filho) => (
-                  <li>
-                    <a href={url(filho.href)}>{filho.rotulo}</a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+    <nav class="nav__principal" aria-label="Principal">
+      <ul class="nav__lista">
+        {navegacao.principal.map((item) => {
+          const frente = frenteDoItem(item.href);
+          return (
+            <li class="nav__item">
+              {item.filhos ? (
+                <details class="nav__sub" data-nav-details data-nav-hover>
+                  <summary class:list={['nav__link', ativo(item.href) && 'nav__link--ativo']}>
+                    {item.rotulo}
+                    <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12">
+                      <path
+                        d="M2.5 4.5 6 8 9.5 4.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </summary>
+                  <div class="nav__painel glass glass--painel">
+                    <div class="nav__painel-frente">
+                      {frente?.lumi ? (
+                        <img
+                          class="nav__painel-lumi"
+                          src={url('/brand/lumi-branco.svg')}
+                          width="2777"
+                          height="979"
+                          alt={frente.marca}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <p class="nav__painel-marca">{frente?.marca}</p>
+                      )}
+                      <p class="nav__painel-quem">{frente?.quem}</p>
+                      <a
+                        class="link-seta nav__painel-geral"
+                        href={url(item.href)}
+                        aria-current={atual === url(item.href) ? 'page' : undefined}
+                      >
+                        Visão geral
+                      </a>
+                    </div>
+                    <ul class="nav__painel-lista">
+                      {item.filhos.map((filho) => (
+                        <li>
+                          <a
+                            href={url(filho.href)}
+                            aria-current={atual === url(filho.href) ? 'page' : undefined}
+                          >
+                            {filho.rotulo}
+                            <span aria-hidden="true">→</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </details>
+              ) : (
+                <a
+                  class:list={['nav__link', ativo(item.href) && 'nav__link--ativo']}
+                  href={url(item.href)}
+                  aria-current={atual === url(item.href) ? 'page' : undefined}
+                >
+                  {item.rotulo}
+                </a>
+              )}
+            </li>
+          );
+        })}
       </ul>
-      <GlassButton href={url(navegacao.cta.href)} tamanho="grande" class="nav__folha-cta">
-        {navegacao.cta.rotulo}
-      </GlassButton>
     </nav>
-  </details>
+
+    <GlassButton href={url(navegacao.cta.href)} class="nav__cta">
+      {navegacao.cta.rotulo}
+    </GlassButton>
+
+    <details class="nav__movel" data-nav-details>
+      <summary class="btn glass nav__menu">
+        <span class="nav__menu-icone" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </span>
+        <span class="nav__menu-abrir">Menu</span>
+        <span class="nav__menu-fechar">Fechar</span>
+      </summary>
+      <nav class="nav__folha glass glass--painel" aria-label="Principal (celular)">
+        <ul class="nav__folha-lista">
+          {navegacao.principal.map((item) => {
+            const frente = frenteDoItem(item.href);
+            return (
+              <li class:list={[item.filhos && 'nav__folha-grupo']}>
+                <a
+                  class="nav__folha-link"
+                  href={url(item.href)}
+                  aria-current={atual === url(item.href) ? 'page' : undefined}
+                >
+                  {item.rotulo}
+                </a>
+                {frente && <p class="nav__folha-quem">{frente.quem}</p>}
+                {item.filhos && (
+                  <ul class="nav__folha-filhos">
+                    {item.filhos.map((filho) => (
+                      <li>
+                        <a
+                          href={url(filho.href)}
+                          aria-current={atual === url(filho.href) ? 'page' : undefined}
+                        >
+                          {filho.rotulo}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+        <div class="nav__folha-acoes">
+          <GlassButton href={url(navegacao.cta.href)} tamanho="grande">
+            {navegacao.cta.rotulo}
+          </GlassButton>
+          <GlassButton
+            href={linkWhatsApp()}
+            variante="secundario"
+            tamanho="grande"
+            rel="noopener"
+            target="_blank"
+          >
+            <WhatsApp tamanho={20} />
+            WhatsApp
+          </GlassButton>
+        </div>
+      </nav>
+    </details>
+  </div>
 </header>
 
 <script>
-  // Aprimoramento: um submenu aberto por vez; Esc e clique fora fecham.
+  // Aprimoramento: abre no hover (só com mouse), um painel por vez; Esc e clique fora fecham.
   const cabecalho = document.querySelector<HTMLElement>('[data-nav]');
   if (cabecalho) {
     const todos = [...cabecalho.querySelectorAll<HTMLDetailsElement>('[data-nav-details]')];
@@ -125,6 +194,27 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
       todos.forEach((d) => d !== exceto && d.removeAttribute('open'));
 
     todos.forEach((d) => d.addEventListener('toggle', () => d.open && fechar(d)));
+
+    const mouse = matchMedia('(hover: hover) and (pointer: fine)');
+    cabecalho.querySelectorAll<HTMLDetailsElement>('[data-nav-hover]').forEach((d) => {
+      let timer: number | undefined;
+      const item = d.closest('li')!;
+      item.addEventListener('pointerenter', () => {
+        if (!mouse.matches) return;
+        clearTimeout(timer);
+        d.open = true;
+      });
+      item.addEventListener('pointerleave', () => {
+        if (!mouse.matches) return;
+        timer = window.setTimeout(() => d.removeAttribute('open'), 160);
+      });
+      // Com mouse, o hover já abriu: o clique no rótulo não pode fechar o painel.
+      d.querySelector('summary')!.addEventListener('click', (e) => {
+        if (!mouse.matches || (e as PointerEvent).pointerType !== 'mouse') return;
+        e.preventDefault();
+        d.open = true;
+      });
+    });
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -143,18 +233,42 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 </script>
 
 <style>
+  /* Moldura Hugo Martins em qualquer página (inclusive Lumi): fontes e botão creme. */
+  :root .nav.tema-navy {
+    --font-display: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-ui: var(--font-body);
+    --link: var(--hm-teal);
+    --link-hover: var(--hm-cyan);
+    --focus: var(--hm-cyan);
+    --eyebrow: var(--hm-teal);
+    --tint-bg: linear-gradient(135deg, rgba(243, 240, 232, 0.96), rgba(243, 240, 232, 0.88));
+    --tint-bg-hover: linear-gradient(135deg, #fff, rgba(243, 240, 232, 0.94));
+    --tint-text: var(--hm-navy);
+    --tint-border: rgba(255, 255, 255, 0.5);
+    --tint-opaco: var(--creme);
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+
   .nav {
     position: fixed;
-    top: max(var(--space-3), env(safe-area-inset-top));
-    left: 50%;
+    inset: max(var(--space-3), env(safe-area-inset-top)) 0 auto;
     z-index: var(--z-nav);
+    pointer-events: none;
+  }
+
+  .nav__barra {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    width: min(100% - 2 * var(--space-3), var(--container));
+    gap: var(--space-5);
+    width: min(100% - 2 * var(--space-3), var(--container) + 2rem);
+    min-height: 64px;
+    margin-inline: auto;
     padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
-    transform: translateX(-50%);
     color: var(--text-strong);
+    pointer-events: auto;
   }
 
   .nav__vidro {
@@ -169,16 +283,17 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     align-items: center;
     flex-shrink: 0;
     min-height: var(--tap);
+    border-radius: var(--radius-inner);
   }
 
   .nav__logo {
-    width: 200px;
+    width: 212px;
     height: auto;
   }
 
   .nav__logo-compacto {
     display: none;
-    width: 38px;
+    width: 34px;
     height: auto;
   }
 
@@ -189,7 +304,7 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
   .nav__lista {
     display: flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: 2px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -197,98 +312,193 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
 
   .nav__item {
     position: relative;
-    display: flex;
-    align-items: center;
   }
 
   .nav__link {
+    position: relative;
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     min-height: var(--tap);
-    padding-inline: var(--space-3);
+    padding-inline: 14px;
     border-radius: var(--radius-pill);
-    color: var(--text-strong);
+    color: rgba(243, 240, 232, 0.82);
+    font-size: 0.97rem;
     font-weight: 500;
+    letter-spacing: 0.005em;
     text-decoration: none;
     white-space: nowrap;
-  }
-
-  .nav__link:hover {
-    color: var(--text-strong);
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .nav__link[aria-current='page'] {
-    text-decoration: underline;
-    text-decoration-color: var(--brand-1);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.35em;
-  }
-
-  .nav__sub {
-    position: static;
-  }
-
-  .nav__abrir {
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: var(--tap);
-    margin-left: calc(-1 * var(--space-2));
-    border-radius: var(--radius-pill);
+    cursor: pointer;
     list-style: none;
-    color: var(--text-strong);
+    transition:
+      color var(--dur-1) var(--ease),
+      background var(--dur-1) var(--ease);
   }
 
-  .nav__abrir::-webkit-details-marker {
+  .nav__link::-webkit-details-marker {
     display: none;
   }
 
-  .nav__abrir svg {
-    transition: transform var(--dur-1) var(--ease);
+  .nav__link:hover,
+  .nav__sub[open] > .nav__link {
+    color: var(--creme);
+    background: rgba(255, 255, 255, 0.07);
+    text-decoration: none;
   }
 
-  .nav__sub[open] .nav__abrir svg {
+  .nav__link svg {
+    opacity: 0.7;
+    transition: transform var(--dur-2) var(--ease);
+  }
+
+  .nav__sub[open] > .nav__link svg {
     transform: rotate(180deg);
   }
 
-  .nav__abrir:hover {
-    background: rgba(255, 255, 255, 0.08);
+  /* Seção atual: texto cheio e um ponto teal embaixo. */
+  .nav__link--ativo {
+    color: var(--creme);
   }
 
-  /* Painéis com muitos links passam sobre o conteúdo claro: vidro mais opaco, para leitura. */
-  .nav__painel,
-  .nav__folha {
-    background: linear-gradient(135deg, rgba(14, 20, 56, 0.96), rgba(0, 5, 35, 0.94));
+  .nav__link--ativo::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--hm-teal);
+    transform: translateX(-50%);
   }
+
+  .nav__sub > .nav__link--ativo::after {
+    left: calc(50% - 9px);
+  }
+
+  /* ---------- Painel das frentes ---------- */
 
   .nav__painel {
     position: absolute;
-    top: calc(100% + var(--space-3));
-    left: 0;
-    min-width: 19rem;
-    margin: 0;
+    top: calc(100% + 18px);
+    left: -1rem;
+    display: grid;
+    grid-template-columns: 13.5rem minmax(0, 1fr);
+    gap: var(--space-2);
+    width: 38rem;
     padding: var(--space-3);
+    background: linear-gradient(160deg, rgba(16, 22, 60, 0.97), rgba(0, 5, 35, 0.97));
+    animation: painel-entra var(--dur-2) var(--ease);
+  }
+
+  /* Ponte invisível entre o link e o painel: o hover não cai no vão. */
+  .nav__painel::before {
+    content: '';
+    position: absolute;
+    inset: -20px 0 100%;
+  }
+
+  @keyframes painel-entra {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  .nav__painel-frente {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .nav__painel-marca {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.15;
+    color: var(--creme);
+  }
+
+  .nav__painel-lumi {
+    width: 120px;
+    height: auto;
+    margin-bottom: var(--space-3);
+  }
+
+  .nav__painel-quem {
+    margin: 0 0 var(--space-4);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+  }
+
+  .nav__painel-geral {
+    margin-top: auto;
+    min-height: 32px;
+    font-size: 0.9375rem;
+    color: var(--creme);
+  }
+
+  .nav__painel-geral::after {
+    color: var(--hm-teal);
+  }
+
+  .nav__painel-geral:hover {
+    color: var(--creme);
+  }
+
+  .nav__painel-lista {
+    display: grid;
+    align-content: start;
+    margin: 0;
+    padding: 0;
     list-style: none;
   }
 
-  .nav__painel a {
+  .nav__painel-lista a {
     display: flex;
     align-items: center;
-    min-height: var(--tap);
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 56px;
     padding: var(--space-2) var(--space-4);
     border-radius: 14px;
-    color: var(--text-strong);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    line-height: 1.25;
+    color: var(--creme);
     text-decoration: none;
+    transition: background var(--dur-1) var(--ease);
   }
 
-  .nav__painel a:hover,
-  .nav__painel a[aria-current='page'] {
-    background: rgba(255, 255, 255, 0.1);
+  .nav__painel-lista li + li a {
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.07);
   }
 
-  .nav__movel {
-    display: none;
+  .nav__painel-lista span {
+    flex: none;
+    font-family: var(--font-ui);
+    color: var(--hm-teal);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity var(--dur-2) var(--ease),
+      transform var(--dur-2) var(--ease);
+  }
+
+  .nav__painel-lista a:hover,
+  .nav__painel-lista a[aria-current='page'] {
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: none;
+  }
+
+  .nav__painel-lista a:hover span,
+  .nav__painel-lista a:focus-visible span,
+  .nav__painel-lista a[aria-current='page'] span {
+    opacity: 1;
+    transform: none;
   }
 
   .nav :global(.nav__cta) {
@@ -296,16 +506,21 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     white-space: nowrap;
   }
 
+  .nav__movel {
+    display: none;
+  }
+
   /* ---------- Celular e tablet ---------- */
 
-  @media (max-width: 71.99rem) {
-    .nav {
+  @media (max-width: 67.99rem) {
+    .nav__barra {
+      gap: var(--space-3);
       padding-left: var(--space-4);
     }
 
     .nav__principal,
-    :global(.nav__cta) {
-      display: none !important;
+    .nav :global(.nav__cta) {
+      display: none;
     }
 
     .nav__movel {
@@ -314,6 +529,8 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     }
 
     .nav__menu {
+      gap: 10px;
+      padding-inline: 1.1rem 1.25rem;
       list-style: none;
     }
 
@@ -321,14 +538,48 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
       display: none;
     }
 
+    .nav__menu-icone {
+      display: grid;
+      gap: 5px;
+      width: 18px;
+    }
+
+    .nav__menu-icone span {
+      display: block;
+      height: 1.5px;
+      border-radius: 2px;
+      background: currentColor;
+      transition: transform var(--dur-2) var(--ease);
+    }
+
+    .nav__movel[open] .nav__menu-icone span:first-child {
+      transform: translateY(3.25px) rotate(45deg);
+    }
+
+    .nav__movel[open] .nav__menu-icone span:last-child {
+      transform: translateY(-3.25px) rotate(-45deg);
+    }
+
+    .nav__menu-fechar,
+    .nav__movel[open] .nav__menu-abrir {
+      display: none;
+    }
+
+    .nav__movel[open] .nav__menu-fechar {
+      display: inline;
+    }
+
     .nav__folha {
       position: absolute;
-      top: calc(100% + var(--space-3));
+      top: calc(100% + var(--space-2));
       left: 0;
       right: 0;
-      max-height: calc(100dvh - 7rem);
+      max-height: calc(100dvh - 6.5rem);
       overflow-y: auto;
-      padding: var(--space-5);
+      overscroll-behavior: contain;
+      padding: var(--space-5) var(--space-5) var(--space-5);
+      background: linear-gradient(160deg, rgba(16, 22, 60, 0.98), rgba(0, 5, 35, 0.98));
+      animation: painel-entra var(--dur-2) var(--ease);
     }
 
     .nav__folha ul {
@@ -337,38 +588,68 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
       list-style: none;
     }
 
-    .nav__folha-link,
+    .nav__folha-lista > li {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav__folha-grupo {
+      padding-bottom: var(--space-4);
+    }
+
+    .nav__folha-link {
+      display: flex;
+      align-items: center;
+      min-height: 56px;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--creme);
+      text-decoration: none;
+    }
+
+    .nav__folha-link[aria-current='page'] {
+      color: var(--hm-teal);
+    }
+
+    .nav__folha-quem {
+      margin: calc(-1 * var(--space-2)) 0 var(--space-2);
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+    }
+
     .nav__folha-filhos a {
       display: flex;
       align-items: center;
       min-height: var(--tap);
-      color: var(--text-strong);
+      padding-left: var(--space-4);
+      border-left: 1px solid var(--line-strong);
+      color: var(--text);
       text-decoration: none;
     }
 
-    .nav__folha-link {
-      font-family: var(--font-display);
-      font-size: var(--step-1);
+    .nav__folha-filhos a:hover,
+    .nav__folha-filhos a[aria-current='page'] {
+      border-left-color: var(--hm-teal);
+      color: var(--creme);
     }
 
-    .nav__folha-filhos {
-      padding-left: var(--space-4) !important;
-      margin-bottom: var(--space-2) !important;
-      border-left: 1px solid var(--line-strong);
+    :global(html:has(.nav__movel[open])) {
+      overflow: hidden;
     }
 
-    .nav__folha-filhos a {
-      padding-left: var(--space-3);
-      color: var(--text);
-    }
-
-    .nav__folha :global(.nav__folha-cta) {
-      width: 100%;
+    .nav__folha-acoes {
+      display: grid;
+      gap: var(--space-3);
       margin-top: var(--space-5);
     }
   }
 
   @media (max-width: 30rem) {
+    .nav__logo {
+      width: 176px;
+    }
+  }
+
+  @media (max-width: 22rem) {
     .nav__logo {
       display: none;
     }
@@ -377,47 +658,23 @@ const ativo = (href: string) => atual === url(href) || atual.startsWith(url(href
     }
   }
 
-  /* ---------- Encolhe ao rolar ---------- */
+  /* ---------- No topo: vidro leve sobre o navy; ao rolar: vidro navy ---------- */
 
   @supports (animation-timeline: scroll()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .nav {
-        animation: nav-encolher linear both;
-        animation-timeline: scroll(root);
-        animation-range: 0 160px;
-      }
-
+    @media (prefers-reduced-motion: no-preference) and (prefers-reduced-transparency: no-preference) and (prefers-contrast: no-preference) {
       .nav__vidro {
-        animation: nav-opacar linear both;
+        animation: nav-vidro linear both;
         animation-timeline: scroll(root);
-        animation-range: 0 160px;
-      }
-
-      .nav__logo {
-        animation: nav-logo linear both;
-        animation-timeline: scroll(root);
-        animation-range: 0 160px;
+        animation-range: 0 140px;
       }
     }
   }
 
-  @keyframes nav-encolher {
-    to {
-      top: var(--space-2);
-      padding-block: 2px;
-      width: min(100% - 2 * var(--space-3), calc(var(--container) - 4rem));
-    }
-  }
-
-  @keyframes nav-opacar {
-    to {
-      background-color: rgba(0, 5, 35, 0.55);
-    }
-  }
-
-  @keyframes nav-logo {
-    to {
-      width: 176px;
+  @keyframes nav-vidro {
+    from {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
   }
 </style>
