@@ -33,7 +33,7 @@ const linhas = linhasComparativas(produtos);
 <Base title={tituloSeo(p)} description={p.data.resumo} trilha={caminho}>
   <Topo trilha={caminho}>
     <span class="eyebrow">Trabalho individual</span>
-    <h1 class="display">{p.data.titulo}</h1>
+    <h1 class:list={['display', { 'titulo-longo': p.data.titulo.length > 32 }]}>{p.data.titulo}</h1>
     <Lead>{p.data.resumo}</Lead>
     <div class="acoes">
       <GlassButton href={url('/para-voce/10s/')}>Começar pelo 10S</GlassButton>

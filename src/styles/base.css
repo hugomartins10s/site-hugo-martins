@@ -159,10 +159,11 @@ h1.display.titulo-longo {
 
 /* Link de "ver mais", com seta que anda no hover. Sem sublinhado até o hover. */
 .link-seta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55em;
+  /* inline-block, não flex: quando o texto quebra linha, a seta fica colada à última palavra. */
+  display: inline-block;
   min-height: var(--tap);
+  padding-block: 0.7em;
+  line-height: 1.4;
   font-weight: 600;
   color: var(--text-strong);
   text-decoration: none;
@@ -170,6 +171,8 @@ h1.display.titulo-longo {
 
 .link-seta::after {
   content: '→';
+  display: inline-block;
+  margin-left: 0.55em;
   font-family: var(--font-ui);
   color: var(--eyebrow);
   transition: transform var(--dur-2) var(--ease);

@@ -1,0 +1,79 @@
+---
+/**
+ * A frase do Hugo "Pensamento gera emoção, … caráter gera seu destino!" (D51) desenhada como
+ * cadeia de setas, o recurso que ele mesmo usa (manual de identidade verbal, seção 2). A cadeia é
+ * decorativa (aria-hidden); a frase inteira, palavra por palavra, vem logo abaixo como citação.
+ */
+import { cadeiaDoDestino, frases } from '../../lib/frases';
+---
+
+<figure class="cadeia">
+  <ol class="cadeia__lista" aria-hidden="true">
+    {cadeiaDoDestino.map((palavra) => (
+      <li>{palavra}</li>
+    ))}
+  </ol>
+  <blockquote class="cadeia__frase">
+    <p>{frases.destino.texto}</p>
+  </blockquote>
+  <figcaption class="cadeia__autor">Hugo Martins</figcaption>
+</figure>
+
+<style>
+  .cadeia {
+    margin: 0;
+  }
+
+  .cadeia__lista {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) 0;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-display);
+    color: var(--text-strong);
+  }
+
+  .cadeia__lista li:not(:last-child)::after {
+    content: '→';
+    margin-inline: 0.35em;
+    font-family: var(--font-ui);
+    font-size: 0.7em;
+    color: var(--brand-2);
+  }
+
+  /* O destino é onde a cadeia chega: em itálico. */
+  .cadeia__lista li:last-child {
+    font-style: italic;
+  }
+
+  .cadeia__frase {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .cadeia__frase p {
+    max-width: 56ch;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--text-muted);
+  }
+
+  .cadeia__autor {
+    margin-top: var(--space-3);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    letter-spacing: var(--tracking-rotulo);
+    text-transform: uppercase;
+    color: var(--eyebrow);
+  }
+</style>

@@ -29,9 +29,13 @@ const { trilha, class: extra } = Astro.props;
     max-width: 22ch;
   }
 
+  /* O parágrafo-resposta continua inteiro no HTML (spec 5), mas com menos peso que o título:
+     corpo um pouco maior que o texto, cor secundária (D51). */
   .topo__conteudo > :global(.lead) {
+    max-width: 58ch;
     margin-top: var(--space-5);
-    color: var(--text);
+    font-size: 1.125rem;
+    color: var(--text-muted);
   }
 
   .topo__conteudo > :global(:last-child) {

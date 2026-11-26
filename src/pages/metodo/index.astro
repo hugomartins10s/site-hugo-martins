@@ -12,6 +12,7 @@ import Lead from '../../components/conteudo/Lead.astro';
 import Atualizado from '../../components/conteudo/Atualizado.astro';
 import ConceitoCards from '../../components/pagina/ConceitoCards.astro';
 import CtaFinal from '../../components/pagina/CtaFinal.astro';
+import CadeiaDestino from '../../components/conteudo/CadeiaDestino.astro';
 import { conceitosOrdenados, caminhoDoConceito } from '../../lib/conceitos';
 import { url } from '../../lib/links';
 import { pagina, tituloSeo } from '../../lib/paginas';
@@ -53,6 +54,9 @@ const termos = conceitos.map(
   </Topo>
 
   <div class="container secao">
+    <div class="metodo__cadeia">
+      <CadeiaDestino />
+    </div>
     <div class="prose">
       <Content />
     </div>
@@ -71,3 +75,11 @@ const termos = conceitos.map(
 
   <CtaFinal titulo="Falar com o Hugo" />
 </Base>
+
+<style>
+  .metodo__cadeia {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--line);
+  }
+</style>

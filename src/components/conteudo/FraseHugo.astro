@@ -1,0 +1,90 @@
+---
+/**
+ * Uma frase-assinatura do Hugo em destaque (D51), citada palavra por palavra de `lib/frases.ts`.
+ * É chamada visual, não explicação: a frase grande, o nome pequeno. O slot recebe o que vem
+ * logo abaixo (por exemplo, "Quem é Hugo Martins" na Home).
+ */
+import type { Frase } from '../../lib/frases';
+
+interface Props {
+  frase: Frase;
+  class?: string;
+}
+const { frase, class: extra } = Astro.props;
+---
+
+<figure class:list={['frase', extra]}>
+  <blockquote class="frase__citacao">
+    <p>
+      {frase.texto
+        .split(/(?<=,) /)
+        .map((parte, i) => (i > 0 ? [' ', <span>{parte}</span>] : <span>{parte}</span>))}
+    </p>
+  </blockquote>
+  <figcaption class="frase__autor">Hugo Martins</figcaption>
+  <slot />
+</figure>
+
+<style>
+  .frase {
+    margin: 0;
+  }
+
+  .frase__citacao {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Aspa grande em teal, decorativa (o texto da citação não depende dela). */
+  .frase__citacao::before {
+    content: '“';
+    display: block;
+    height: 0.5em;
+    margin-bottom: var(--space-3);
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 3rem + 4vw, 7rem);
+    line-height: 1;
+    color: var(--filete);
+  }
+
+  .frase__citacao p {
+    max-width: 22ch;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: var(--tracking-display);
+    color: var(--text-strong);
+    text-wrap: balance;
+  }
+
+  /* Quebra de linha nas vírgulas da própria frase, quando couber. No celular cada trecho já
+     ocupa a largura toda, e a quebra natural fica melhor. */
+  @media (min-width: 40rem) {
+    .frase__citacao span {
+      display: inline-block;
+    }
+  }
+
+  .frase__autor {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    margin-top: var(--space-5);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    letter-spacing: var(--tracking-rotulo);
+    text-transform: uppercase;
+    color: var(--eyebrow);
+  }
+
+  .frase__autor::before {
+    content: '';
+    width: 1.75rem;
+    height: 1px;
+    background: currentColor;
+  }
+</style>

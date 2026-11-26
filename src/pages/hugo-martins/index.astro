@@ -19,6 +19,8 @@ import { trilha } from '../../lib/trilha';
 import { pagina, tituloSeo } from '../../lib/paginas';
 import { ids, noPessoa } from '../../lib/schema/grafo';
 import { urlAbsolutaDoCaminho, urlInicio } from '../../lib/seo';
+import FraseHugo from '../../components/conteudo/FraseHugo.astro';
+import { frases } from '../../lib/frases';
 
 const p = await pagina('hugo-martins');
 const { Content } = await render(p);
@@ -78,7 +80,13 @@ const fatos = [
     </div>
   </div>
 
-  <section class="faixa secao" aria-labelledby="frentes">
+  <div class="secao tema-navy navy-profundo">
+    <div class="container">
+      <FraseHugo frase={frases.almaCorpo} />
+    </div>
+  </div>
+
+  <section class="secao" aria-labelledby="frentes">
     <div class="container">
       <h2 id="frentes">Como Hugo Martins trabalha hoje</h2>
       <Frentes />
