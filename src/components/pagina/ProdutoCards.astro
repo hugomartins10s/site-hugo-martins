@@ -1,6 +1,6 @@
 ---
 // Grade de cartões de produto (hubs, Home e "outras etapas"). O texto do cartão é a `chamada`
-// [C] da spec 3.1; sem ela, o cartão mostra só o nome.
+// [C] da spec 3.1; sem ela (treinamentos da Lumi), a pergunta-alvo da página.
 import Card from '../conteudo/Card.astro';
 import { url } from '../../lib/links';
 import { caminhoDoProduto, type Produto } from '../../lib/produtos';
@@ -21,7 +21,7 @@ const { produtos, eyebrow, nivel = 3 } = Astro.props;
       eyebrow={eyebrow?.(p)}
       nivel={nivel}
     >
-      {p.data.chamada && <p>{p.data.chamada}</p>}
+      <p>{p.data.chamada ?? p.data.pergunta}</p>
     </Card>
   ))}
 </div>

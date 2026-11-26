@@ -68,17 +68,19 @@
   --font-body: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-ui: var(--font-body);
   --font-h1: var(--font-display);
-  --tracking-heading: -0.01em;
+  --tracking-heading: -0.015em;
+  --tracking-display: -0.028em; /* títulos grandes (h1, .display) */
   --tracking-rotulo: 0.14em; /* só nos rótulos curtos em caixa alta (.eyebrow) */
 
   --step--1: 0.9375rem; /* 15px: legendas, metadados */
   --step-0: 1.125rem; /* 18px: corpo (spec: ≥ 17px) */
-  --step-1: clamp(1.25rem, 1.15rem + 0.4vw, 1.4rem);
-  --step-2: clamp(1.45rem, 1.25rem + 0.9vw, 1.85rem);
-  --step-3: clamp(1.8rem, 1.45rem + 1.6vw, 2.5rem);
-  --step-4: clamp(2.3rem, 1.6rem + 3vw, 3.75rem);
-  --leading: 1.6;
-  --leading-tight: 1.15;
+  --step-1: clamp(1.2rem, 1.1rem + 0.45vw, 1.375rem);
+  --step-2: clamp(1.4rem, 1.2rem + 0.9vw, 1.75rem);
+  --step-3: clamp(1.9rem, 1.4rem + 2.1vw, 3rem);
+  --step-4: clamp(2.3rem, 1.4rem + 4vw, 4.5rem);
+  --step-5: clamp(2.3rem, 1.2rem + 5vw, 5.25rem); /* título do hero da Home */
+  --leading: 1.65;
+  --leading-tight: 1.1;
   --measure: 68ch; /* 60 a 72 caracteres */
 
   /* Espaçamento */
@@ -90,15 +92,20 @@
   --space-6: 2rem;
   --space-7: 3rem;
   --space-8: 4.5rem;
-  --space-9: 7rem;
-  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  --container: 72rem;
-  --topo-livre: 7.5rem; /* espaço do cabeçalho flutuante */
+  --space-9: clamp(4.5rem, 3rem + 5vw, 8rem);
+  --gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);
+  --container: 76rem;
+  --topo-livre: 8.5rem; /* espaço do cabeçalho flutuante */
 
   /* Formas */
   --radius-pill: 999px;
   --radius-panel: 24px; /* painéis de vidro: 24–28px */
-  --radius-card: 14px;
+  --radius-card: 20px;
+  --radius-inner: 12px;
+
+  /* Sombras tingidas de navy (uma fonte de luz, de cima) */
+  --sombra-1: 0 1px 2px rgba(0, 5, 35, 0.04), 0 10px 30px -18px rgba(0, 5, 35, 0.18);
+  --sombra-2: 0 2px 6px rgba(0, 5, 35, 0.05), 0 28px 56px -24px rgba(0, 5, 35, 0.28);
   --radius-field: 10px;
 
   /* Movimento (150–250 ms; desligado em prefers-reduced-motion) */
@@ -123,7 +130,7 @@
   color-scheme: light;
 
   --bg: var(--papel);
-  --surface-1: #ffffff; /* cartão */
+  --surface-1: #fffefb; /* cartão */
   --surface-2: var(--papel-2); /* faixa alternada, superfície elevada */
   --surface-3: #e8e4da; /* hover */
   --campo: #ffffff;
@@ -138,7 +145,7 @@
   --link: var(--hm-navy);
   --link-hover: var(--teal-escuro);
   --focus: var(--hm-navy);
-  --eyebrow: var(--text-muted);
+  --eyebrow: var(--teal-escuro);
   --filete: var(--hm-teal);
 
   /* Vidro neutro (botão secundário) */
@@ -182,7 +189,7 @@
   --link: var(--hm-teal);
   --link-hover: var(--hm-cyan);
   --focus: var(--hm-cyan);
-  --eyebrow: var(--text-muted);
+  --eyebrow: var(--hm-teal);
   --filete: var(--hm-teal);
 
   /* Vidro neutro: navy translúcido. Opaco o bastante para o cabeçalho ser legível sobre o papel. */

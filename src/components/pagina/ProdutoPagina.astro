@@ -108,18 +108,27 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
   </Topo>
 
   <div class="container secao produto">
-    <FactList fatos={fatos} />
-    {produto.id === 'potencial-corporativo' && <CrossFrontNotice para="empresas" />}
-    {!pessoal && <CrossFrontNotice para="pessoal" />}
-    <div class="prose produto__corpo">
-      <Content />
+    <div class="produto__grade">
+      <div class="produto__lado">
+        <FactList fatos={fatos} />
+      </div>
+      <div class="produto__principal">
+        {produto.id === 'potencial-corporativo' && <CrossFrontNotice para="empresas" />}
+        {!pessoal && <CrossFrontNotice para="pessoal" />}
+        <div class="prose produto__corpo">
+          <Content />
+        </div>
+      </div>
     </div>
     {conceitos.length > 0 && (
       <section class="produto__conceitos" aria-labelledby="conceitos">
-        <h2 id="conceitos">
-          {pessoal ? 'Conceitos do método nesta etapa' : 'Conceitos do método neste treinamento'}
-        </h2>
-        <ConceitoCards conceitos={conceitos} eyebrow={() => 'Método'} />
+        <div class="secao__cabeca">
+          <span class="eyebrow">Método</span>
+          <h2 id="conceitos">
+            {pessoal ? 'Conceitos do método nesta etapa' : 'Conceitos do método neste treinamento'}
+          </h2>
+        </div>
+        <ConceitoCards conceitos={conceitos} />
       </section>
     )}
   </div>
@@ -127,7 +136,10 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
   {pessoal && (
     <section class="faixa secao" aria-labelledby="esteira">
       <div class="container">
-        <h2 id="esteira">A esteira do trabalho individual</h2>
+        <div class="secao__cabeca">
+          <span class="eyebrow">Para você</span>
+          <h2 id="esteira">A esteira do trabalho individual</h2>
+        </div>
         <EsteiraDiagram />
       </div>
     </section>
@@ -141,10 +153,13 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
 
   <section class="faixa secao" aria-labelledby="irmaos">
     <div class="container">
-      <h2 id="irmaos">{tituloIrmaos}</h2>
+      <div class="secao__cabeca">
+        <span class="eyebrow">{hub.nome}</span>
+        <h2 id="irmaos">{tituloIrmaos}</h2>
+      </div>
       <ProdutoCards produtos={irmaos} />
-      <p class="produto__hub">
-        <a href={url(hub.caminho)}>
+      <p class="secao__pe">
+        <a class="link-seta" href={url(hub.caminho)}>
           {pessoal ? 'Como funciona o trabalho individual' : 'Conheça a Lumi – Soluções Integradas'}
         </a>
       </p>
@@ -168,7 +183,44 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
 
   .produto {
     display: grid;
+    gap: var(--space-9);
+  }
+
+  .produto__grade {
+    display: grid;
     gap: var(--space-7);
+  }
+
+  .produto__principal {
+    display: grid;
+    gap: var(--space-6);
+    align-content: start;
+  }
+
+  .produto__principal > :global(*) {
+    margin: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .produto__grade {
+      grid-template-columns: minmax(0, 1fr) 22rem;
+      gap: var(--space-8);
+    }
+
+    .produto__lado {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .produto__lado > :global(*) {
+      position: sticky;
+      top: 6.5rem;
+    }
+
+    .produto__principal {
+      grid-column: 1;
+      grid-row: 1;
+    }
   }
 
   .produto__corpo {
@@ -182,10 +234,5 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
 
   .produto__fim > :global(*) {
     margin: 0;
-  }
-
-  .produto__hub {
-    margin: var(--space-6) 0 0;
-    font-weight: 600;
   }
 </style>

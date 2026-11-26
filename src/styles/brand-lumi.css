@@ -44,6 +44,7 @@
   --link-hover: #0079b6;
   --focus: #024b98;
   --filete: #0079b6;
+  --eyebrow: #024b98;
 
   --tint-bg: linear-gradient(135deg, rgba(2, 75, 152, 0.94), rgba(2, 60, 128, 0.9));
   --tint-bg-hover: linear-gradient(135deg, rgba(0, 101, 160, 0.95), rgba(2, 75, 152, 0.92));
@@ -58,6 +59,7 @@
   --link-hover: #9ad6f5;
   --focus: #5cb8e6;
   --filete: #0079b6;
+  --eyebrow: #5cb8e6;
 
   --tint-bg: linear-gradient(135deg, rgba(0, 121, 182, 0.94), rgba(2, 75, 152, 0.9));
   --tint-bg-hover: linear-gradient(135deg, rgba(0, 135, 200, 0.96), rgba(2, 85, 168, 0.92));

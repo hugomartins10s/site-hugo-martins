@@ -12,7 +12,7 @@ interface Props {
 const { trilha, class: extra } = Astro.props;
 ---
 
-<div class:list={['topo', 'tema-navy', extra]}>
+<div class:list={['topo', 'tema-navy', 'navy-profundo', extra]}>
   <div class="container topo__conteudo">
     {trilha && <Breadcrumb itens={trilha} />}
     <slot />
@@ -21,9 +21,17 @@ const { trilha, class: extra } = Astro.props;
 
 <style>
   .topo {
-    padding-top: calc(var(--topo-livre) + var(--space-6));
-    padding-bottom: var(--space-9);
-    background: var(--bg);
+    padding-top: calc(var(--topo-livre) + var(--space-5));
+    padding-bottom: clamp(var(--space-8), 6vw, var(--space-9));
+  }
+
+  .topo__conteudo > :global(h1:not(.display)) {
+    max-width: 22ch;
+  }
+
+  .topo__conteudo > :global(.lead) {
+    margin-top: var(--space-5);
+    color: var(--text);
   }
 
   .topo__conteudo > :global(:last-child) {

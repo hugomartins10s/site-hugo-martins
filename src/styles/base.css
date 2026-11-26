@@ -7,6 +7,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: 6rem; /* âncoras não ficam sob o cabeçalho flutuante */
@@ -14,7 +15,7 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -51,10 +52,15 @@ h4 {
 h1 {
   font-family: var(--font-h1);
   font-size: var(--step-4);
-  font-weight: 500;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: var(--tracking-display);
 }
 h2 {
   font-size: var(--step-3);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: var(--tracking-display);
 }
 h3 {
   font-size: var(--step-2);
@@ -90,8 +96,9 @@ strong {
 
 /* Título do hero: serifada grande, em caixa normal (D23). */
 .display {
-  max-width: 18ch;
-  font-size: var(--step-4);
+  max-width: 15ch;
+  font-size: var(--step-5);
+  line-height: 0.98;
   overflow-wrap: break-word;
 }
 
@@ -101,17 +108,35 @@ h1.titulo-longo {
   font-weight: 600;
 }
 
-/* Rótulo curto em caixa alta espaçada, o único lugar com esse tratamento. */
+h1.display.titulo-longo {
+  max-width: 22ch;
+  font-size: var(--step-4);
+  line-height: 1.05;
+}
+
+/* Rótulo curto em caixa alta espaçada, o único lugar com esse tratamento. Um filete na cor da
+   marca abre o rótulo. */
 .eyebrow {
-  display: block;
-  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin-bottom: var(--space-4);
   font-family: var(--font-ui);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 650;
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: var(--tracking-rotulo);
   color: var(--eyebrow);
+}
+
+.eyebrow::before {
+  content: '';
+  flex: none;
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
 }
 
 /* Filete decorativo em teal: o único uso da cor da marca fora do logo e do navy. */
@@ -126,10 +151,38 @@ h1.titulo-longo {
 
 /* Parágrafo-resposta (spec 5): o trecho que queremos ver citado. */
 .lead {
-  max-width: var(--measure);
+  max-width: 62ch;
   font-size: var(--step-1);
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--text);
+}
+
+/* Link de "ver mais", com seta que anda no hover. Sem sublinhado até o hover. */
+.link-seta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  min-height: var(--tap);
+  font-weight: 600;
+  color: var(--text-strong);
+  text-decoration: none;
+}
+
+.link-seta::after {
+  content: '→';
+  font-family: var(--font-ui);
+  color: var(--eyebrow);
+  transition: transform var(--dur-2) var(--ease);
+}
+
+.link-seta:hover {
+  color: var(--text-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.link-seta:hover::after {
+  transform: translateX(4px);
 }
 
 .muted {
@@ -207,7 +260,36 @@ a:hover {
 }
 
 .secao {
-  padding-block: var(--space-8);
+  padding-block: var(--space-9) calc(var(--space-9) + var(--space-2));
+}
+
+/* Cabeçalho de seção: rótulo, título e (opcional) um texto curto ao lado, no desktop. */
+.secao__cabeca {
+  display: grid;
+  gap: var(--space-4) var(--space-7);
+  align-items: end;
+  margin-bottom: var(--space-7);
+}
+
+.secao__cabeca > * {
+  margin-bottom: 0;
+}
+
+.secao__cabeca h2 {
+  max-width: 26ch;
+}
+
+@media (min-width: 60rem) {
+  .secao__cabeca:has(> :nth-child(2) + *) {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .secao__cabeca > .eyebrow {
+    grid-column: 1 / -1;
+  }
+}
+
+.secao__pe {
+  margin: var(--space-6) 0 0;
 }
 
 .acoes {
@@ -224,17 +306,45 @@ a:hover {
 
 .grade {
   display: grid;
-  gap: var(--space-5);
+  gap: clamp(var(--space-4), 1.5vw, var(--space-5));
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+/* Navy com profundidade discreta (topo, chamada final, rodapé): um degradê quase imperceptível e
+   grão fino, para não ser um bloco chapado. Sem manchas de luz (D23). */
+.navy-profundo {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.02)),
+    radial-gradient(120% 90% at 85% 0%, #0b1238 0%, var(--hm-navy) 60%);
+  background-color: var(--hm-navy);
+  overflow: hidden;
+}
+
+.navy-profundo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  pointer-events: none;
 }
 
 /* ---------- Superfícies sólidas (conteúdo: spec 9.1) ---------- */
 
 .superficie {
   background: var(--surface-1);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(0, 5, 35, 0.05);
   border-radius: var(--radius-card);
+  box-shadow: var(--sombra-1);
   padding: clamp(var(--space-5), 3vw, var(--space-6));
+}
+
+.tema-navy .superficie {
+  border-color: var(--line);
+  box-shadow: none;
 }
 
 .superficie--2 {

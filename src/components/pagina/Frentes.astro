@@ -1,10 +1,10 @@
 ---
 /**
  * As duas frentes lado a lado, cada uma dizendo quem compra (spec 3.1 e 5.1). Textos [C] da
- * spec 3.1; os produtos vêm da navegação. Usado na Home e na página do Hugo.
+ * spec 3.1 (lib/frentes.ts); os produtos vêm da navegação. Usado na Home e na página do Hugo.
+ * A frente empresas leva a identidade Lumi (logo, fonte e azul), a pessoal a do Hugo.
  */
-import navegacao from '../../data/navegacao.json';
-import { empresa } from '../../lib/empresa';
+import { frentes } from '../../lib/frentes';
 import { url } from '../../lib/links';
 
 interface Props {
@@ -12,27 +12,24 @@ interface Props {
 }
 const { nivel = 3 } = Astro.props;
 const Titulo = `h${nivel}` as 'h2' | 'h3';
-const [paraVoce, paraEmpresas] = navegacao.principal;
-const frentes = [
-  {
-    item: paraVoce!,
-    marca: empresa.marcas.pessoal.nome,
-    quem: 'Quem compra é a pessoa.',
-    lumi: false,
-  },
-  {
-    item: paraEmpresas!,
-    marca: empresa.marcas.empresas.nome,
-    quem: 'Quem compra é a empresa. A Lumi fatura os contratos.',
-    lumi: true,
-  },
-];
 ---
 
 <div class="frentes">
   {frentes.map((f) => (
     <article class="frente superficie" data-brand={f.lumi ? 'lumi' : undefined}>
-      <span class="eyebrow">{f.item.rotulo}</span>
+      <div class="frente__cabeca">
+        <span class="eyebrow">{f.item.rotulo}</span>
+        {f.lumi && (
+          <img
+            class="frente__logo"
+            src={url('/brand/lumi.svg')}
+            width="2777"
+            height="979"
+            alt=""
+            loading="lazy"
+          />
+        )}
+      </div>
       <Titulo class="frente__titulo">
         <a href={url(f.item.href)}>{f.marca}</a>
       </Titulo>
@@ -40,7 +37,19 @@ const frentes = [
       <ul class="frente__produtos">
         {f.item.filhos?.map((p) => (
           <li>
-            <a href={url(p.href)}>{p.rotulo}</a>
+            <a href={url(p.href)}>
+              <span>{p.rotulo}</span>
+              <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+                <path
+                  d="M3 8h10M9 4l4 4-4 4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </a>
           </li>
         ))}
       </ul>
@@ -51,16 +60,50 @@ const frentes = [
 <style>
   .frentes {
     display: grid;
-    gap: var(--space-5);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: clamp(var(--space-4), 1.5vw, var(--space-5));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
   }
 
   .frente {
-    border-top: 3px solid var(--filete);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(var(--space-5), 3.5vw, var(--space-7));
+    overflow: hidden;
+  }
+
+  /* Filete na cor da frente, no topo do bloco. */
+  .frente::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--filete);
+  }
+
+  .frente__cabeca {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 40px;
+    margin-bottom: var(--space-5);
+  }
+
+  .frente__cabeca .eyebrow {
+    margin: 0;
+  }
+
+  .frente__logo {
+    width: 104px;
+    height: auto;
   }
 
   .frente__titulo {
-    font-size: var(--step-2);
+    font-size: var(--step-3);
+    font-weight: 400;
+    letter-spacing: var(--tracking-display);
+    margin-bottom: var(--space-3);
   }
 
   .frente__titulo a {
@@ -70,15 +113,18 @@ const frentes = [
 
   .frente__titulo a:hover {
     text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
   }
 
   .frente__quem {
+    margin-bottom: var(--space-6);
     font-size: var(--step-1);
-    color: var(--text-strong);
+    color: var(--text-muted);
   }
 
   .frente__produtos {
-    margin: 0;
+    margin: auto 0 0;
     padding: 0;
     list-style: none;
     border-top: 1px solid var(--line);
@@ -91,7 +137,28 @@ const frentes = [
   .frente__produtos a {
     display: flex;
     align-items: center;
-    min-height: var(--tap);
-    padding-block: var(--space-2);
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 60px;
+    padding-block: var(--space-3);
+    font-family: var(--font-display);
+    font-size: 1.1875rem;
+    line-height: 1.25;
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .frente__produtos svg {
+    flex: none;
+    color: var(--brand-2);
+    transition: transform var(--dur-2) var(--ease);
+  }
+
+  .frente__produtos a:hover {
+    color: var(--brand-2);
+  }
+
+  .frente__produtos a:hover svg {
+    transform: translateX(4px);
   }
 </style>
