@@ -56,5 +56,11 @@ export const formacoes: Formacao[] = [
     resumo:
       'Aplica o trabalho à vida profissional: relações na empresa, dinâmicas de poder, escolha da área certa, ajustes de carreira e gestão de time.',
     fonte: 'Chamada e resumo do Potencial Corporativo (produtos/pessoal/potencial-corporativo.md)',
+    imagem: {
+      base: '/img/formacao-potencial-corporativo',
+      largura: 1400,
+      altura: 939,
+      alt: 'Um grupo de pessoas trabalha junto numa horta já crescida, colhendo e conversando ao lado de um muro de pedra',
+    },
   },
 ];
