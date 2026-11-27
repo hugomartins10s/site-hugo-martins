@@ -1,29 +1,28 @@
 ---
 /**
- * Home (spec 5.1). Seções, na ordem da spec: hero · as duas frentes · a esteira · Lumi · quem é o
- * Hugo · Método (4 conceitos) · livro · últimos 3 posts · contato rápido.
- * - Slogan "A Perspectiva que mudará a sua Atitude" fica fora até a P33 (só aparece na página
- *   Holos do manual); entra sozinho quando `slogan` existir em empresa.json.
- * - Método: os 4 primeiros conceitos do lote 1, na ordem da spec 4.4. Últimos posts: só com posts.
- * - Chamadas (D51): frases-assinatura do Hugo, palavra por palavra (lib/frases.ts). O h1 da spec
- *   continua sendo o h1, só com menos peso visual que a frase.
+ * Home. Mostra autoridade e curiosidade, não explicação (D52, desvio pedido da spec 5.1):
+ * hero com a frase do Hugo · o que ele ajuda a resolver, na vida e na empresa · quem é o Hugo ·
+ * Método · livro · últimos posts · em resumo · contato.
+ * - Quem compra, a esteira e os formatos saem da Home e ficam em /para-voce/ e /para-empresas/.
+ * - O parágrafo-resposta da spec continua no HTML, discreto, no fim ("Em resumo"), e na meta
+ *   description.
+ * - Slogan "A Perspectiva que mudará a sua Atitude" fica fora até a P33; entra sozinho quando
+ *   `slogan` existir em empresa.json.
+ * - Chamadas (D51): frases-assinatura do Hugo (lib/frases.ts). Problemas (D52): lib/problemas.ts.
  */
 import Base from '../layouts/Base.astro';
 import Topo from '../components/layout/Topo.astro';
 import Lead from '../components/conteudo/Lead.astro';
 import Card from '../components/conteudo/Card.astro';
-import EsteiraDiagram from '../components/conteudo/EsteiraDiagram.astro';
 import GlassButton from '../components/glass/GlassButton.astro';
-import Frentes from '../components/pagina/Frentes.astro';
-import ProdutoCards from '../components/pagina/ProdutoCards.astro';
 import CtaFinal from '../components/pagina/CtaFinal.astro';
 import FraseHugo from '../components/conteudo/FraseHugo.astro';
 import CadeiaDestino from '../components/conteudo/CadeiaDestino.astro';
 import { frases } from '../lib/frases';
+import { naEmpresa, naVida } from '../lib/problemas';
 import { empresa } from '../lib/empresa';
 import { url } from '../lib/links';
 import { pagina, tituloSeo } from '../lib/paginas';
-import { produtosDaFrente } from '../lib/produtos';
 import { dataCurta } from '../lib/datas';
 import { caminhoDoConceito, conceitosOrdenados } from '../lib/conceitos';
 import { caminhoDoPost, postsOrdenados } from '../lib/posts';
@@ -31,10 +30,16 @@ import { caminhoDoPost, postsOrdenados } from '../lib/posts';
 const p = await pagina('inicio');
 const livroPagina = await pagina('livro');
 const { pessoa, livro } = empresa;
-const treinamentos = await produtosDaFrente('empresas');
 const conceitos = (await conceitosOrdenados()).filter((c) => c.data.lote === 1).slice(0, 4);
 const posts = (await postsOrdenados()).slice(0, 3);
 const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
+
+/** Os nomes dos programas, só como convite: o que cada um é, a página dele explica. */
+const caminhos = [
+  { nome: '10S', href: '/para-voce/10s/' },
+  { nome: 'Potencial Humano', href: '/para-voce/potencial-humano/' },
+  { nome: 'Potencial Corporativo', href: '/para-voce/potencial-corporativo/' },
+];
 ---
 
 <Base title={tituloSeo(p)} description={p.data.resumo}>
@@ -47,75 +52,58 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     </p>
     {empresa.slogan && <p class="inicio__slogan">{empresa.slogan}</p>}
     <div class="inicio__hero-base">
-      <div>
-        <Lead>{p.data.resumo}</Lead>
-        <div class="acoes">
-          <GlassButton href={url('/para-voce/')} tamanho="grande">
-            Para você
-          </GlassButton>
-          <GlassButton href={url('/para-empresas/')} variante="secundario" tamanho="grande">
-            Para empresas
-          </GlassButton>
-        </div>
+      <Lead>{pessoa.descricao}</Lead>
+      <div class="acoes">
+        <GlassButton href={url('/hugo-martins/')} tamanho="grande">
+          Conhecer Hugo Martins
+        </GlassButton>
+        <GlassButton href={url('/contato/')} variante="secundario" tamanho="grande">
+          Falar com o Hugo
+        </GlassButton>
       </div>
-      <dl class="inicio__ficha">
-        <div>
-          <dt>Criou</dt>
-          {pessoa.criacoes.map((c) => (
-            <dd>{c}</dd>
-          ))}
-        </div>
-        <div>
-          <dt>Livro</dt>
-          <dd>
-            <a href={url(livro.caminho)}>{livro.titulo}</a>
-          </dd>
-        </div>
-      </dl>
     </div>
   </Topo>
 
-  <section class="container secao" aria-labelledby="frentes">
+  <section class="container secao" aria-labelledby="resolve">
     <div class="secao__cabeca">
-      <h2 id="frentes">Duas frentes de trabalho</h2>
+      <h2 id="resolve">O que Hugo Martins ajuda a resolver</h2>
     </div>
-    <Frentes />
-  </section>
-
-  <section class="faixa secao" aria-labelledby="esteira">
-    <div class="container inicio__esteira">
-      <div>
-        <span class="eyebrow">Para você</span>
-        <h2 id="esteira">A esteira do trabalho individual</h2>
-        <p class="secao__pe">
-          <a class="link-seta" href={url('/para-voce/')}>
-            Como funciona o trabalho individual com Hugo Martins
+    <div class="resolve">
+      <div class="resolve__coluna">
+        <h3 class="resolve__onde">Na sua vida</h3>
+        <ol class="resolve__lista">
+          {naVida.map((x) => (
+            <li>
+              <span class="resolve__titulo">{x.titulo}</span>
+              <span class="resolve__texto">{x.texto}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="resolve__caminhos">
+          {caminhos.map((c) => (
+            <a class="link-seta" href={url(c.href)}>
+              {c.nome}
+            </a>
+          ))}
+        </p>
+      </div>
+      <div class="resolve__coluna resolve__coluna--lumi" data-brand="lumi">
+        <h3 class="resolve__onde">Na sua empresa</h3>
+        <ol class="resolve__lista">
+          {naEmpresa.map((x) => (
+            <li>
+              <span class="resolve__titulo">{x.titulo}</span>
+              <span class="resolve__texto">{x.texto}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="resolve__caminhos">
+          <a class="resolve__lumi" href={url('/para-empresas/')}>
+            <img src={url('/brand/lumi.svg')} width="2777" height="979" alt="" loading="lazy" />
+            <span class="link-seta">{empresa.marcas.empresas.nome}</span>
           </a>
         </p>
       </div>
-      <EsteiraDiagram />
-    </div>
-  </section>
-
-  <section class="secao inicio__lumi" data-brand="lumi" aria-labelledby="lumi">
-    <div class="container">
-      <div class="secao__cabeca">
-        <img
-          class="inicio__lumi-logo"
-          src={url('/brand/lumi.svg')}
-          width="2777"
-          height="979"
-          alt=""
-          loading="lazy"
-        />
-        <h2 id="lumi">Treinamentos para empresas: {empresa.marcas.empresas.nome}</h2>
-      </div>
-      <ProdutoCards produtos={treinamentos} />
-      <p class="secao__pe">
-        <a class="link-seta" href={url('/para-empresas/')}>
-          O que é a Lumi – Soluções Integradas
-        </a>
-      </p>
     </div>
   </section>
 
@@ -129,9 +117,11 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
         <h2 id="hugo">Quem é Hugo Martins</h2>
       </div>
       <div class="inicio__hugo-texto">
-        <p class="inicio__hugo-destaque">{pessoa.descricao}</p>
-        <p>
+        <p class="inicio__hugo-destaque">
           Começou pelo {pessoa.comecouPor} e criou {lista(pessoa.criacoes.map((c) => `o ${c}`))}.
+        </p>
+        <p>
+          Autor do livro <a href={url(livro.caminho)}>{livro.titulo}</a>.
         </p>
         <p class="secao__pe">
           <a class="link-seta" href={url('/hugo-martins/')}>
@@ -217,6 +207,13 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     </section>
   )}
 
+  <section class="container inicio__resumo" aria-labelledby="resumo">
+    <h2 id="resumo" class="eyebrow">
+      Em resumo
+    </h2>
+    <p>{p.data.resumo}</p>
+  </section>
+
   <CtaFinal titulo="Falar com o Hugo">
     <p>
       E-mail: <a href={`mailto:${empresa.contato.email}`}>{empresa.contato.email}</a>
@@ -263,82 +260,136 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     text-wrap: balance;
   }
 
-  .inicio__hero-base .lead {
-    max-width: 54ch;
-    font-size: 1.0625rem;
-    color: var(--text-muted);
-  }
-
+  /* Autoridade em uma linha, sem explicar o trabalho (D52). */
   .inicio__hero-base {
     display: grid;
-    gap: var(--space-7);
+    gap: var(--space-6);
     padding-top: var(--space-6);
     border-top: 1px solid var(--line);
   }
 
-  .inicio__hero-base .acoes {
-    margin-top: var(--space-6);
-  }
-
-  .inicio__ficha {
-    display: grid;
-    gap: var(--space-5);
+  .inicio__hero-base :global(.lead) {
+    max-width: 44ch;
     margin: 0;
-    align-content: start;
+    font-size: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
+    line-height: 1.5;
+    color: var(--text);
   }
 
-  .inicio__ficha dt {
-    margin-bottom: var(--space-2);
-    font-size: 0.75rem;
+  .inicio__hero-base .acoes {
+    margin: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .inicio__hero-base {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: var(--space-8);
+    }
+  }
+
+  /* O que ele ajuda a resolver: na vida e na empresa, lado a lado. */
+  .resolve {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .resolve {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: var(--space-9);
+    }
+
+    .resolve__coluna--lumi {
+      padding-left: var(--space-8);
+      border-left: 1px solid var(--line);
+    }
+  }
+
+  .resolve__onde {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-ui);
+    font-size: 0.8125rem;
     font-weight: 650;
     letter-spacing: var(--tracking-rotulo);
     text-transform: uppercase;
     color: var(--eyebrow);
   }
 
-  .inicio__ficha dd {
+  .resolve__lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: resolve;
+  }
+
+  .resolve__lista li {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    column-gap: var(--space-3);
+    row-gap: var(--space-1);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--line);
+    counter-increment: resolve;
+  }
+
+  .resolve__lista li::before {
+    content: counter(resolve, decimal-leading-zero);
+    grid-row: 1 / span 2;
+    padding-top: 0.45em;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--brand-2);
+  }
+
+  .resolve__titulo {
     font-family: var(--font-display);
-    font-size: var(--step-1);
-    line-height: 1.35;
+    font-size: var(--step-2);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-display);
     color: var(--text-strong);
   }
 
-  .inicio__ficha dd a {
-    color: inherit;
-    text-decoration-color: var(--line-strong);
+  .resolve__texto {
+    max-width: 44ch;
+    color: var(--text-muted);
   }
 
-  @media (min-width: 60rem) {
-    .inicio__hero-base {
-      grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-      gap: var(--space-8);
-    }
-
-    .inicio__ficha {
-      padding-left: var(--space-6);
-      border-left: 1px solid var(--line);
-    }
+  .resolve__caminhos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-6);
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
   }
 
-  .inicio__lumi-logo {
-    width: min(100%, 180px);
+  .resolve__lumi {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+    text-decoration: none;
+  }
+
+  .resolve__lumi img {
+    width: 112px;
     height: auto;
   }
 
-  .inicio__lumi .secao__cabeca h2 {
-    max-width: 24ch;
+  .inicio__resumo {
+    padding-bottom: var(--space-8);
   }
 
-  .inicio__esteira {
-    display: grid;
-    gap: var(--space-6) var(--space-8);
-    align-items: center;
+  .inicio__resumo h2 {
+    margin-bottom: var(--space-3);
   }
 
-  @media (min-width: 64rem) {
-    .inicio__esteira {
-      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
-    }
+  .inicio__resumo p {
+    max-width: var(--measure);
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
   }
 
   .inicio__cadeia {
