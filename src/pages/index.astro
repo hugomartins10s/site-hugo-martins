@@ -174,12 +174,29 @@ const caminhos = [
 
   <section class="container inicio__livro-secao" aria-labelledby="livro">
     <div class="inicio__livro tema-navy">
+      <img
+        class="inicio__livro-capa"
+        src={url('/img/livro-reiki-uma-viagem-a-alma-400.webp')}
+        srcset={`${url('/img/livro-reiki-uma-viagem-a-alma-400.webp')} 400w, ${url('/img/livro-reiki-uma-viagem-a-alma.webp')} 931w`}
+        sizes="(min-width: 60rem) 13rem, 11rem"
+        width="400"
+        height="577"
+        alt="Capa do livro Reiki, uma Viagem à Alma, de Hugo David Santos Martins, publicado pela Editora Viseu"
+        loading="lazy"
+      />
       <div>
         <span class="eyebrow">O livro</span>
         <h2 id="livro">
           <a href={url(livro.caminho)}>{livro.titulo}</a>
         </h2>
         <p>{livroPagina.data.resumo}</p>
+        {livroPagina.data.lojas[0] && (
+          <div class="acoes">
+            <GlassButton href={livroPagina.data.lojas[0].url} rel="noopener" target="_blank">
+              Comprar na {livroPagina.data.lojas[0].nome}
+            </GlassButton>
+          </div>
+        )}
       </div>
       <dl class="inicio__livro-ficha">
         <div>
@@ -493,10 +510,21 @@ const caminhos = [
     color: var(--text);
   }
 
+  /* Capa do livro (D55): no celular, em cima; no desktop, à esquerda do texto. */
+  .inicio__livro-capa {
+    width: 11rem;
+    height: auto;
+    filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.45));
+  }
+
   @media (min-width: 60rem) {
     .inicio__livro {
-      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-      align-items: end;
+      grid-template-columns: 13rem minmax(0, 1.6fr) minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .inicio__livro-capa {
+      width: 100%;
     }
   }
 

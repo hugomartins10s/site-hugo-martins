@@ -11,6 +11,7 @@ import Lead from '../../../components/conteudo/Lead.astro';
 import FactList from '../../../components/conteudo/FactList.astro';
 import Atualizado from '../../../components/conteudo/Atualizado.astro';
 import CtaFinal from '../../../components/pagina/CtaFinal.astro';
+import GlassButton from '../../../components/glass/GlassButton.astro';
 import { empresa } from '../../../lib/empresa';
 import { url } from '../../../lib/links';
 import { trilha } from '../../../lib/trilha';
@@ -35,10 +36,27 @@ const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
   schema={[noLivro(inicio, urlPagina, p.data.resumo)]}
   principal={ids(inicio).livro}
 >
-  <Topo trilha={caminho}>
+  <Topo trilha={caminho} class="livro__topo">
     <span class="eyebrow">O livro de Hugo Martins</span>
     <h1 class="display">{p.data.titulo}</h1>
     <Lead>{p.data.resumo}</Lead>
+    {p.data.lojas[0] && (
+      <div class="acoes">
+        <GlassButton href={p.data.lojas[0].url} tamanho="grande" rel="noopener" target="_blank">
+          Comprar na {p.data.lojas[0].nome}
+        </GlassButton>
+      </div>
+    )}
+    <img
+      class="livro__capa"
+      src={url('/img/livro-reiki-uma-viagem-a-alma.webp')}
+      srcset={`${url('/img/livro-reiki-uma-viagem-a-alma-400.webp')} 400w, ${url('/img/livro-reiki-uma-viagem-a-alma.webp')} 931w`}
+      sizes="(min-width: 60rem) 18rem, 12rem"
+      width="931"
+      height="1342"
+      alt="Capa do livro Reiki, uma Viagem à Alma, de Hugo David Santos Martins, publicado pela Editora Viseu"
+      fetchpriority="high"
+    />
   </Topo>
 
   <div class="container secao livro">
@@ -76,6 +94,37 @@ const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
 </Base>
 
 <style>
+  /* Capa do livro no topo (D55): à direita do texto no desktop, embaixo no celular. */
+  :global(.livro__topo .topo__conteudo) {
+    display: grid;
+    column-gap: var(--space-8);
+  }
+
+  .livro__capa {
+    width: 12rem;
+    height: auto;
+    margin-top: var(--space-6);
+    filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.45));
+  }
+
+  @media (min-width: 60rem) {
+    :global(.livro__topo .topo__conteudo) {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      align-items: center;
+    }
+
+    :global(.livro__topo .topo__conteudo) > :global(*) {
+      grid-column: 1;
+    }
+
+    :global(.livro__topo .topo__conteudo) > .livro__capa {
+      grid-column: 2;
+      grid-row: 1 / span 5;
+      width: 100%;
+      margin-top: 0;
+    }
+  }
+
   .livro {
     display: grid;
     gap: var(--space-7);
