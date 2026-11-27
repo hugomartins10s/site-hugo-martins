@@ -5,10 +5,20 @@
  * Mudou o texto do produto, revise aqui.
  */
 
+export type Imagem = {
+  /** Caminho base em /public/img, sem a largura: `${base}-800.webp` e `${base}-1400.webp`. */
+  base: string;
+  largura: number;
+  altura: number;
+  alt: string;
+};
+
 export type Formacao = {
   nome: string;
   href: string;
   resumo: string;
+  /** Imagem que apoia o que é a formação (D59), enviada pelo Jonathan. */
+  imagem?: Imagem;
   /** De onde saiu, para a revisão. */
   fonte: string;
 };
@@ -20,6 +30,12 @@ export const formacoes: Formacao[] = [
     resumo:
       'Dez sessões individuais para expurgar o que pesa, se entender e situar o momento de vida. Hugo compara o processo a limpar e adubar o terreno antes de plantar o jardim.',
     fonte: 'Chamada e resumo do 10S (produtos/pessoal/10s.md)',
+    imagem: {
+      base: '/img/formacao-10s',
+      largura: 1400,
+      altura: 939,
+      alt: 'Um homem de luvas limpa um terreno cheio de entulho, pneus e sacos de lixo, ao lado de um muro de pedra',
+    },
   },
   {
     nome: 'Potencial Humano',

@@ -114,7 +114,19 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
       class:list={['secao', 'formacao', { faixa: i % 2 === 0 }]}
       aria-labelledby={`formacao-${i + 1}`}
     >
-      <div class="container formacao__grade">
+      <div class:list={['container', 'formacao__grade', { 'formacao__grade--imagem': f.imagem }]}>
+        {f.imagem && (
+          <img
+            class="formacao__imagem"
+            src={url(`${f.imagem.base}-1400.webp`)}
+            srcset={`${url(`${f.imagem.base}-800.webp`)} 800w, ${url(`${f.imagem.base}-1400.webp`)} 1400w`}
+            sizes="(min-width: 60rem) 45vw, 92vw"
+            width={f.imagem.largura}
+            height={f.imagem.altura}
+            alt={f.imagem.alt}
+            loading="lazy"
+          />
+        )}
         <div>
           <span class="eyebrow">Formação {String(i + 1).padStart(2, '0')}</span>
           <h2 id={`formacao-${i + 1}`} class="formacao__nome">
@@ -366,9 +378,46 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     color: var(--text);
   }
 
+  /* Com imagem (D59): imagem > nome > descrição. No celular, empilhados nessa ordem; no
+     desktop, a imagem à esquerda e o nome e a descrição à direita. */
+  .formacao__imagem {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+  }
+
+  .formacao__grade--imagem {
+    align-items: start;
+  }
+
+  .formacao__grade--imagem .formacao__nome {
+    margin-bottom: var(--space-4);
+  }
+
   @media (min-width: 60rem) {
     .formacao__grade {
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+
+    .formacao__grade--imagem {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-rows: auto 1fr;
+      align-items: center;
+      column-gap: var(--space-8);
+    }
+
+    .formacao__grade--imagem .formacao__imagem {
+      grid-row: 1 / span 2;
+    }
+
+    .formacao__grade--imagem > div {
+      align-self: end;
+    }
+
+    .formacao__grade--imagem .formacao__texto {
+      align-self: start;
     }
   }
 
