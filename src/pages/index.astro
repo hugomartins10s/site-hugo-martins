@@ -2,7 +2,7 @@
 /**
  * Home. Mostra autoridade e curiosidade, não explicação (D52, desvio pedido da spec 5.1):
  * hero com a frase do Hugo · o que ele ajuda a resolver, na vida e na empresa · quem é o Hugo ·
- * Método · livro · últimos posts · em resumo · contato.
+ * Método (só a cadeia do destino, D57) · livro · últimos posts · em resumo · contato.
  * - Quem compra, a esteira e os formatos saem da Home e ficam em /para-voce/ e /para-empresas/.
  * - O parágrafo-resposta da spec continua no HTML, discreto, no fim ("Em resumo"), e na meta
  *   description.
@@ -24,13 +24,11 @@ import { empresa } from '../lib/empresa';
 import { url } from '../lib/links';
 import { pagina, tituloSeo } from '../lib/paginas';
 import { dataCurta } from '../lib/datas';
-import { caminhoDoConceito, conceitosOrdenados } from '../lib/conceitos';
 import { caminhoDoPost, postsOrdenados } from '../lib/posts';
 
 const p = await pagina('inicio');
 const livroPagina = await pagina('livro');
 const { pessoa, livro } = empresa;
-const conceitos = (await conceitosOrdenados()).filter((c) => c.data.lote === 1).slice(0, 4);
 const posts = (await postsOrdenados()).slice(0, 3);
 const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
 
@@ -148,29 +146,20 @@ const caminhos = [
     </div>
   </section>
 
-  {conceitos.length > 0 && (
-    <section class="container secao" aria-labelledby="metodo">
-      <div class="secao__cabeca">
-        <span class="eyebrow">Método</span>
-        <h2 id="metodo">O método de Hugo Martins</h2>
-      </div>
-      <div class="inicio__cadeia">
-        <CadeiaDestino />
-      </div>
-      <div class="grade">
-        {conceitos.map((c) => (
-          <Card titulo={c.data.titulo} href={url(caminhoDoConceito(c))}>
-            <p>{c.data.pergunta}</p>
-          </Card>
-        ))}
-      </div>
-      <p class="secao__pe">
-        <a class="link-seta" href={url('/metodo/')}>
-          Todos os conceitos do método
-        </a>
-      </p>
-    </section>
-  )}
+  <section class="container secao" aria-labelledby="metodo">
+    <div class="secao__cabeca">
+      <span class="eyebrow">Método</span>
+      <h2 id="metodo">O método de Hugo Martins</h2>
+    </div>
+    <div class="inicio__cadeia">
+      <CadeiaDestino />
+    </div>
+    <p class="secao__pe">
+      <a class="link-seta" href={url('/metodo/')}>
+        Conhecer o método
+      </a>
+    </p>
+  </section>
 
   <section class="container inicio__livro-secao" aria-labelledby="livro">
     <div class="inicio__livro tema-navy">
@@ -453,9 +442,7 @@ const caminhos = [
   }
 
   .inicio__cadeia {
-    margin-bottom: var(--space-8);
-    padding-bottom: var(--space-7);
-    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--space-5);
   }
 
   .inicio__hugo {
