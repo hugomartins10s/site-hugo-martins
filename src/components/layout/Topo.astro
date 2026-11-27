@@ -22,11 +22,11 @@ const { trilha, class: extra } = Astro.props;
 <style>
   .topo {
     padding-top: calc(var(--topo-livre) + var(--space-5));
-    padding-bottom: clamp(var(--space-8), 6vw, var(--space-9));
+    padding-bottom: clamp(var(--space-7), 4vw, var(--space-8));
   }
 
   .topo__conteudo > :global(h1:not(.display)) {
-    max-width: 22ch;
+    max-width: 30ch;
   }
 
   /* O parágrafo-resposta continua inteiro no HTML (spec 5), mas com menos peso que o título:
@@ -34,7 +34,7 @@ const { trilha, class: extra } = Astro.props;
   .topo__conteudo > :global(.lead) {
     max-width: 58ch;
     margin-top: var(--space-5);
-    font-size: 1.125rem;
+    font-size: var(--step-0);
     color: var(--text-muted);
   }
 

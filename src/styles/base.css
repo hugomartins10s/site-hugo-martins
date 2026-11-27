@@ -53,14 +53,14 @@ h1 {
   font-family: var(--font-h1);
   font-size: var(--step-4);
   font-weight: 400;
-  line-height: 1.04;
+  line-height: 1.1;
   letter-spacing: var(--tracking-display);
 }
 h2 {
   font-size: var(--step-3);
-  font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: var(--tracking-display);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: var(--tracking-heading);
 }
 h3 {
   font-size: var(--step-2);
@@ -94,11 +94,11 @@ strong {
   color: var(--text-strong);
 }
 
-/* Título do hero: serifada grande, em caixa normal (D23). */
+/* Título do topo das páginas: serifada, em caixa normal (D23), no tamanho do h1 (D53). */
 .display {
-  max-width: 15ch;
-  font-size: var(--step-5);
-  line-height: 0.98;
+  max-width: 24ch;
+  font-size: var(--step-4);
+  line-height: 1.05;
   overflow-wrap: break-word;
 }
 
@@ -109,9 +109,9 @@ h1.titulo-longo {
 }
 
 h1.display.titulo-longo {
-  max-width: 22ch;
+  max-width: 28ch;
   font-size: var(--step-4);
-  line-height: 1.05;
+  line-height: 1.12;
 }
 
 /* Rótulo curto em caixa alta espaçada, o único lugar com esse tratamento. Um filete na cor da
@@ -263,7 +263,8 @@ a:hover {
 }
 
 .secao {
-  padding-block: var(--space-9) calc(var(--space-9) + var(--space-2));
+  /* O topo da seção respira menos que a base: o conteúdo começa cedo e fecha com folga (D53). */
+  padding-block: calc(var(--space-9) * 0.62) var(--space-9);
 }
 
 /* Cabeçalho de seção: rótulo, título e (opcional) um texto curto ao lado, no desktop. */
@@ -279,7 +280,7 @@ a:hover {
 }
 
 .secao__cabeca h2 {
-  max-width: 26ch;
+  max-width: 40ch;
 }
 
 @media (min-width: 60rem) {

@@ -72,13 +72,15 @@
   --tracking-display: -0.028em; /* títulos grandes (h1, .display) */
   --tracking-rotulo: 0.14em; /* só nos rótulos curtos em caixa alta (.eyebrow) */
 
-  --step--1: 0.9375rem; /* 15px: legendas, metadados */
-  --step-0: 1.125rem; /* 18px: corpo (spec: ≥ 17px) */
-  --step-1: clamp(1.2rem, 1.1rem + 0.45vw, 1.375rem);
-  --step-2: clamp(1.4rem, 1.2rem + 0.9vw, 1.75rem);
-  --step-3: clamp(1.9rem, 1.4rem + 2.1vw, 3rem);
-  --step-4: clamp(2.3rem, 1.4rem + 4vw, 4.5rem);
-  --step-5: clamp(2.3rem, 1.2rem + 5vw, 5.25rem); /* título do hero da Home */
+  /* Escala contida (D53), medida no site da Bespoke: corpo 17px, h3 ~20px, h2 22→28px,
+     h1 26→34px, frase do hero da Home 32→52px (valores no celular → em 1280px). */
+  --step--1: 0.875rem; /* 14px: legendas, metadados */
+  --step-0: 1.0625rem; /* 17px: corpo (spec: ≥ 17px) */
+  --step-1: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem); /* 17→19px */
+  --step-2: clamp(1.1875rem, 1.1rem + 0.25vw, 1.3125rem); /* 19→21px: h3 */
+  --step-3: clamp(1.375rem, 1.15rem + 0.75vw, 1.75rem); /* 22→28px: h2 */
+  --step-4: clamp(1.625rem, 1.3rem + 0.9vw, 2.125rem); /* 26→34px: h1 das páginas */
+  --step-5: clamp(2rem, 1.3rem + 2.4vw, 3.25rem); /* 32→52px: título do hero da Home */
   --leading: 1.65;
   --leading-tight: 1.1;
   --measure: 68ch; /* 60 a 72 caracteres */
@@ -92,10 +94,10 @@
   --space-6: 2rem;
   --space-7: 3rem;
   --space-8: 4.5rem;
-  --space-9: clamp(4.5rem, 3rem + 5vw, 8rem);
+  --space-9: clamp(3rem, 2rem + 4vw, 5.5rem); /* 48→88px entre seções (D53) */
   --gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);
   --container: 76rem;
-  --topo-livre: 8.5rem; /* espaço do cabeçalho flutuante */
+  --topo-livre: 7rem; /* espaço do cabeçalho flutuante */
 
   /* Formas */
   --radius-pill: 999px;
