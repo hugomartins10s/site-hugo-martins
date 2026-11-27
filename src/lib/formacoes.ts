@@ -43,6 +43,12 @@ export const formacoes: Formacao[] = [
     resumo:
       'Aplica o trabalho à vida pessoal e social: casa, família, igreja e convívio. É onde o lado transpessoal do trabalho ganha corpo.',
     fonte: 'Chamada e resumo do Potencial Humano (produtos/pessoal/potencial-humano.md)',
+    imagem: {
+      base: '/img/formacao-potencial-humano',
+      largura: 1400,
+      altura: 939,
+      alt: 'O mesmo homem prepara o terreno já limpo, com terra adubada, sacos de adubo e bandejas de mudas prontas para plantar',
+    },
   },
   {
     nome: 'Potencial Corporativo',
