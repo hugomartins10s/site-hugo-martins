@@ -44,22 +44,38 @@ const caminhos = [
 
 <Base title={tituloSeo(p)} description={p.data.resumo}>
   <Topo class="inicio__topo">
-    <h1 class="inicio__h1">{p.data.titulo}</h1>
-    <p class="display inicio__frase">
-      {frases.almaCorpo.texto
-        .split(/(?<=,) /)
-        .map((parte, i) => (i > 0 ? [' ', <span>{parte}</span>] : <span>{parte}</span>))}
-    </p>
-    {empresa.slogan && <p class="inicio__slogan">{empresa.slogan}</p>}
-    <div class="inicio__hero-base">
-      <Lead>{pessoa.descricao}</Lead>
-      <div class="acoes">
-        <GlassButton href={url('/hugo-martins/')} tamanho="grande">
-          Conhecer Hugo Martins
-        </GlassButton>
-        <GlassButton href={url('/contato/')} variante="secundario" tamanho="grande">
-          Falar com o Hugo
-        </GlassButton>
+    <div class="inicio__hero">
+      <div class="inicio__texto">
+        <h1 class="inicio__h1">{p.data.titulo}</h1>
+        <p class="display inicio__frase">
+          {frases.almaCorpo.texto
+            .split(/(?<=,) /)
+            .map((parte, i) => (i > 0 ? [' ', <span>{parte}</span>] : <span>{parte}</span>))}
+        </p>
+        {empresa.slogan && <p class="inicio__slogan">{empresa.slogan}</p>}
+        <div class="inicio__hero-base">
+          <Lead>{pessoa.descricao}</Lead>
+          <div class="acoes">
+            <GlassButton href={url('/hugo-martins/')} tamanho="grande">
+              Conhecer Hugo Martins
+            </GlassButton>
+            <GlassButton href={url('/contato/')} variante="secundario" tamanho="grande">
+              Falar com o Hugo
+            </GlassButton>
+          </div>
+        </div>
+      </div>
+      {/* Foto do Hugo com as três sombras (D54): sem o fundo branco, apoiada na borda de baixo. */}
+      <div class="inicio__foto">
+        <img
+          src={url('/img/hugo-martins-hero.webp')}
+          srcset={`${url('/img/hugo-martins-hero-480.webp')} 480w, ${url('/img/hugo-martins-hero.webp')} 727w`}
+          sizes="(min-width: 60rem) 36vw, 86vw"
+          width="727"
+          height="748"
+          alt="Hugo Martins sorrindo, de blazer caramelo e camisa azul, com três sombras de pessoas atrás dele"
+          fetchpriority="high"
+        />
       </div>
     </div>
   </Topo>
@@ -228,13 +244,58 @@ const caminhos = [
     color: var(--text-strong);
   }
 
+  /* O topo da Home termina na foto: sem respiro embaixo, a foto encosta na borda (D54). */
   :global(.tema-navy.topo.inicio__topo) {
     padding-top: calc(var(--topo-livre) + var(--space-4));
+    padding-bottom: 0;
+    overflow: hidden;
   }
 
-  /* O h1 da spec nomeia a entidade; a frase do Hugo é que leva o peso visual (D51). */
-  :global(.inicio__topo .topo__conteudo) > .inicio__h1 {
-    max-width: none;
+  .inicio__hero {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .inicio__texto {
+    align-self: center;
+  }
+
+  .inicio__foto {
+    position: relative;
+    justify-self: center;
+    align-self: end;
+    width: min(86vw, 26rem);
+  }
+
+  /* Luz azul atrás do Hugo: é ela que deixa as sombras da foto visíveis sobre o navy (D54). */
+  .inicio__foto::before {
+    content: '';
+    position: absolute;
+    inset: 0 -18% -4%;
+    background: radial-gradient(50% 55% at 50% 62%, #1f3a6b, rgb(31 58 107 / 0) 100%);
+  }
+
+  .inicio__foto img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 60rem) {
+    .inicio__hero {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: var(--space-7);
+    }
+
+    .inicio__texto {
+      padding-bottom: clamp(var(--space-7), 4vw, var(--space-8));
+    }
+
+    .inicio__foto {
+      justify-self: end;
+      width: min(100%, 30rem);
+    }
   }
 
   .inicio__h1 {
@@ -252,12 +313,13 @@ const caminhos = [
 
   .inicio__frase {
     font-size: var(--step-5);
+    margin-top: 0;
     line-height: 1.05;
     font-family: var(--font-h1);
     font-weight: 400;
     letter-spacing: var(--tracking-display);
     max-width: 16ch;
-    margin-bottom: var(--space-7);
+    margin-bottom: var(--space-6);
     color: var(--text-strong);
     text-wrap: balance;
   }
@@ -280,14 +342,6 @@ const caminhos = [
 
   .inicio__hero-base .acoes {
     margin: 0;
-  }
-
-  @media (min-width: 60rem) {
-    .inicio__hero-base {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
-      gap: var(--space-8);
-    }
   }
 
   /* O que ele ajuda a resolver: na vida e na empresa, lado a lado. */
