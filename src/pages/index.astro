@@ -198,20 +198,6 @@ const caminhos = [
           </div>
         )}
       </div>
-      <dl class="inicio__livro-ficha">
-        <div>
-          <dt>Autor</dt>
-          <dd>{pessoa.nome}</dd>
-        </div>
-        <div>
-          <dt>Editora</dt>
-          <dd>{livro.editora}</dd>
-        </div>
-        <div>
-          <dt>e-ISBN</dt>
-          <dd>{livro.isbnEbook}</dd>
-        </div>
-      </dl>
     </div>
   </section>
 
@@ -519,7 +505,7 @@ const caminhos = [
 
   @media (min-width: 60rem) {
     .inicio__livro {
-      grid-template-columns: 13rem minmax(0, 1.6fr) minmax(0, 1fr);
+      grid-template-columns: 13rem minmax(0, 1fr);
       align-items: center;
     }
 
@@ -541,28 +527,5 @@ const caminhos = [
   .inicio__livro p {
     max-width: var(--measure);
     margin: 0;
-  }
-
-  .inicio__livro-ficha {
-    gap: 0;
-    margin: 0;
-  }
-
-  .inicio__livro-ficha div {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding-block: var(--space-3);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .inicio__livro-ficha dt {
-    font-weight: 400;
-    color: var(--text-muted);
-  }
-
-  .inicio__livro-ficha dd {
-    text-align: right;
-    color: var(--text-strong);
   }
 </style>
