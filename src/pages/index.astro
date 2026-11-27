@@ -123,16 +123,16 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
                 class="formacao__imagem"
                 src={url(`${f.imagem.base}-800.webp`)}
                 srcset={`${url(`${f.imagem.base}-800.webp`)} 800w, ${url(`${f.imagem.base}-1400.webp`)} 1400w`}
-                sizes="(min-width: 60rem) 20rem, 92vw"
+                sizes="(min-width: 60rem) 30rem, 92vw"
                 width={f.imagem.largura}
                 height={f.imagem.altura}
                 alt={f.imagem.alt}
                 loading="lazy"
               />
             )}
-            <h3 class="formacao__nome">{f.nome}</h3>
-            <p class="formacao__resumo">{f.resumo}</p>
-            <div class="formacao__acao">
+            <div class="formacao__corpo">
+              <h3 class="formacao__nome">{f.nome}</h3>
+              <p class="formacao__resumo">{f.resumo}</p>
               <GlassButton href={url(f.href)}>
                 Saber mais sobre {f.nome === '10S' ? 'o 10S' : `o ${f.nome}`}
               </GlassButton>
@@ -379,54 +379,28 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     list-style: none;
   }
 
+  /* Card: a imagem encosta nas bordas do card (o card recorta os cantos) e o texto ocupa o
+     resto, com respiro. Celular: imagem em cima, texto embaixo. Desktop: imagem à esquerda na
+     altura toda do card, texto à direita centralizado na vertical (D62). */
   .formacao {
-    display: flex;
-    flex-direction: column;
-    padding: var(--space-4) var(--space-4) var(--space-5);
+    display: grid;
+    overflow: hidden;
+    padding: 0;
   }
 
-  /* A imagem apoia, não protagoniza: baixa e um pouco apagada (D59). */
+  /* A imagem apoia, não protagoniza: um pouco apagada (D59). */
   .formacao__imagem {
+    display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 5 / 2; /* no celular, uma faixa baixa; 16:9 no desktop */
-    margin-bottom: var(--space-4);
+    aspect-ratio: 5 / 2;
     object-fit: cover;
-    border-radius: var(--radius-inner);
     filter: saturate(0.8);
     opacity: 0.92;
   }
 
-  /* Desktop: os cards um embaixo do outro (D61); dentro de cada um, a imagem à esquerda,
-     pequena, e o nome, a descrição e o botão à direita. */
-  @media (min-width: 60rem) {
-    .formacao {
-      display: grid;
-      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-      grid-template-rows: auto auto 1fr;
-      column-gap: var(--space-7);
-      padding: var(--space-4);
-    }
-
-    .formacao__imagem {
-      grid-row: 1 / span 3;
-      aspect-ratio: 16 / 9;
-      margin-bottom: 0;
-    }
-
-    .formacao__nome {
-      margin-top: var(--space-2);
-    }
-
-    .formacao__resumo {
-      max-width: 62ch;
-    }
-  }
-
-  .formacao__nome,
-  .formacao__resumo,
-  .formacao__acao {
-    padding-inline: var(--space-2);
+  .formacao__corpo {
+    padding: var(--space-5) var(--space-5) var(--space-6);
   }
 
   .formacao__nome {
@@ -439,8 +413,22 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     color: var(--text);
   }
 
-  .formacao__acao {
-    margin-top: auto;
+  @media (min-width: 60rem) {
+    .formacao {
+      grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
+      align-items: stretch;
+    }
+
+    .formacao__imagem {
+      height: 100%;
+      min-height: 15rem;
+      aspect-ratio: auto;
+    }
+
+    .formacao__corpo {
+      align-self: center;
+      padding: var(--space-6) var(--space-7);
+    }
   }
 
   /* O que ele ajuda a resolver: na vida e na empresa, lado a lado. */
