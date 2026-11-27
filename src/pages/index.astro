@@ -318,7 +318,7 @@ const caminhos = [
     font-family: var(--font-h1);
     font-weight: 400;
     letter-spacing: var(--tracking-display);
-    max-width: 16ch;
+    max-width: none;
     margin-bottom: var(--space-6);
     color: var(--text-strong);
     text-wrap: balance;
@@ -332,8 +332,9 @@ const caminhos = [
     border-top: 1px solid var(--line);
   }
 
+  /* Os textos do hero usam a largura toda da coluna (pedido do Jonathan). */
   .inicio__hero-base :global(.lead) {
-    max-width: 44ch;
+    max-width: none;
     margin: 0;
     font-size: var(--step-1);
     line-height: 1.5;
