@@ -20,6 +20,7 @@ import FraseHugo from '../components/conteudo/FraseHugo.astro';
 import CadeiaDestino from '../components/conteudo/CadeiaDestino.astro';
 import { frases } from '../lib/frases';
 import { naEmpresa, naVida } from '../lib/problemas';
+import { formacoes } from '../lib/formacoes';
 import { empresa } from '../lib/empresa';
 import { url } from '../lib/links';
 import { pagina, tituloSeo } from '../lib/paginas';
@@ -31,13 +32,6 @@ const livroPagina = await pagina('livro');
 const { pessoa, livro } = empresa;
 const posts = (await postsOrdenados()).slice(0, 3);
 const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
-
-/** Os nomes dos programas, só como convite: o que cada um é, a página dele explica. */
-const caminhos = [
-  { nome: '10S', href: '/para-voce/10s/' },
-  { nome: 'Potencial Humano', href: '/para-voce/potencial-humano/' },
-  { nome: 'Potencial Corporativo', href: '/para-voce/potencial-corporativo/' },
-];
 ---
 
 <Base title={tituloSeo(p)} description={p.data.resumo}>
@@ -93,13 +87,6 @@ const caminhos = [
             </li>
           ))}
         </ol>
-        <p class="resolve__caminhos">
-          {caminhos.map((c) => (
-            <a class="link-seta" href={url(c.href)}>
-              {c.nome}
-            </a>
-          ))}
-        </p>
       </div>
       <div class="resolve__coluna resolve__coluna--lumi" data-brand="lumi">
         <h3 class="resolve__onde">Na sua empresa</h3>
@@ -120,6 +107,29 @@ const caminhos = [
       </div>
     </div>
   </section>
+
+  {/* Uma seção por formação (D58): nome, resumo curto e "Saber mais" para a página dela. */}
+  {formacoes.map((f, i) => (
+    <section
+      class:list={['secao', 'formacao', { faixa: i % 2 === 0 }]}
+      aria-labelledby={`formacao-${i + 1}`}
+    >
+      <div class="container formacao__grade">
+        <div>
+          <span class="eyebrow">Formação {String(i + 1).padStart(2, '0')}</span>
+          <h2 id={`formacao-${i + 1}`} class="formacao__nome">
+            {f.nome}
+          </h2>
+        </div>
+        <div class="formacao__texto">
+          <p>{f.resumo}</p>
+          <GlassButton href={url(f.href)} variante="secundario">
+            Saber mais sobre {f.nome === '10S' ? 'o 10S' : `o ${f.nome}`}
+          </GlassButton>
+        </div>
+      </div>
+    </section>
+  ))}
 
   <section class="secao tema-navy navy-profundo inicio__voz" aria-labelledby="hugo">
     <div class="container">
@@ -335,6 +345,31 @@ const caminhos = [
 
   .inicio__hero-base .acoes {
     margin: 0;
+  }
+
+  /* Seções das formações (D58): nome à esquerda, resumo e botão à direita. */
+  .formacao__grade {
+    display: grid;
+    gap: var(--space-4) var(--space-8);
+    align-items: center;
+  }
+
+  .formacao__nome {
+    margin: 0;
+    font-size: var(--step-4);
+  }
+
+  .formacao__texto p {
+    max-width: 52ch;
+    margin-bottom: var(--space-5);
+    font-size: var(--step-1);
+    color: var(--text);
+  }
+
+  @media (min-width: 60rem) {
+    .formacao__grade {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
   }
 
   /* O que ele ajuda a resolver: na vida e na empresa, lado a lado. */
