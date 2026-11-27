@@ -36,7 +36,7 @@ const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
   schema={[noLivro(inicio, urlPagina, p.data.resumo)]}
   principal={ids(inicio).livro}
 >
-  <Topo trilha={caminho} class="livro__topo">
+  <Topo trilha={caminho} class="livro__topo" alinhamento="esquerda">
     <span class="eyebrow">O livro de Hugo Martins</span>
     <h1 class="display">{p.data.titulo}</h1>
     <Lead>{p.data.resumo}</Lead>
@@ -131,6 +131,6 @@ const urlPagina = urlAbsolutaDoCaminho(Astro.url.pathname, Astro.site);
   }
 
   .livro > :global(*) {
-    margin: 0;
+    margin-block: 0;
   }
 </style>

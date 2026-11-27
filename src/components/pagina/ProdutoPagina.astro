@@ -198,7 +198,7 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
   }
 
   .produto__principal > :global(*) {
-    margin: 0;
+    margin-block: 0;
   }
 
   @media (min-width: 64rem) {
@@ -224,7 +224,9 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
   }
 
   .produto__corpo {
-    max-width: var(--measure);
+    /* preenche a coluna até a ficha "Em resumo", sem vão no meio (D63) */
+    max-width: none;
+    margin-inline: 0;
   }
 
   .produto__fim {
@@ -233,6 +235,6 @@ const tituloIrmaos = pessoal ? 'As outras etapas' : 'Os outros treinamentos da L
   }
 
   .produto__fim > :global(*) {
-    margin: 0;
+    margin-block: 0;
   }
 </style>

@@ -35,7 +35,7 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
 ---
 
 <Base title={tituloSeo(p)} description={p.data.resumo}>
-  <Topo class="inicio__topo">
+  <Topo class="inicio__topo" alinhamento="esquerda">
     <div class="inicio__hero">
       <div class="inicio__texto">
         <h1 class="inicio__h1">{p.data.titulo}</h1>
@@ -168,7 +168,7 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     </div>
   </section>
 
-  <section class="container secao" aria-labelledby="metodo">
+  <section class="container secao centro inicio__metodo" aria-labelledby="metodo">
     <div class="secao__cabeca">
       <span class="eyebrow">Método</span>
       <h2 id="metodo">O método de Hugo Martins</h2>
@@ -237,7 +237,7 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
     </section>
   )}
 
-  <section class="container inicio__resumo" aria-labelledby="resumo">
+  <section class="container centro inicio__resumo" aria-labelledby="resumo">
     <h2 id="resumo" class="eyebrow">
       Em resumo
     </h2>
@@ -530,9 +530,22 @@ const lista = (xs: string[]) => `${xs.slice(0, -1).join(', ')} e ${xs.at(-1)}`;
 
   .inicio__resumo p {
     max-width: var(--measure);
-    margin: 0;
+    margin: 0 auto;
     font-size: 0.9375rem;
     color: var(--text-muted);
+  }
+
+  /* A cadeia do destino centralizada com o resto do bloco (D63). */
+  .inicio__metodo :global(.cadeia__lista) {
+    justify-content: center;
+  }
+
+  .inicio__metodo :global(.cadeia__frase p) {
+    margin-inline: auto;
+  }
+
+  .inicio__resumo h2 {
+    justify-content: center;
   }
 
   .inicio__cadeia {

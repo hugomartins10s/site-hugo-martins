@@ -8,11 +8,22 @@ import Breadcrumb from './Breadcrumb.astro';
 interface Props {
   trilha?: ItemTrilha[];
   class?: string;
+  /** Centro (padrão, D63): o topo só tem texto e fica no eixo da página. Esquerda: quando há
+   * imagem ao lado (Home, livro). */
+  alinhamento?: 'centro' | 'esquerda';
 }
-const { trilha, class: extra } = Astro.props;
+const { trilha, class: extra, alinhamento = 'centro' } = Astro.props;
 ---
 
-<div class:list={['topo', 'tema-navy', 'navy-profundo', extra]}>
+<div
+  class:list={[
+    'topo',
+    'tema-navy',
+    'navy-profundo',
+    { 'topo--centro': alinhamento === 'centro' },
+    extra,
+  ]}
+>
   <div class="container topo__conteudo">
     {trilha && <Breadcrumb itens={trilha} />}
     <slot />
@@ -36,6 +47,21 @@ const { trilha, class: extra } = Astro.props;
     margin-top: var(--space-5);
     font-size: var(--step-0);
     color: var(--text-muted);
+  }
+
+  /* Topo centralizado (D63): título, parágrafo, trilha, rótulo e botões no eixo da página. */
+  .topo--centro .topo__conteudo {
+    text-align: center;
+  }
+
+  .topo--centro .topo__conteudo > :global(*) {
+    margin-inline: auto;
+  }
+
+  .topo--centro .topo__conteudo > :global(.eyebrow),
+  .topo--centro .topo__conteudo > :global(.acoes),
+  .topo--centro .topo__conteudo :global(.trilha ol) {
+    justify-content: center;
   }
 
   .topo__conteudo > :global(:last-child) {

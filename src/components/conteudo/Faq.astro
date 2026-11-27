@@ -27,6 +27,13 @@ const { itens, titulo = 'Perguntas frequentes' } = Astro.props;
 )}
 
 <style>
+  /* bloco centralizado na página, na largura de leitura (D63) */
+  .faq {
+    width: 100%;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
   .faq__item + .faq__item {
     margin-top: var(--space-3);
   }
@@ -71,6 +78,5 @@ const { itens, titulo = 'Perguntas frequentes' } = Astro.props;
 
   .faq__resposta {
     margin: var(--space-3) 0 0;
-    max-width: var(--measure);
   }
 </style>

@@ -268,6 +268,25 @@ a:hover {
 }
 
 /* Cabeçalho de seção: rótulo, título e (opcional) um texto curto ao lado, no desktop. */
+/* Bloco centralizado no eixo da página (D63): textos curtos sem nada ao lado. */
+.centro {
+  text-align: center;
+}
+
+.centro > *,
+.centro .secao__cabeca > * {
+  margin-inline: auto;
+}
+
+.centro .secao__cabeca {
+  justify-items: center;
+}
+
+.centro .eyebrow,
+.centro .acoes {
+  justify-content: center;
+}
+
 .secao__cabeca {
   display: grid;
   gap: var(--space-4) var(--space-7);
