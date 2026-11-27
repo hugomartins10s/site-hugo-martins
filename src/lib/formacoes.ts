@@ -1,8 +1,6 @@
 /**
- * As três formações da frente pessoal, para as seções da Home (D58). Cada resumo é tirado da
- * chamada ou do resumo do próprio produto (src/content/produtos/pessoal/*.md), sem as frases de
- * "quem contrata" e de ordem obrigatória, que ficam nas páginas de cada formação (D52).
- * Mudou o texto do produto, revise aqui.
+ * As três formações da frente pessoal, para os cards da Home (D58, D60). Os resumos são o texto
+ * que o Jonathan enviou em 27/11/2026, palavra por palavra (D61). Não parafrasear.
  */
 
 export type Imagem = {
@@ -28,8 +26,8 @@ export const formacoes: Formacao[] = [
     nome: '10S',
     href: '/para-voce/10s/',
     resumo:
-      'Dez sessões individuais para expurgar o que pesa, se entender e situar o momento de vida. Hugo compara o processo a limpar e adubar o terreno antes de plantar o jardim.',
-    fonte: 'Chamada e resumo do 10S (produtos/pessoal/10s.md)',
+      'No 10S, a pessoa solta o que vinha carregando e passa a enxergar a própria história com clareza. Entende por que sente e reage como reage e situa o momento de vida em que está. Sai mais leve, com o terreno limpo e bem adubado para plantar o que quiser.',
+    fonte: 'Texto do Jonathan, 27/11/2026 (D61)',
     imagem: {
       base: '/img/formacao-10s',
       largura: 1400,
@@ -41,8 +39,8 @@ export const formacoes: Formacao[] = [
     nome: 'Potencial Humano',
     href: '/para-voce/potencial-humano/',
     resumo:
-      'Aplica o trabalho à vida pessoal e social: casa, família, igreja e convívio. É onde o lado transpessoal do trabalho ganha corpo.',
-    fonte: 'Chamada e resumo do Potencial Humano (produtos/pessoal/potencial-humano.md)',
+      'O Potencial Humano leva o autoconhecimento para dentro de casa e do convívio. A pessoa passa a entender quem vive ao seu lado, a se comunicar com mais verdade e a ocupar o seu lugar na família, na igreja e nas amizades. O lado transpessoal ganha corpo no cotidiano.',
+    fonte: 'Texto do Jonathan, 27/11/2026 (D61)',
     imagem: {
       base: '/img/formacao-potencial-humano',
       largura: 1400,
@@ -54,8 +52,8 @@ export const formacoes: Formacao[] = [
     nome: 'Potencial Corporativo',
     href: '/para-voce/potencial-corporativo/',
     resumo:
-      'Aplica o trabalho à vida profissional: relações na empresa, dinâmicas de poder, escolha da área certa, ajustes de carreira e gestão de time.',
-    fonte: 'Chamada e resumo do Potencial Corporativo (produtos/pessoal/potencial-corporativo.md)',
+      'O Potencial Corporativo leva o autoconhecimento para o trabalho. A pessoa aprende a ler as relações e as dinâmicas de poder da empresa, descobre se está na área certa, ajusta a carreira com consciência e conduz o time com mais segurança. Assim, a vida profissional ganha clareza, propósito e direção.',
+    fonte: 'Texto do Jonathan, 27/11/2026 (D61)',
     imagem: {
       base: '/img/formacao-potencial-corporativo',
       largura: 1400,
